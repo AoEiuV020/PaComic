@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="my" >
+    <property name="java.compilerargs" value="-Xlint:-options" />
+	<target name="-myenv" depends="-xml">
+	</target>
+	<target name="-xml" depends="-setup" 
+		description="设置我自己需要的变量">
+		<!--从AndroidMenifest.xml中取出主活动名-->
+		<xpath input="${manifest.abs.file}"
+			expression="/manifest/application/activity[intent-filter/action/@android:name='android.intent.action.MAIN']/@android:name"
+			output="activity.main"/>
+		<!--这主活动名格式可能不是我想要的，改成不带包名的，点.开头的形式-->
+		<script language="javascript">
+			var main=project.getProperty("activity.main");
+			var package=project.getProperty("project.app.package");
+			main=main.replace(new RegExp("^("+package+")?\\.?"),".");
+			project.setProperty("activity.main",main);
+		</script>
+	</target>
+	<target name="t" depends="-myenv">
+		<echo>${project.app.package}/${activity.main}</echo>
+		<exec executable="echo">
+			<arg value="hello"/>
+		</exec>
+	</target>
+	<target name="run" depends="-myenv"
+		description="运行app">
+		<property name="activity" value="${project.app.package}/${activity.main}" />
+		<exec executable="${adb}" failonerror="true">
+			<arg line="${adb.device.arg}" />
+			<arg value="shell" />
+			<arg value="am" />
+			<arg value="start" />
+			<arg value="-n" />
+			<arg value="${activity}" />
+		</exec>
+	</target>
+	<target name="cap" depends="-myenv"
+		description="用screencap截屏到screen.png">
+		<exec executable="${adb}" failonerror="true">
+			<arg line="${adb.device.arg}" />
+			<arg value="shell" />
+			<arg value="/system/bin/screencap" />
+			<arg value="-p" />
+			<arg value="/data/local/tmp/screen.png" />
+		</exec>
+		<exec executable="${adb}" failonerror="true">
+			<arg line="${adb.device.arg}" />
+			<arg value="pull" />
+			<arg value="/data/local/tmp/screen.png" />
+			<arg value="./screen.png" />
+		</exec>
+	</target>
+	<target name="all" depends="debug,install,run">
+	</target>
+</project>
