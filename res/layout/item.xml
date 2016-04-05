@@ -28,11 +28,9 @@
     <!-- Activity icon when presenting dialog
          Size will be filled in by ResolverActivity -->
     <ImageView android:id="@android:id/icon"
-               android:layout_width="24dp"
-               android:layout_height="24dp"
+               android:layout_width="80dp"
+               android:layout_height="80dp"
                android:layout_gravity="start|center_vertical"
-               android:layout_marginTop="12dp"
-               android:layout_marginBottom="12dp"
                android:scaleType="fitCenter" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

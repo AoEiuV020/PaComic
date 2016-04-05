@@ -7,32 +7,35 @@
 package com.aoeiuv020.comic;
 import com.aoeiuv020.reptile.Reptile;
 import com.aoeiuv020.stream.Stream;
+import android.app.Activity;
 import android.content.*;
 import android.view.*;
 import android.widget.*;
+import android.os.Handler;
+import android.os.Message;
 import org.json.*;
-public class MainView extends LinearLayout
+public class MainView extends LinearLayout implements Runnable,AbsListView.OnScrollListener
 {
 	ListView mListView=null;
 	SimpleAdapter mAdapter=null;
+	Reptile reptile=null;
 	public MainView(Context context)
 	{
 		super(context);
 		setOrientation(LinearLayout.VERTICAL);
 		setGravity(Gravity.TOP);
 		mListView=new ListView(getContext());
-		addView(mListView);
 		JSONObject json=null;
 		try
 		{
-			json=new JSONObject(Stream.read(getContext().getAssets(),"sites.json"));
+			json=new JSONObject(Stream.read(getContext(),"sites.json"));
 			json=json.getJSONObject(json.keys().next());
 		}
 		catch(JSONException e)
 		{
 			throw new RuntimeException("sites.json解析错误，",e);
 		}
-		Reptile reptile=new Reptile(json);
+		reptile=new Reptile(getContext(),json);
 		mAdapter=new SimpleAdapter(
 				getContext(),
 				reptile.getData(Reptile.MAIN),
@@ -42,5 +45,37 @@ public class MainView extends LinearLayout
 				);
 		mAdapter.setViewBinder(reptile.getViewBinder());
 		mListView.setAdapter(mAdapter);
+		mListView.setOnScrollListener(this);
+		addView(mListView);
+		reptile.loadStart();
+		Thread dataThread;
+		dataThread=new Thread(this);
+		dataThread.start();
+	}
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
+	{
+	}
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState)
+	{
+		if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE)
+		{
+			if (view.getLastVisiblePosition() == view.getCount() - 1)
+			{  
+				reptile.loadNext();
+			}
+		}
+	}
+	public void notifyDataSetChanged()
+	{
+		if(mAdapter!=null)
+		{
+			mAdapter.notifyDataSetChanged();
+		}
+	}
+	@Override
+	public void run()
+	{
 	}
 }

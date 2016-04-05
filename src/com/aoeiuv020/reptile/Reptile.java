@@ -7,6 +7,7 @@
 package com.aoeiuv020.reptile;
 import com.aoeiuv020.stream.Stream;
 import android.content.Context;
+import android.content.*;
 import android.widget.*;
 import android.view.*;
 import android.graphics.drawable.Drawable;
@@ -48,39 +49,53 @@ public class Reptile
 	private URL pageUrl=null;
 	private URL catalogUrl=null;
 	private URL comicUrl=null;
-	public Reptile(JSONObject json)
+	private Selector selector=null;
+	private Connection mConnection=null;
+	private Context mContext=null;
+	public Reptile(Context context,JSONObject json)
 	{
+		this.mContext=context;
 		mJsonSite=json;
 		init();
 	}
 	private void init()
 	{
-		encoding="UTF-8";
-		method="get";
+		method="GET";
 		try
 		{
 			baseuri=mJsonSite.getString("baseuri");
-			if(mJsonSite.has("encoding"))
-			{
-				encoding=mJsonSite.getString("encoding");
-			}
+			baseUrl=new URL(baseuri);
+			mConnection=Jsoup.connect(baseUrl.toString());
 			if(mJsonSite.has("method"))
 			{
 				method=mJsonSite.getString("method");
 			}
+			mConnection.method(Connection.Method.valueOf(method));
 		}
 		catch(JSONException e)
 		{
 			throw new RuntimeException(e);
 		}
-		try
-		{
-			baseUrl=new URL(baseuri);
-		}
 		catch(MalformedURLException e)
 		{
 			throw new RuntimeException("baseuri不规范:"+baseuri,e);
 		}
+		catch(IOException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+	public void loadNext()
+	{
+		selector.loadNext();
+	}
+	public void loadStart()
+	{
+		selector.loadStart();
+	}
+	public int getCount()
+	{
+		return selector.getCount();
 	}
 	public List<Map<String,Object>> getData(int page)
 	{
@@ -90,7 +105,6 @@ public class Reptile
 	{
 		List<Map<String,Object>> list=null;
 		JSONObject pageJson=null;
-		Selector selector=null;
 		Document document=null;
 		try
 		{
@@ -99,9 +113,9 @@ public class Reptile
 				case MAIN:
 					pageJson=mJsonSite.getJSONObject("main");
 					pageUrl=new URL(baseUrl,pageJson.getString("uri"));
-					selector=new Selector(pageJson.getJSONObject("selector"));
-					document=Jsoup.connect(pageUrl.toString()).get();
-					list=selector.getData(document);
+					document=mConnection.url(pageUrl).execute().parse();
+					selector=new Selector(mContext,pageJson.getJSONObject("selector"),mConnection,document);
+					list=selector.getData();
 					break;
 			}
 		}
@@ -137,60 +151,143 @@ class ComicViewBinder implements SimpleAdapter.ViewBinder
 		return false;
 	}
 }
-class Selector
+class Selector implements Runnable
 {
 	private String elementsQuery=null;
 	private String aQuery=null;
 	private String imgQuery=null;
 	private String textQuery=null;
+	private String nextQuery=null;
 	private JSONObject mJson=null;
-	public Selector(JSONObject json)
+	private Element mElement=null;
+	private Thread loader=null;
+	private Context mContext=null;
+	private boolean loading=false;
+	private boolean ok=false;
+	List<Map<String,Object>> mList=new LinkedList<Map<String,Object>>();
+	private Connection mConnection=null;
+	public Selector(Context context,JSONObject json,Connection parmConnection,Element parmElement)
 	{
+		this.mContext=context;
 		this.mJson=json;
+		mConnection=parmConnection;
 		try
 		{
 			elementsQuery=mJson.getString("elements");
 			aQuery=mJson.getString("a");
 			imgQuery=mJson.getString("img");
 			textQuery=mJson.getString("text");
+			if(mJson.has("next"))
+			{
+				nextQuery=mJson.getString("next");
+			}
 		}
 		catch(JSONException e)
 		{
 			throw new RuntimeException(e);
 		}
+		mElement=parmElement;
+		mList=new LinkedList<Map<String,Object>>();
+		loader=new Thread(this);
 	}
-	public List<Map<String,Object>> getData(Element parmElement)
+	public int getCount()
 	{
-		List<Map<String,Object>> list=new LinkedList<Map<String,Object>>();
-		Map<String,Object> map=null;
-		try
+		return mList.size();
+	}
+	public boolean loadNext()
+	{
+		boolean hasNext=false;
+		if(nextQuery==null||"".equals(nextQuery))
 		{
-			for(Element element:parmElement.select(elementsQuery))
+			return false;
+		}
+		//如果没加载完，
+		if(!ok)
+		{
+			return true;
+		}
+		Element next=mElement.select(nextQuery).first();
+		if(next!=null)
+		{
+			loading=false;
+			/*
+			try
 			{
-				Element aElement,imgElement,textElement;
-				aElement=element.select(aQuery).first();
-				imgElement=element.select(imgQuery).first();
-				textElement=element.select(textQuery).first();
-				Drawable drawable=null;
-				try
+				loader.join();
+			}
+			catch(InterruptedException e)
+			{
+				//不可到达，
+				throw new RuntimeException(e);
+			}
+			*/
+			try
+			{
+				mElement=mConnection.url(next.absUrl("href")).execute().parse();
+				loader=new Thread(this);
+				loader.start();
+				hasNext=true;
+			}
+			catch(IOException e)
+			{
+				hasNext=false;
+			}
+		}
+		System.out.println(""+hasNext);
+		return false;
+	}
+	public List<Map<String,Object>> getData()
+	{
+		return mList;
+	}
+	public void notifyDataSetChanged()
+	{
+		Intent intent=new Intent();
+		intent.setAction("com.aoeiuv020.comic.notifyDataSetChanged");
+		mContext.sendBroadcast(intent);
+	}
+	@Override
+	public void run()
+	{
+		loading=true;
+		ok=false;
+		Map<String,Object> map=null;
+		for(Element element:mElement.select(elementsQuery))
+		{
+			Element aElement,imgElement,textElement;
+			aElement=element.select(aQuery).first();
+			imgElement=element.select(imgQuery).first();
+			textElement=element.select(textQuery).first();
+			Drawable drawable=null;
+			try
+			{
+				if(imgElement!=null)
 				{
 					drawable=Drawable.createFromStream(new ByteArrayInputStream(Jsoup.connect(imgElement.absUrl("src")).ignoreContentType(true).execute().bodyAsBytes()),null);
 				}
-				catch(Exception e)
-				{
-					throw new RuntimeException(e);
-				}
-				map=new HashMap<String,Object>();
-				map.put("img",drawable);
-				map.put("text",textElement.text());
-				map.put("url",aElement.absUrl("href"));
-				list.add(map);
 			}
+			catch(Exception e)
+			{
+				//throw new RuntimeException(e);
+			}
+			map=new HashMap<String,Object>();
+			map.put("img",drawable);
+			if(aElement!=null)
+			{
+				map.put("url",aElement.absUrl("href"));
+			}
+			if(textElement!=null)
+			{
+				map.put("text",textElement.text());
+			}
+			mList.add(map);
+			System.out.println(""+map);
 		}
-		catch(Exception e)
-		{
-			throw new RuntimeException(e);
-		}
-		return list;
+		notifyDataSetChanged();
+		ok=true;
+	}
+	public void loadStart()
+	{
+		loader.start();
 	}
 }
