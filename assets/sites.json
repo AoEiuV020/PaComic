@@ -1,0 +1,26 @@
+{
+	"1kkk":{
+		"comment.encoding":"网站的编码，所有文件都用这个编码读，",
+		"encoding":"UTF-8",
+		"method":"get",
+		"comment.baseuri":"网站根地址，",
+		"baseuri":"http://www.1kkk.com/",
+		"comment.main":"主页的爬虫配置，",
+		"main":{
+			"comment.url":"主页的地址，",
+			"uri":"/",
+			"comment.selector":"主页的选择器，选出要显示的内容，",
+			"selector":{
+				"comment.elements":"筛选出所有目标各自所在的结点，",
+				"elements":"div.in_02 dl",
+				"comment.a.img.text":"在elements中精确指定(目标，缩略图，文本)所在结点，",
+				"a":"a.a_comicname",
+				"img":"img.a_comicname",
+				"text":"a.a_comicname"
+			}
+		},
+		"classification":{
+
+		}
+	}
+}
