@@ -11,6 +11,7 @@ import com.aoeiuv020.reptile.Reptile;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.view.inputmethod.InputMethodManager;
 import android.os.Bundle;
 import android.content.*;
 import android.view.*;
@@ -42,6 +43,9 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 	public void onFinish()
 	{
 		setDefaultFragment();
+		InputMethodManager imm=(InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE);
+		if(getCurrentFocus()!=null)
+			imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 	}
 	@Override
 	public void onItemClick(int position)

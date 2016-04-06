@@ -17,7 +17,7 @@
 				"a":"a",
 				"img":"dt img",
 				"text":"dd a",
-				"content":"dd span",
+				"content":"dd span.lj_hei",
 				"next":"div.main div#search_fy a:contains(下一页)"
 			},
 			"comment.item":"在具体分类的页面里选择漫画列表元素的选择器，",
