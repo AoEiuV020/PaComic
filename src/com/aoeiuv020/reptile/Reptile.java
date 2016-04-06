@@ -6,6 +6,7 @@
 *************************************************** */
 package com.aoeiuv020.reptile;
 import com.aoeiuv020.stream.Stream;
+import com.aoeiuv020.comic.Item;
 import android.content.Context;
 import android.content.*;
 import android.widget.*;
@@ -26,7 +27,7 @@ import java.io.IOException;
   * Reptile.CATALOG
   * Reptile.COMIC
   * Reptile reptile=new Reptile(jsonobject);
-  * List<Map<String,Object>> list;
+  * List<Item> list;
   * //Map.keys {"icon","text1"}
   * list=reptile.getData(Reptile.MAIN);
   * list=reptile.getData(Reptile.CATALOG,index);
@@ -85,25 +86,65 @@ public class Reptile
 			throw new RuntimeException(e);
 		}
 	}
-	public void loadNext()
+	public boolean loadNext()
 	{
-		selector.loadNext();
+		boolean hasNext=false;
+		if(selector!=null)
+		{
+			hasNext=selector.loadNext();
+		}
+		return hasNext;
 	}
 	public void loadStart()
 	{
-		selector.loadStart();
+			selector.loadStart();
 	}
 	public int getCount()
 	{
 		return selector.getCount();
 	}
-	public List<Map<String,Object>> getData(int page)
+	public List<Item> getPage(int page)
+	{
+		List<Item> list=null;
+		JSONObject pageJson=null;
+		Document document=null;
+		try
+		{
+			switch(page)
+			{
+				case MAIN:
+					pageJson=mJsonSite.getJSONObject("main");
+					URL pageUrl=new URL(baseUrl,pageJson.getString("uri"));
+					document=mConnection.url(pageUrl).execute().parse();
+					if(selector==null)
+					{
+						selector=new Selector(mContext,pageJson.getJSONObject("selector"),mConnection,document);
+					}
+					list=selector.getItems();
+					break;
+			}
+		}
+		catch(MalformedURLException e)
+		{
+			throw new RuntimeException("uri参数错误",e);
+		}
+		catch(JSONException e)
+		{
+			throw new RuntimeException(e);
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException("可能是网络不通",e);
+		}
+		return list;
+	}
+	public List<Item> getData(int page)
 	{
 		return getData(page,0);
 	}
-	public List<Map<String,Object>> getData(int page,int index)
+	public List<Item> getData(int page,int index)
 	{
-		List<Map<String,Object>> list=null;
+		List<Item> list=null;
 		JSONObject pageJson=null;
 		Document document=null;
 		try
@@ -164,7 +205,7 @@ class Selector implements Runnable
 	private Context mContext=null;
 	private boolean loading=false;
 	private boolean ok=false;
-	List<Map<String,Object>> mList=new LinkedList<Map<String,Object>>();
+	List<Item> mList=new LinkedList<Item>();
 	private Connection mConnection=null;
 	public Selector(Context context,JSONObject json,Connection parmConnection,Element parmElement)
 	{
@@ -187,8 +228,37 @@ class Selector implements Runnable
 			throw new RuntimeException(e);
 		}
 		mElement=parmElement;
-		mList=new LinkedList<Map<String,Object>>();
+		mList=new LinkedList<Item>();
 		loader=new Thread(this);
+	}
+	public List<Item> getItems()
+	{
+		List<Item> list=new LinkedList<Item>();
+		Item item=null;
+		for(Element element:mElement.select(elementsQuery))
+		{
+			Element aElement,imgElement,textElement;
+			aElement=element.select(aQuery).first();
+			imgElement=element.select(imgQuery).first();
+			textElement=element.select(textQuery).first();
+			item=new Item();
+			if(imgElement!=null)
+			{
+				item.image=imgElement.absUrl("src");
+			}
+			if(aElement!=null)
+			{
+				item.url=aElement.absUrl("href");
+				item.content=item.url;
+			}
+			if(textElement!=null)
+			{
+				item.title=textElement.text();
+			}
+			System.out.println(""+item);
+			list.add(item);
+		}
+		return list;
 	}
 	public int getCount()
 	{
@@ -200,11 +270,6 @@ class Selector implements Runnable
 		if(nextQuery==null||"".equals(nextQuery))
 		{
 			return false;
-		}
-		//如果没加载完，
-		if(!ok)
-		{
-			return true;
 		}
 		Element next=mElement.select(nextQuery).first();
 		if(next!=null)
@@ -233,10 +298,9 @@ class Selector implements Runnable
 				hasNext=false;
 			}
 		}
-		System.out.println(""+hasNext);
-		return false;
+		return hasNext;
 	}
-	public List<Map<String,Object>> getData()
+	public List<Item> getData()
 	{
 		return mList;
 	}
@@ -251,7 +315,19 @@ class Selector implements Runnable
 	{
 		loading=true;
 		ok=false;
-		Map<String,Object> map=null;
+		Item item=null;
+		for(int i=0;i<10;++i)
+		{
+
+			item=new Item();
+			item.image="";
+			item.title="title "+i;
+			item.content="content "+i;
+			mList.add(item);
+			notifyDataSetChanged();
+		}
+		ok=true;
+		/*
 		for(Element element:mElement.select(elementsQuery))
 		{
 			Element aElement,imgElement,textElement;
@@ -270,21 +346,22 @@ class Selector implements Runnable
 			{
 				//throw new RuntimeException(e);
 			}
-			map=new HashMap<String,Object>();
-			map.put("img",drawable);
+			item=new HashMap<String,Object>();
+			item.put("img",drawable);
 			if(aElement!=null)
 			{
-				map.put("url",aElement.absUrl("href"));
+				item.put("url",aElement.absUrl("href"));
 			}
 			if(textElement!=null)
 			{
-				map.put("text",textElement.text());
+				item.put("text",textElement.text());
 			}
-			mList.add(map);
-			System.out.println(""+map);
+			mList.add(item);
+			System.out.println(""+item);
 		}
 		notifyDataSetChanged();
 		ok=true;
+		*/
 	}
 	public void loadStart()
 	{
