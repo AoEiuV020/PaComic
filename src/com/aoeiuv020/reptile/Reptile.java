@@ -106,10 +106,6 @@ public class Reptile
 		}
 		catch(Exception e)
 		{
-			if(Main.DEBUG)
-			{
-				throw new RuntimeException(e);
-			}
 		}
 	}
 	public void setClassification(int index)

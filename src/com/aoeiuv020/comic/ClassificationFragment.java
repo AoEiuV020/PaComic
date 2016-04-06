@@ -13,6 +13,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.content.*;
 import android.view.*;
+import android.view.inputmethod.InputMethodManager;
 import android.os.*;
 import android.widget.*;
 
@@ -55,6 +56,8 @@ public class ClassificationFragment extends Fragment implements View.OnClickList
 		if(sSearch.equals(""))
 			return;
 		mReptile.setSearch(sSearch);
+		InputMethodManager imm=(InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(mEditText.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
 		callOnFinish();
 	}
 	private void setDefaultListener()
