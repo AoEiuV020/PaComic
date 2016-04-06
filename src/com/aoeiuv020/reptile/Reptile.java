@@ -20,7 +20,13 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-/*
+/**
+  * Reptile reptile=new Reptile();
+  * reptile.setSite(siteJson); //设置网站，不耗时，不抛异常，
+  * List<Item> list=reptile.getItems(); //耗时，只抛RuntimeException,
+  * reptile.loadNext(); //耗时，不抛异常，返回是否有Next,boolean
+  * reptile.setClassification(3); //设置分类，不耗时，
+  * List<Item> classList=reptile.getClassifications(); //耗时，
   */
 public class Reptile
 {

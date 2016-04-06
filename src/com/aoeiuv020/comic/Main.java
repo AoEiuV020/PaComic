@@ -23,8 +23,6 @@ import org.json.*;
 
 public class Main extends Activity implements BottomFragment.OnItemClickListener
 {
-	Fragment mContentFragment=null,mTitleFragment=null,mBottomFragment=null;
-	FragmentTransaction mFragmentTransaction=null;
 	JSONObject mSiteJson=null;
 	Reptile mReptile=null;
     /** Called when the activity is first created. */
@@ -35,7 +33,6 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 		first();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
-		mFragmentTransaction=getFragmentManager().beginTransaction();
 		mReptile=new Reptile();
 		setDefaultSite();
 		setDefaultFragment();
@@ -47,15 +44,22 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 	}
 	private void changeTab(int position)
 	{
+		Fragment fContent=null;
+		FragmentTransaction ft=getFragmentManager().beginTransaction();
 		switch(position)
 		{
 			case BottomFragment.MAIN:
+				fContent=new ItemsFragment(mReptile);
 				break;
 			case BottomFragment.CLASSIFICATION:
+				fContent=new ClassificationFragment(mReptile);
 				break;
 			case BottomFragment.SITE:
+				fContent=new SiteFragment(mReptile);
 				break;
 		}
+		ft.replace(R.id.fragment_content,fContent);
+		ft.commit();
 	}
 	private void setDefaultSite()
 	{
@@ -72,13 +76,20 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 	}
 	private void setDefaultFragment()
 	{
-		mContentFragment=new ItemsFragment(mReptile);
-		mFragmentTransaction.replace(R.id.fragment_content,mContentFragment);
-		mTitleFragment=new TitleFragment();
-		mFragmentTransaction.replace(R.id.fragment_title,mTitleFragment);
-		mBottomFragment=new BottomFragment();
-		mFragmentTransaction.replace(R.id.fragment_bottom,mBottomFragment);
-		mFragmentTransaction.commit();
+		Fragment fContent=null;
+		Fragment fTitle=null;
+		BottomFragment fBottom=null;
+		FragmentTransaction ft=getFragmentManager().beginTransaction();
+
+		fContent=new ItemsFragment(mReptile);
+		fTitle=new TitleFragment();
+		fBottom=new BottomFragment();
+		fBottom.setOnItemClickListener(this);
+
+		ft.replace(R.id.fragment_content,fContent);
+		ft.replace(R.id.fragment_title,fTitle);
+		ft.replace(R.id.fragment_bottom,fBottom);
+		ft.commit();
 	}
 	private void first()
 	{

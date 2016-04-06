@@ -22,12 +22,12 @@ import org.json.*;
 
 public class ItemsFragment extends Fragment implements View.OnClickListener
 {
-	ListView mListView=null;
-	List<Item> mList=null;
-	ItemLoadAsyncTask mTask=null;
-	Button bLoadMore=null;
-	Reptile mReptile=null;
-	ItemAdapter mAdapter=null;
+	private ListView mListView=null;
+	private List<Item> mList=null;
+	private ItemLoadAsyncTask mTask=null;
+	private Button bLoadMore=null;
+	private Reptile mReptile=null;
+	private ItemAdapter mAdapter=null;
 	public ItemsFragment(Reptile reptile)
 	{
 		mReptile=reptile;
