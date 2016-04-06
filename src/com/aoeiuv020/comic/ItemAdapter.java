@@ -84,7 +84,7 @@ public class ItemAdapter extends BaseAdapter
 	}
 	private void loadImage(ImageView imageView,String url)
 	{
-		imageView.setImageResource(R.drawable.ic_launcher);
+		ImageLoader.showImage(imageView,url);
 	}
 	class ViewHolder
 	{
