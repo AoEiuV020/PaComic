@@ -18,6 +18,7 @@ import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
 import java.util.*;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.net.MalformedURLException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -100,6 +101,7 @@ public class Reptile
 			JSONObject searchSelectorJson=mJsonSite.getJSONObject("selector").getJSONObject("search");
 			String sUrl=searchSelectorJson.getString("url");
 			sUrl=String.format(sUrl,sSearch);
+			sUrl=URLEncoder.encode(sUrl,"UTF-8");
 			URL url=new URL(baseUrl,sUrl);
 			Document document=mConnection.url(url).execute().parse();
 			mItemsSelector=new Selector(searchSelectorJson,mConnection,document);
