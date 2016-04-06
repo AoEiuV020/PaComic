@@ -7,15 +7,28 @@
 		"baseuri":"http://www.1kkk.com/",
 		"comment.main":"主页的爬虫配置，",
 		"selector":{
+			"comment.search":"搜索页面的选择器，",
+			"search":{
+				"comment.url":"搜索的地址，%s会用搜索内容替代,",
+				"url":"/search?title=%s",
+				"comment.elements":"筛选出所有目标各自所在的结点，",
+				"elements":"div.main div.in_02 dl",
+				"comment.a.img.text":"在elements中精确指定(目标，缩略图，文本)所在结点，",
+				"a":"a",
+				"img":"dt img",
+				"text":"dd a",
+				"content":"dd span",
+				"next":"div.main div#search_fy a:contains(下一页)"
+			},
 			"comment.item":"在具体分类的页面里选择漫画列表元素的选择器，",
 			"item":{
 				"comment.elements":"筛选出所有目标各自所在的结点，",
-				"elements":"div.main ul.in_01 li p.cover a:has(img.a_comicname2)",
+				"elements":"div.main ul.in_01 li p.cover",
 				"comment.a.img.text":"在elements中精确指定(目标，缩略图，文本)所在结点，",
 				"a":"a",
 				"img":"img",
 				"text":"a",
-				"content":"a",
+				"content":"span.lj_h1",
 				"next":"div.main div#search_fy a:contains(下一页)"
 			},
 			"comment.classification":"具体分类的选择器，这是决定分类所在的链接，",
@@ -26,8 +39,7 @@
 				"comment.a.img.text":"在elements中精确指定(目标，缩略图，文本)所在结点，",
 				"a":"a",
 				"img":"null",
-				"text":"span",
-				"content":"span"
+				"text":"span"
 			}
 		}
 	}

@@ -6,6 +6,7 @@
 *************************************************** */
 package com.aoeiuv020.reptile;
 import com.aoeiuv020.comic.Item;
+import com.aoeiuv020.comic.Main;
 import android.content.*;
 import org.json.*;
 import org.jsoup.*;
@@ -64,6 +65,8 @@ public class Selector
 	}
 	public List<Item> getItems()
 	{
+		if(mElement==null)
+			return null;
 		List<Item> list=new LinkedList<Item>();
 		Item item=null;
 		for(Element element:mElement.select(elementsQuery))
@@ -81,7 +84,7 @@ public class Selector
 			if(contentQuery!=null)
 				contentElement=element.select(contentQuery).first();
 			if(contentElement!=null)
-				item.image=contentElement.absUrl("src");
+				item.content=contentElement.text();
 			if(aQuery!=null)
 				aElement=element.select(aQuery).first();
 			if(aElement!=null)
@@ -93,16 +96,17 @@ public class Selector
 	public boolean loadNext()
 	{
 		boolean hasNext=false;
-		if(nextQuery==null||"".equals(nextQuery))
+		if(nextQuery==null||"".equals(nextQuery)||mElement==null)
 		{
 			return false;
 		}
-		Element next=mElement.select(nextQuery).first();
-		if(next!=null)
+		//直接赋值给mElement,如果没有下一页，以后getItems()就直接返回null,
+		mElement=mElement.select(nextQuery).first();
+		if(mElement!=null)
 		{
 			try
 			{
-				mElement=mConnection.url(next.absUrl("href")).execute().parse();
+				mElement=mConnection.url(mElement.absUrl("href")).execute().parse();
 				hasNext=true;
 			}
 			catch(IOException e)

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.LinkedList;
 public class ItemLoadAsyncTask extends AsyncTask<Integer,Integer,List<Item>>
 {
-	private static final boolean DEBUG=true;
+	private static final boolean DEBUG=Main.DEBUG;
 	Reptile mReptile=null;
 	ItemAdapter mAdapter=null;
 	Button mButton=null;
@@ -35,7 +35,7 @@ public class ItemLoadAsyncTask extends AsyncTask<Integer,Integer,List<Item>>
 	@Override
 	protected List<Item> doInBackground(Integer... parms)
 	{
-		List<Item> list=new LinkedList<Item>();
+		List<Item> list=null;
 		try
 		{
 			switch(parms[0])

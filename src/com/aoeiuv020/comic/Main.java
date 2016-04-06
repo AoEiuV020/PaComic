@@ -21,8 +21,9 @@ import java.util.*;
 
 import org.json.*;
 
-public class Main extends Activity implements BottomFragment.OnItemClickListener
+public class Main extends Activity implements BottomFragment.OnItemClickListener,OnTaskFinishListener
 {
+	public static final boolean DEBUG=true;
 	JSONObject mSiteJson=null;
 	Reptile mReptile=null;
     /** Called when the activity is first created. */
@@ -37,6 +38,11 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 		setDefaultSite();
 		setDefaultFragment();
     }
+	@Override
+	public void onFinish()
+	{
+		setDefaultFragment();
+	}
 	@Override
 	public void onItemClick(int position)
 	{

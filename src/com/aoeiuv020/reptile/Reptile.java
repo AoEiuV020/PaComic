@@ -7,6 +7,7 @@
 package com.aoeiuv020.reptile;
 import com.aoeiuv020.stream.Stream;
 import com.aoeiuv020.comic.Item;
+import com.aoeiuv020.comic.Main;
 import android.content.Context;
 import android.content.*;
 import android.widget.*;
@@ -88,6 +89,29 @@ public class Reptile
 		}
 		return hasNext;
 	}
+	/**
+	  * 不抛异常，
+	  * 所有错误都无视，
+	  */
+	public void setSearch(String sSearch)
+	{
+		try
+		{
+			JSONObject searchSelectorJson=mJsonSite.getJSONObject("selector").getJSONObject("search");
+			String sUrl=searchSelectorJson.getString("url");
+			sUrl=String.format(sUrl,sSearch);
+			URL url=new URL(baseUrl,sUrl);
+			Document document=mConnection.url(url).execute().parse();
+			mItemsSelector=new Selector(searchSelectorJson,mConnection,document);
+		}
+		catch(Exception e)
+		{
+			if(Main.DEBUG)
+			{
+				throw new RuntimeException(e);
+			}
+		}
+	}
 	public void setClassification(int index)
 	{
 		mClassificationIndex=index;
@@ -132,17 +156,14 @@ public class Reptile
 		{
 			if(mItemsSelector==null)
 			{
-				if(mItemsSelectorJson==null)
-				{
-					mItemsSelectorJson=mJsonSite.getJSONObject("selector").getJSONObject("item");
-				}
+				JSONObject itemsSelectorJson=mJsonSite.getJSONObject("selector").getJSONObject("item");
 				if(mClassificationUrl==null)
 				{
 					mClassificationUrl=getClassifications().get(mClassificationIndex).url;
 				}
 				URL url=new URL(baseUrl,mClassificationUrl);
 				Document document=mConnection.url(url).execute().parse();
-				mItemsSelector=new Selector(mItemsSelectorJson,mConnection,document);
+				mItemsSelector=new Selector(itemsSelectorJson,mConnection,document);
 			}
 			list=mItemsSelector.getItems();
 		}

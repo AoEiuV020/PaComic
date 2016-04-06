@@ -23,7 +23,6 @@ import org.json.*;
 public class ItemsFragment extends Fragment implements View.OnClickListener
 {
 	private ListView mListView=null;
-	private List<Item> mList=null;
 	private ItemLoadAsyncTask mTask=null;
 	private Button bLoadMore=null;
 	private Reptile mReptile=null;
@@ -59,12 +58,5 @@ public class ItemsFragment extends Fragment implements View.OnClickListener
 			mTask=new ItemLoadAsyncTask(mReptile,mAdapter,(Button)view);
 			mTask.execute(ItemLoadAsyncTask.NEXT);
 		}
-	}
-	private void loadMore()
-	{
-	}
-	private void setAdapter(List<Item> list)
-	{
-		mList=list;
 	}
 }
