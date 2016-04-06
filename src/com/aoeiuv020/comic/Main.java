@@ -9,6 +9,8 @@ import com.aoeiuv020.stream.Stream;
 import com.aoeiuv020.reptile.Reptile;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.content.*;
 import android.view.*;
@@ -19,65 +21,64 @@ import java.util.*;
 
 import org.json.*;
 
-public class Main extends Activity implements View.OnClickListener
+public class Main extends Activity implements BottomFragment.OnItemClickListener
 {
-	ListView mListView=null;
-	List<Item> mList=null;
-	ItemLoadAsyncTask mTask=null;
-	Button bLoadMore=null;
+	Fragment mContentFragment=null,mTitleFragment=null,mBottomFragment=null;
+	FragmentTransaction mFragmentTransaction=null;
+	JSONObject mSiteJson=null;
 	Reptile mReptile=null;
-	ItemAdapter mAdapter=null;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 		first();
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
-		mListView=(ListView)findViewById(R.id.listview);
-		View vLoadMore=getLayoutInflater().inflate(R.layout.layout_load_more,null);
-		bLoadMore=(Button)vLoadMore.findViewById(R.id.button_load_more);
-		bLoadMore.setOnClickListener(this);
-		mListView.addFooterView(vLoadMore);
-		mAdapter=new ItemAdapter(this,null);
-		mListView.setAdapter(mAdapter);
-		mReptile=getReptile();
-		loadMain();
+		mFragmentTransaction=getFragmentManager().beginTransaction();
+		mReptile=new Reptile();
+		setDefaultSite();
+		setDefaultFragment();
     }
-	private void loadMain()
+	@Override
+	public void onItemClick(int position)
 	{
-		mTask=new ItemLoadAsyncTask(mReptile,mAdapter,bLoadMore);
-		mTask.execute(ItemLoadAsyncTask.MAIN);
+		changeTab(position);
 	}
-	private Reptile getReptile()
+	private void changeTab(int position)
 	{
-		Reptile reptile=null;
+		switch(position)
+		{
+			case BottomFragment.MAIN:
+				break;
+			case BottomFragment.CLASSIFICATION:
+				break;
+			case BottomFragment.SITE:
+				break;
+		}
+	}
+	private void setDefaultSite()
+	{
 		try
 		{
 			JSONObject sitesJson=new JSONObject(Stream.read(this,"sites.json"));
-			reptile=new Reptile(this,sitesJson.getJSONObject(sitesJson.keys().next()));
+			mSiteJson=sitesJson.getJSONObject(sitesJson.keys().next());
+			mReptile.setSite(mSiteJson);
 		}
 		catch(JSONException e)
 		{
 			throw new RuntimeException("sites.json解析出错",e);
 		}
-		return reptile;
 	}
-	@Override
-	public void onClick(View view)
+	private void setDefaultFragment()
 	{
-		if(mTask.getStatus()==AsyncTask.Status.FINISHED)
-		{
-			mTask=new ItemLoadAsyncTask(mReptile,mAdapter,(Button)view);
-			mTask.execute(ItemLoadAsyncTask.NEXT);
-		}
-	}
-	private void loadMore()
-	{
-	}
-	private void setAdapter(List<Item> list)
-	{
-		mList=list;
+		mContentFragment=new ItemsFragment(mReptile);
+		mFragmentTransaction.replace(R.id.fragment_content,mContentFragment);
+		mTitleFragment=new TitleFragment();
+		mFragmentTransaction.replace(R.id.fragment_title,mTitleFragment);
+		mBottomFragment=new BottomFragment();
+		mFragmentTransaction.replace(R.id.fragment_bottom,mBottomFragment);
+		mFragmentTransaction.commit();
 	}
 	private void first()
 	{

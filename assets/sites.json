@@ -6,11 +6,9 @@
 		"comment.baseuri":"网站根地址，",
 		"baseuri":"http://www.1kkk.com/",
 		"comment.main":"主页的爬虫配置，",
-		"main":{
-			"comment.url":"主页的地址，",
-			"uri":"/manhua-new/",
-			"comment.selector":"主页的选择器，选出要显示的内容，",
-			"selector":{
+		"selector":{
+			"comment.item":"在具体分类的页面里选择漫画列表元素的选择器，",
+			"item":{
 				"comment.elements":"筛选出所有目标各自所在的结点，",
 				"elements":"div.main ul.in_01 li p.cover a:has(img.a_comicname2)",
 				"comment.a.img.text":"在elements中精确指定(目标，缩略图，文本)所在结点，",
@@ -18,10 +16,17 @@
 				"img":"img",
 				"text":"a",
 				"next":"div.main div#search_fy a:contains(下一页)"
+			},
+			"comment.classification":"具体分类的选择器，这是决定分类所在的链接，",
+			"classification":{
+				"comment.url":"分类所在的地址，一般就是首页了，",
+				"comment.elements":"筛选出所有分类各自所在的结点，",
+				"elements":"div.k980 ul.nav li:not(.on)",
+				"comment.a.img.text":"在elements中精确指定(目标，缩略图，文本)所在结点，",
+				"a":"a",
+				"img":"null",
+				"text":"span"
 			}
-		},
-		"classification":{
-
 		}
 	}
 }

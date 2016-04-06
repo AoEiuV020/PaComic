@@ -67,9 +67,9 @@ public class ItemAdapter extends BaseAdapter
 		{
 			convertView=mInflater.inflate(R.layout.layout_item,null);
 			viewHolder=new ViewHolder();
-			viewHolder.image=(ImageView)convertView.findViewById(R.id.image);
-			viewHolder.title=(TextView)convertView.findViewById(R.id.title);
-			viewHolder.content=(TextView)convertView.findViewById(R.id.content);
+			viewHolder.image=(ImageView)convertView.findViewById(R.id.item_image);
+			viewHolder.title=(TextView)convertView.findViewById(R.id.item_title);
+			viewHolder.content=(TextView)convertView.findViewById(R.id.item_content);
 			convertView.setTag(viewHolder);
 		}
 		else
@@ -77,9 +77,15 @@ public class ItemAdapter extends BaseAdapter
 			viewHolder=(ViewHolder)convertView.getTag();
 		}
 		Item item=mList.get(position);
-		loadImage(viewHolder.image,item.image);
-		viewHolder.title.setText(item.title);
-		viewHolder.content.setText(item.content);
+		try
+		{
+			loadImage(viewHolder.image,item.image);
+			viewHolder.title.setText(item.title);
+			viewHolder.content.setText(item.url);
+		}
+		catch(NullPointerException e)
+		{
+		}
 		return convertView;
 	}
 	private void loadImage(ImageView imageView,String url)
