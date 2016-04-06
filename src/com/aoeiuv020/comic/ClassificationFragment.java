@@ -78,7 +78,7 @@ public class ClassificationFragment extends Fragment implements View.OnClickList
 	@Override
 	public void onItemClick(AdapterView<?> parent,View view,int position,long id)
 	{
-		mReptile.setClassification(position);
+		mReptile.setClassification(position-1);
 		callOnFinish();
 	}
 	private void loadClassifications()
