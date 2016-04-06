@@ -21,6 +21,8 @@ public class ImageLoader
 	  */
 	public static void showImage(ImageView imageView,String url)
 	{
+		if(imageView==null||url==null||url.equals(""))
+			return;
 		ShowImageAsyncTask task=new ShowImageAsyncTask(imageView,url);
 		imageView.setTag(url);
 		task.execute();

@@ -41,7 +41,7 @@ public class ItemsFragment extends Fragment implements View.OnClickListener
 		bLoadMore=(Button)vLoadMore.findViewById(R.id.button_load_more);
 		bLoadMore.setOnClickListener(this);
 		mListView.addFooterView(vLoadMore);
-		mAdapter=new ItemAdapter(getActivity(),null);
+		mAdapter=new ItemAdapter(getActivity(),R.layout.layout_item,R.id.item_title,R.id.item_image,R.id.item_content);
 		mListView.setAdapter(mAdapter);
 		loadItems();
 		return view;

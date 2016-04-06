@@ -23,6 +23,7 @@ public class Selector
 	private String aQuery=null;
 	private String imgQuery=null;
 	private String textQuery=null;
+	private String contentQuery=null;
 	private String nextQuery=null;
 	private JSONObject mJson=null;
 	private Element mElement=null;
@@ -46,6 +47,10 @@ public class Selector
 			{
 				textQuery=mJson.getString("text");
 			}
+			if(mJson.has("content"))
+			{
+				contentQuery=mJson.getString("content");
+			}
 			if(mJson.has("next"))
 			{
 				nextQuery=mJson.getString("next");
@@ -63,20 +68,24 @@ public class Selector
 		Item item=null;
 		for(Element element:mElement.select(elementsQuery))
 		{
-			Element aElement=null,imgElement=null,textElement=null;
+			Element aElement=null,imgElement=null,textElement=null,contentElement=null;
 			item=new Item();
-			if(aQuery!=null)
-				aElement=element.select(aQuery).first();
-			if(aElement!=null)
-				item.url=aElement.absUrl("href");
-			if(imgQuery!=null)
-				imgElement=element.select(imgQuery).first();
-			if(imgElement!=null)
-				item.image=imgElement.absUrl("src");
 			if(textQuery!=null)
 				textElement=element.select(textQuery).first();
 			if(textElement!=null)
 				item.title=textElement.text();
+			if(imgQuery!=null)
+				imgElement=element.select(imgQuery).first();
+			if(imgElement!=null)
+				item.image=imgElement.absUrl("src");
+			if(contentQuery!=null)
+				contentElement=element.select(contentQuery).first();
+			if(contentElement!=null)
+				item.image=contentElement.absUrl("src");
+			if(aQuery!=null)
+				aElement=element.select(aQuery).first();
+			if(aElement!=null)
+				item.url=aElement.absUrl("href");
 			list.add(item);
 		}
 		return list;

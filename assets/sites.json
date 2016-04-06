@@ -15,6 +15,7 @@
 				"a":"a",
 				"img":"img",
 				"text":"a",
+				"content":"a",
 				"next":"div.main div#search_fy a:contains(下一页)"
 			},
 			"comment.classification":"具体分类的选择器，这是决定分类所在的链接，",
@@ -25,7 +26,8 @@
 				"comment.a.img.text":"在elements中精确指定(目标，缩略图，文本)所在结点，",
 				"a":"a",
 				"img":"null",
-				"text":"span"
+				"text":"span",
+				"content":"span"
 			}
 		}
 	}
