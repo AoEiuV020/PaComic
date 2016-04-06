@@ -95,45 +95,4 @@ public class Main extends Activity implements View.OnClickListener
 		String sitesjson="sites.json";
 		Stream.write(this,sitesjson,Stream.read(this.getAssets(),sitesjson));
 	}
-	class ItemLoadAsyncTask extends AsyncTask<Integer,Integer,List<Item>>
-	{
-		Reptile mReptile=null;
-		ItemAdapter mAdapter=null;
-		Button mButton=null;
-		public static final int MAIN=0;
-		public static final int NEXT=1;
-		public ItemLoadAsyncTask(Reptile reptile,ItemAdapter adapter,Button button)
-		{
-			mReptile=reptile;
-			mAdapter=adapter;
-			mButton=button;
-		}
-		@Override
-		protected void onPreExecute()
-		{
-			mButton.setClickable(false);
-			mButton.setText("加载中");
-		}
-		@Override
-		protected List<Item> doInBackground(Integer... parms)
-		{
-			List<Item> list=new LinkedList<Item>();
-			switch(parms[0])
-			{
-				case NEXT:
-					mReptile.loadNext();
-				case MAIN:
-					list=mReptile.getPage(Reptile.MAIN);
-					break;
-			}
-			return list;
-		}
-		@Override
-		protected void onPostExecute(List<Item> list)
-		{
-			mAdapter.addAll(list);
-			mButton.setText("加载更多");
-			mButton.setClickable(true);
-		}
-	}
 }

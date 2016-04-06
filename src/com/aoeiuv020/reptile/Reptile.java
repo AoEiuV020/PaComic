@@ -255,7 +255,6 @@ class Selector implements Runnable
 			{
 				item.title=textElement.text();
 			}
-			System.out.println(""+item);
 			list.add(item);
 		}
 		return list;
