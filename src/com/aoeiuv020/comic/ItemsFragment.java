@@ -28,7 +28,8 @@ public class ItemsFragment extends Fragment implements View.OnClickListener
 	private Reptile mReptile=null;
 	private ItemAdapter mAdapter=null;
 	public ItemsFragment()
-	{}
+	{
+	}
 	public ItemsFragment(Reptile reptile)
 	{
 		mReptile=reptile;
@@ -36,6 +37,10 @@ public class ItemsFragment extends Fragment implements View.OnClickListener
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState)
     {
+		if(mReptile==null)
+		{
+			mReptile=((Main)getActivity()).getReptitle();
+		}
 		View view=inflater.inflate(R.layout.layout_fragment_items,container,false);
 		mListView=(ListView)view.findViewById(R.id.listview);
 		View vLoadMore=inflater.inflate(R.layout.layout_load_more,null);

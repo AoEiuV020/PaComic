@@ -28,7 +28,8 @@ public class ClassificationFragment extends Fragment implements View.OnClickList
 	private OnTaskFinishListener mListener=null;
 	private TextView mEditText=null;
 	public ClassificationFragment()
-	{}
+	{
+	}
 	public ClassificationFragment(Reptile reptile)
 	{
 		mReptile=reptile;
@@ -36,6 +37,10 @@ public class ClassificationFragment extends Fragment implements View.OnClickList
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState)
 	{
+		if(mReptile==null)
+		{
+			mReptile=((Main)getActivity()).getReptitle();
+		}
 		View view=inflater.inflate(R.layout.layout_fragment_classification,container,false);
 		mListView=(ListView)view.findViewById(R.id.listview);
 		View vSearch=inflater.inflate(R.layout.layout_search,null);

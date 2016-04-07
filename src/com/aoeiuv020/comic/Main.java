@@ -52,6 +52,10 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 	{
 		changeTab(position);
 	}
+	public Reptile getReptitle()
+	{
+		return mReptile;
+	}
 	private void changeTab(int position)
 	{
 		Fragment fContent=null;
@@ -59,13 +63,13 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 		switch(position)
 		{
 			case BottomFragment.MAIN:
-				fContent=new ItemsFragment(mReptile);
+				fContent=new ItemsFragment();
 				break;
 			case BottomFragment.CLASSIFICATION:
-				fContent=new ClassificationFragment(mReptile);
+				fContent=new ClassificationFragment();
 				break;
 			case BottomFragment.SITE:
-				fContent=new SiteFragment(mReptile);
+				fContent=new SiteFragment();
 				break;
 		}
 		ft.replace(R.id.fragment_content,fContent);
@@ -91,7 +95,7 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 		BottomFragment fBottom=null;
 		FragmentTransaction ft=getFragmentManager().beginTransaction();
 
-		fContent=new ItemsFragment(mReptile);
+		fContent=new ItemsFragment();
 		fTitle=new TitleFragment();
 		fBottom=new BottomFragment();
 		fBottom.setOnItemClickListener(this);

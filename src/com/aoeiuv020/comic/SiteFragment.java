@@ -24,7 +24,8 @@ public class SiteFragment extends Fragment implements View.OnClickListener
 {
 	private Reptile mReptile=null;
 	public SiteFragment()
-	{}
+	{
+	}
 	public SiteFragment(Reptile reptile)
 	{
 		mReptile=reptile;
@@ -32,6 +33,10 @@ public class SiteFragment extends Fragment implements View.OnClickListener
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState)
 	{
+		if(mReptile==null)
+		{
+			mReptile=((Main)getActivity()).getReptitle();
+		}
 		TextView view=new TextView(getActivity());
 		view.setText("SiteFragment");
 		return view;
