@@ -49,6 +49,33 @@ public class Reptile
 	/**
 	 * 耗时方法，
 	 */
+	public List<Item> getPages(String str)
+	{
+		List<Item> list=null;
+		try
+		{
+			URL url=new URL(baseUrl,str);
+			Document document=mConnection.url(url).execute().parse();
+			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("page");
+			list=new Selector(siteSelector,mConnection,document).getItems();
+		}
+		catch(JSONException e)
+		{
+			throw new RuntimeException("json中没有目录的选择器",e);
+		}
+		catch(MalformedURLException e)
+		{
+			throw new RuntimeException("uri参数错误",e);
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException("可能是网络不通",e);
+		}
+		return list;
+	}
+	/**
+	 * 耗时方法，
+	 */
 	public List<Item> getCatalog(String str)
 	{
 		List<Item> list=null;

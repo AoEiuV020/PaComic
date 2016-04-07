@@ -5,6 +5,7 @@
 	^> Created Time: 2016/04/06 - 16:19:22
 *************************************************** */
 package com.aoeiuv020.comic;
+import com.aoeiuv020.tool.Tool;
 import android.widget.ImageView;
 import android.os.AsyncTask;
 import android.graphics.Bitmap;
@@ -21,8 +22,13 @@ public class ImageLoader
 	  */
 	public static void showImage(ImageView imageView,String url)
 	{
-		if(imageView==null||url==null||url.equals(""))
+		if(imageView==null)
 			return;
+		if(Tool.isEmpty(url))
+		{
+			imageView.setImageBitmap(null);
+			return;
+		}
 		ShowImageAsyncTask task=new ShowImageAsyncTask(imageView,url);
 		imageView.setTag(url);
 		task.execute();
@@ -57,6 +63,7 @@ class ShowImageAsyncTask extends AsyncTask<Void,Integer,Bitmap>
 {
 	ImageView mImageView=null;
 	String mUrl=null;
+	private static Object mLock=new Object();
 	public ShowImageAsyncTask(ImageView imageView,String url)
 	{
 		mImageView=imageView;
@@ -70,7 +77,10 @@ class ShowImageAsyncTask extends AsyncTask<Void,Integer,Bitmap>
 	@Override
 	protected Bitmap doInBackground(Void... parms)
 	{
-		return ImageLoader.getBitmap(mUrl);
+		synchronized(mLock)
+		{
+			return ImageLoader.getBitmap(mUrl);
+		}
 	}
 	@Override
 	protected void onPostExecute(Bitmap bitmap)

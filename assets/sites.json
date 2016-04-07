@@ -60,7 +60,7 @@
 			"comment.catalog":"漫画目录的选择器，",
 			"catalog":{
 				"elements":"div.main div#cp_a1 ul li:has(a.tg)",
-				"url":"a",
+				"a":"a",
 				"img":"img",
 				"text":"a",
 				"content":":root"
@@ -108,7 +108,7 @@
 			},
 			"catalog":{
 				"elements":"div.vol > ul.bi li",
-				"url":"a",
+				"a":"a",
 				"text":"a"
 			}
 		}

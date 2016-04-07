@@ -57,10 +57,9 @@ public class ItemsFragment extends Fragment implements View.OnClickListener,Adap
 	@Override
 	public void onItemClick(AdapterView<?> parent,View view,int position,long id)
 	{
-		String url=((Item)mAdapter.getItem(position)).url;
+		String url=((Item)parent.getAdapter().getItem(position)).url;
 		if(Tool.isEmpty(url))
 			return;
-		System.out.println("url="+url);
 		Intent intent=new Intent();
 		intent.setClass(getActivity(),ComicInfoActivity.class);
 		intent.putExtra("url",url);

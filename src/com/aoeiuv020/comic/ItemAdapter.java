@@ -121,9 +121,6 @@ public class ItemAdapter extends BaseAdapter
 	}
 	private void loadImage(ImageView imageView,String url)
 	{
-		//if语句多余，但是看着爽一点，
-		if(imageView==null||url==null||url.equals(""))
-			return;
 		ImageLoader.showImage(imageView,url);
 	}
 	public class ViewHolder
