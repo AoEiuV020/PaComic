@@ -27,6 +27,8 @@ public class ClassificationFragment extends Fragment implements View.OnClickList
 	private ItemAdapter mAdapter=null;
 	private OnTaskFinishListener mListener=null;
 	private TextView mEditText=null;
+	public ClassificationFragment()
+	{}
 	public ClassificationFragment(Reptile reptile)
 	{
 		mReptile=reptile;

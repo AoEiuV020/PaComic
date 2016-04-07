@@ -23,6 +23,8 @@ import org.json.*;
 public class SiteFragment extends Fragment implements View.OnClickListener
 {
 	private Reptile mReptile=null;
+	public SiteFragment()
+	{}
 	public SiteFragment(Reptile reptile)
 	{
 		mReptile=reptile;

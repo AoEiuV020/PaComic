@@ -27,6 +27,8 @@ public class ItemsFragment extends Fragment implements View.OnClickListener
 	private Button bLoadMore=null;
 	private Reptile mReptile=null;
 	private ItemAdapter mAdapter=null;
+	public ItemsFragment()
+	{}
 	public ItemsFragment(Reptile reptile)
 	{
 		mReptile=reptile;
