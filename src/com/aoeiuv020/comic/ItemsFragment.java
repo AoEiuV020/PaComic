@@ -6,6 +6,7 @@
 *************************************************** */
 package com.aoeiuv020.comic;
 import com.aoeiuv020.stream.Stream;
+import com.aoeiuv020.tool.Tool;
 import com.aoeiuv020.reptile.Reptile;
 
 import android.app.Activity;
@@ -20,7 +21,7 @@ import java.util.*;
 
 import org.json.*;
 
-public class ItemsFragment extends Fragment implements View.OnClickListener
+public class ItemsFragment extends Fragment implements View.OnClickListener,AdapterView.OnItemClickListener
 {
 	private ListView mListView=null;
 	private ItemLoadAsyncTask mTask=null;
@@ -49,9 +50,23 @@ public class ItemsFragment extends Fragment implements View.OnClickListener
 		mListView.addFooterView(vLoadMore);
 		mAdapter=new ItemAdapter(getActivity(),R.layout.layout_item,R.id.item_title,R.id.item_image,R.id.item_content);
 		mListView.setAdapter(mAdapter);
+		mListView.setOnItemClickListener(this);
 		loadItems();
 		return view;
     }
+	@Override
+	public void onItemClick(AdapterView<?> parent,View view,int position,long id)
+	{
+		String url=((Item)mAdapter.getItem(position)).url;
+		if(Tool.isEmpty(url))
+			return;
+		System.out.println("url="+url);
+		Intent intent=new Intent();
+		intent.setClass(getActivity(),ComicInfoActivity.class);
+		intent.putExtra("url",url);
+		intent.putExtra("sitejson",mReptile.getSiteJson().toString());
+		getActivity().startActivity(intent);
+	}
 	private void loadItems()
 	{
 		mTask=new ItemLoadAsyncTask(mReptile,mAdapter,bLoadMore);

@@ -17,6 +17,7 @@ import java.util.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.ByteArrayInputStream;
+import java.io.Serializable;
 import java.io.IOException;
 
 public class Selector
@@ -107,9 +108,6 @@ public class Selector
 				aElement=element.select(aQuery).first();
 			if(!Tool.isEmpty(aElement))
 				item.url=aElement.absUrl("href");
-			if(Main.DEBUG)
-				if(Tool.isEmpty(imgElement))
-					System.out.println("imgQuery="+imgQuery);
 			list.add(item);
 		}
 		return list;

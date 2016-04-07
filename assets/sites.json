@@ -50,6 +50,20 @@
 				"a":"a",
 				"img":"null",
 				"text":"span"
+			},
+			"comment.info":"漫画详情页的选择器，",
+			"info":{
+				"img":"div.main > div.sy_k div:eq(0) img",
+				"text":"div.main div.sy_k21 span.y h1",
+				"content":"div.main ul li[class=mt10 z555]"
+			},
+			"comment.catalog":"漫画目录的选择器，",
+			"catalog":{
+				"elements":"div.main div#cp_a1 ul li:has(a.tg)",
+				"url":"a",
+				"img":"img",
+				"text":"a",
+				"content":":root"
 			}
 		}
 	},
@@ -77,7 +91,7 @@
 			},
 			"item":{
 				"elements":"div#container > div#mainContent > div#content > div.m_list > ul.list li.list_small",
-				"a":"a:has(imt)",
+				"a":"a:has(img)",
 				"img":"img",
 				"text":"h3",
 				"next":"div#container > div#mainContent > div#content > div.replz a:contains(下一页)"
@@ -86,6 +100,16 @@
 				"elements":"div#container > div#menu a",
 				"a":":root",
 				"text":":root"
+			},
+			"info":{
+				"img":"div#content div.replc table tbody tr td:has(img) img",
+				"text":"div#content div.replc table tbody tr td img:not(img)",
+				"content":"div#content div.replc table tbody tr td div.2replh"
+			},
+			"catalog":{
+				"elements":"div.vol > ul.bi li",
+				"url":"a",
+				"text":"a"
 			}
 		}
 	}

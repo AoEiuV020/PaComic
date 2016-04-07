@@ -5,6 +5,7 @@
 	^> Created Time: 2016/04/06 - 05:17:24
 *************************************************** */
 package com.aoeiuv020.comic;
+import com.aoeiuv020.tool.Tool;
 import android.content.*;
 import android.view.*;
 import android.widget.*;
@@ -125,7 +126,7 @@ public class ItemAdapter extends BaseAdapter
 			return;
 		ImageLoader.showImage(imageView,url);
 	}
-	class ViewHolder
+	public class ViewHolder
 	{
 		public ImageView image;
 		public TextView title;

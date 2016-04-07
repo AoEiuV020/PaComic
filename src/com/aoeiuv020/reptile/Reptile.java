@@ -21,6 +21,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.MalformedURLException;
 import java.io.ByteArrayInputStream;
+import java.io.Serializable;
 import java.io.IOException;
 /**
   * Reptile reptile=new Reptile();
@@ -44,6 +45,60 @@ public class Reptile
 	private Item mSiteInfo=null;
 	public Reptile()
 	{
+	}
+	/**
+	 * 耗时方法，
+	 */
+	public List<Item> getCatalog(String str)
+	{
+		List<Item> list=null;
+		try
+		{
+			URL url=new URL(baseUrl,str);
+			Document document=mConnection.url(url).execute().parse();
+			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("catalog");
+			list=new Selector(siteSelector,mConnection,document).getItems();
+		}
+		catch(JSONException e)
+		{
+			throw new RuntimeException("json中没有目录的选择器",e);
+		}
+		catch(MalformedURLException e)
+		{
+			throw new RuntimeException("uri参数错误",e);
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException("可能是网络不通",e);
+		}
+		return list;
+	}
+	/**
+	 * 耗时方法，
+	 */
+	public Item getComicInfo(String str)
+	{
+		Item item=null;
+		try
+		{
+			URL url=new URL(baseUrl,str);
+			Document document=mConnection.url(url).execute().parse();
+			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("info");
+			item=new Selector(siteSelector,mConnection,document).getItems().get(0);
+		}
+		catch(JSONException e)
+		{
+			throw new RuntimeException("json中没有info的选择器",e);
+		}
+		catch(MalformedURLException e)
+		{
+			throw new RuntimeException("uri参数错误",e);
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException("可能是网络不通",e);
+		}
+		return item;
 	}
 	/**
 	 * 耗时方法，
@@ -94,8 +149,6 @@ public class Reptile
 			Document document=mConnection.url(baseUrl).execute().parse();
 			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("site");
 			mSiteInfo=new Selector(siteSelector,mConnection,document).getItems().get(0);
-			if(Main.DEBUG)
-				System.out.println(""+mSiteInfo+siteSelector);
 			if(mSiteInfo.title==null&&mJsonSite.has("name"))
 				mSiteInfo.title=mJsonSite.getString("name");
 		}

@@ -8,6 +8,7 @@ package com.aoeiuv020.comic;
 import android.content.*;
 import android.view.*;
 import android.widget.*;
+import java.io.Serializable;
 public class Item
 {
 	public String image=null;
