@@ -61,12 +61,13 @@ public class ClassificationFragment extends Fragment implements View.OnClickList
 		String sSearch=""+mEditText.getText();
 		if(sSearch.equals(""))
 			return;
+		//耗时操作，以后可能要改，
 		mReptile.setSearch(sSearch);
 		callOnFinish();
 	}
 	private void setDefaultListener()
 	{
-		if(getActivity() instanceof OnTaskFinishListener)
+		if(getActivity() instanceof OnTaskFinishListener&&mListener==null)
 		{
 			setOnTaskFinishListener((OnTaskFinishListener)getActivity());
 		}
@@ -85,7 +86,10 @@ public class ClassificationFragment extends Fragment implements View.OnClickList
 	@Override
 	public void onItemClick(AdapterView<?> parent,View view,int position,long id)
 	{
-		mReptile.setClassification(position-1);
+		int headerCount=0;
+		if(parent instanceof ListView)
+			headerCount=((ListView)parent).getHeaderViewsCount();
+		mReptile.setClassification(position-headerCount);
 		callOnFinish();
 	}
 	private void loadClassifications()
@@ -96,7 +100,6 @@ public class ClassificationFragment extends Fragment implements View.OnClickList
 }
 class ClassificationLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 {
-	private static final boolean DEBUG=Main.DEBUG;
 	Reptile mReptile=null;
 	ItemAdapter mAdapter=null;
 	//加载失败的原因，
@@ -122,7 +125,7 @@ class ClassificationLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 		{
 			//任何异常都表示没有内容了，
 			mThrowable=e.getCause();
-			if(DEBUG) throw new RuntimeException(e);
+			if(Main.DEBUG) throw new RuntimeException(e);
 		}
 		return list;
 	}

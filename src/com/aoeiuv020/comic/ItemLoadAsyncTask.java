@@ -51,7 +51,7 @@ public class ItemLoadAsyncTask extends AsyncTask<Integer,Integer,List<Item>>
 		{
 			//任何异常都表示没有内容了，
 			mThrowable=e.getCause();
-			if(DEBUG) throw new RuntimeException(e);
+			if(Main.DEBUG) throw new RuntimeException(e);
 		}
 		return list;
 	}

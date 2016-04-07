@@ -91,9 +91,12 @@ public class ItemAdapter extends BaseAdapter
 			viewHolder=(ViewHolder)convertView.getTag();
 		}
 		Item item=mList.get(position);
-		setText(viewHolder.title,item.title);
-		loadImage(viewHolder.image,item.image);
-		setText(viewHolder.content,item.content);
+		if(item!=null)
+		{
+			setText(viewHolder.title,item.title);
+			loadImage(viewHolder.image,item.image);
+			setText(viewHolder.content,item.content);
+		}
 		return convertView;
 	}
 	private View findViewById(View parent,Integer id)

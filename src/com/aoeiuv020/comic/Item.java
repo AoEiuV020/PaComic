@@ -14,4 +14,8 @@ public class Item
 	public String title=null;
 	public String content=null;
 	public String url=null;
+	public String toString()
+	{
+		return String.format("image=%s,title=%s,content=%s,url=%s,",image,title,content,url);
+	}
 }

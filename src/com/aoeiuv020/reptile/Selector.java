@@ -7,6 +7,7 @@
 package com.aoeiuv020.reptile;
 import com.aoeiuv020.comic.Item;
 import com.aoeiuv020.comic.Main;
+import com.aoeiuv020.tool.Tool;
 import android.content.*;
 import org.json.*;
 import org.jsoup.*;
@@ -35,7 +36,10 @@ public class Selector
 		mConnection=parmConnection;
 		try
 		{
-			elementsQuery=mJson.getString("elements");
+			if(mJson.has("elements"))
+			{
+				elementsQuery=mJson.getString("elements");
+			}
 			if(mJson.has("a"))
 			{
 				aQuery=mJson.getString("a");
@@ -59,9 +63,14 @@ public class Selector
 		}
 		catch(JSONException e)
 		{
+			//不可到达，
 			throw new RuntimeException(e);
 		}
 		mElement=parmElement;
+	}
+	public String toString()
+	{
+		return String.format("a=%s,text=%s,img=%s,\njson=%s\n",aQuery,textQuery,imgQuery,mJson);
 	}
 	public List<Item> getItems()
 	{
@@ -69,26 +78,38 @@ public class Selector
 			return null;
 		List<Item> list=new LinkedList<Item>();
 		Item item=null;
-		for(Element element:mElement.select(elementsQuery))
+		Elements elements=null;
+		if(elementsQuery!=null)
+		{
+			elements=mElement.select(elementsQuery);
+		}
+		if(elements==null)
+		{
+			elements=new Elements(mElement);
+		}
+		for(Element element:elements)
 		{
 			Element aElement=null,imgElement=null,textElement=null,contentElement=null;
 			item=new Item();
-			if(textQuery!=null)
+			if(!Tool.isEmpty(textQuery))
 				textElement=element.select(textQuery).first();
-			if(textElement!=null)
+			if(!Tool.isEmpty(textElement))
 				item.title=textElement.text();
-			if(imgQuery!=null)
+			if(!Tool.isEmpty(imgQuery))
 				imgElement=element.select(imgQuery).first();
-			if(imgElement!=null)
+			if(!Tool.isEmpty(imgElement))
 				item.image=imgElement.absUrl("src");
-			if(contentQuery!=null)
+			if(!Tool.isEmpty(contentQuery))
 				contentElement=element.select(contentQuery).first();
-			if(contentElement!=null)
+			if(!Tool.isEmpty(contentElement))
 				item.content=contentElement.text();
-			if(aQuery!=null)
+			if(!Tool.isEmpty(aQuery))
 				aElement=element.select(aQuery).first();
-			if(aElement!=null)
+			if(!Tool.isEmpty(aElement))
 				item.url=aElement.absUrl("href");
+			if(Main.DEBUG)
+				if(Tool.isEmpty(imgElement))
+					System.out.println("imgQuery="+imgQuery);
 			list.add(item);
 		}
 		return list;

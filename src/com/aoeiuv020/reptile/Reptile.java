@@ -36,14 +36,82 @@ public class Reptile
 	private int mClassificationIndex=0;
 	private JSONObject mJsonSite=null;
 	private String encoding=null;
-	private String method=null;
 	private URL baseUrl=null;
 	private Selector mItemsSelector=null;
 	private Connection mConnection=null;
 	private List<Item> mClassificationList=null;
 	private JSONObject mItemsSelectorJson=null;
+	private Item mSiteInfo=null;
 	public Reptile()
 	{
+	}
+	/**
+	 * 耗时方法，
+	 * 整个过程其实也可以在其他类里执行，
+	 */
+	public static List<Item> getSites(JSONObject sitesJson)
+	{
+		if(sitesJson==null)
+			return null;
+		List<Item> list=new LinkedList<Item>();
+		Iterator<String> iterator=sitesJson.keys();
+		while(iterator.hasNext())
+		{
+			Item item=null;
+			try
+			{
+				String name=iterator.next();
+				Reptile reptile=new Reptile();
+				reptile.setSite(sitesJson.getJSONObject(name));
+				item=reptile.getSiteInfo();
+				if(item.title==null)
+					item.title=name;
+			}
+			catch(Exception e)
+			{
+				//无视任何错误，
+			}
+			finally
+			{
+				//就算有网站信息加载错误也加上这个网站，
+				//毕竟只是网站信息爬不出来，说不定网站其他还能爬的，
+				list.add(item);
+			}
+		}
+		return list;
+	}
+	/**
+	 * 耗时方法，
+	 */
+	public Item getSiteInfo()
+	{
+		if(mSiteInfo!=null)
+		{
+			return mSiteInfo;
+		}
+		try
+		{
+			Document document=mConnection.url(baseUrl).execute().parse();
+			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("site");
+			mSiteInfo=new Selector(siteSelector,mConnection,document).getItems().get(0);
+			if(Main.DEBUG)
+				System.out.println(""+mSiteInfo+siteSelector);
+			if(mSiteInfo.title==null&&mJsonSite.has("name"))
+				mSiteInfo.title=mJsonSite.getString("name");
+		}
+		catch(JSONException e)
+		{
+			throw new RuntimeException("json中没有网站信息的选择器",e);
+		}
+		catch(MalformedURLException e)
+		{
+			throw new RuntimeException("uri参数错误",e);
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException("可能是网络不通",e);
+		}
+		return mSiteInfo;
 	}
 	public void setSite(JSONObject json)
 	{
@@ -53,33 +121,42 @@ public class Reptile
 		mItemsSelectorJson=null;
 		setClassification(0);
 	}
+	public JSONObject getSiteJson()
+	{
+		return mJsonSite;
+	}
 	private void initSite()
 	{
-		method="GET";
+		String method="GET";
 		String baseuri=null;
+		String useragent="Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36";
+		int timeout=3000;
 		try
 		{
 			baseuri=mJsonSite.getString("baseuri");
-			baseUrl=new URL(baseuri);
-			mConnection=Jsoup.connect(baseUrl.toString());
 			if(mJsonSite.has("method"))
-			{
 				method=mJsonSite.getString("method");
-			}
-			mConnection.method(Connection.Method.valueOf(method));
+			if(mJsonSite.has("timeout"))
+				timeout=mJsonSite.getInt("timeout");
+			if(mJsonSite.has("useragent"))
+				useragent=mJsonSite.getString("useragent");
 		}
 		catch(JSONException e)
 		{
 			throw new RuntimeException(e);
 		}
+		try
+		{
+			baseUrl=new URL(baseuri);
+		}
 		catch(MalformedURLException e)
 		{
 			throw new RuntimeException("baseuri不规范:"+baseuri,e);
 		}
-		catch(IOException e)
-		{
-			throw new RuntimeException(e);
-		}
+		mConnection=Jsoup.connect(baseUrl.toString());
+		mConnection.timeout(timeout);
+		mConnection.userAgent(useragent);
+		mConnection.method(Connection.Method.valueOf(method));
 	}
 	public boolean loadNext()
 	{
@@ -98,10 +175,13 @@ public class Reptile
 	{
 		try
 		{
+			String encoding="UTF-8";
 			JSONObject searchSelectorJson=mJsonSite.getJSONObject("selector").getJSONObject("search");
+			if(searchSelectorJson.has("encoding"))
+				encoding=searchSelectorJson.getString("encoding");
+			sSearch=URLEncoder.encode(sSearch,encoding);
 			String sUrl=searchSelectorJson.getString("url");
 			sUrl=String.format(sUrl,sSearch);
-			sUrl=URLEncoder.encode(sUrl,"UTF-8");
 			URL url=new URL(baseUrl,sUrl);
 			Document document=mConnection.url(url).execute().parse();
 			mItemsSelector=new Selector(searchSelectorJson,mConnection,document);
@@ -132,7 +212,7 @@ public class Reptile
 		}
 		catch(JSONException e)
 		{
-			throw new RuntimeException("找不到分类",e);
+			throw new RuntimeException("json中没有网站信息的选择器",e);
 		}
 		catch(MalformedURLException e)
 		{

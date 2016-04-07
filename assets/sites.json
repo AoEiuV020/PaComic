@@ -1,19 +1,34 @@
 {
 	"1kkk":{
-		"comment.encoding":"网站的编码，所有文件都用这个编码读，",
-		"encoding":"UTF-8",
+		"comment.name":"网站的名字，先找selector.site.text，没有就找这个name,再没有就和当前对象的名字一样，",
+		"name":"1kkk极速漫画",
+		"comment.method":"网站请求方式，正常只要GET就可以，不写默认就是GET",
 		"method":"GET",
+		"comment.useragent":"网站请求使用的ua，默认就是这个，windows+chrome",
+		"useragent":"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36",
+		"comment.timeout":"超时时间，毫秒，默认3000",
+		"timeout":"5000",
 		"comment.baseuri":"网站根地址，",
 		"baseuri":"http://www.1kkk.com/",
 		"comment.main":"主页的爬虫配置，",
 		"selector":{
+			"comment.site":"网站信息的选择器，只选一个元素,",
+			"site":{
+				"comment.elements":"因为只选一个，所以不需要elements，",
+				"comment.img.text.content":"网站的图标，标题，详情，",
+				"img":"div.bodyc div.hd div.k980 div[class*=k200] a[target=_parent] img",
+				"text":"null",
+				"content":"div.main div#hy span.lj_lv"
+			},
 			"comment.search":"搜索页面的选择器，",
 			"search":{
 				"comment.url":"搜索的地址，%s会用搜索内容替代,",
 				"url":"/search?title=%s",
+				"comment.encoding":"网站的编码，默认就是UTF-8搜索的字符串要用和网站相同的编码做Url encode,",
+				"encoding":"UTF-8",
 				"comment.elements":"筛选出所有目标各自所在的结点，",
 				"elements":"div.main div.in_02 dl",
-				"comment.a.img.text":"在elements中精确指定(目标，缩略图，文本)所在结点，",
+				"comment.a.img.text.content.next":"在elements中精确指定(目标，缩略图，文本，详情，下一页)所在结点，",
 				"a":"a",
 				"img":"dt img",
 				"text":"dd a",
@@ -22,9 +37,7 @@
 			},
 			"comment.item":"在具体分类的页面里选择漫画列表元素的选择器，",
 			"item":{
-				"comment.elements":"筛选出所有目标各自所在的结点，",
 				"elements":"div.main ul.in_01 li p.cover",
-				"comment.a.img.text":"在elements中精确指定(目标，缩略图，文本)所在结点，",
 				"a":"a",
 				"img":"img",
 				"text":"a",
@@ -33,13 +46,46 @@
 			},
 			"comment.classification":"具体分类的选择器，这是决定分类所在的链接，",
 			"classification":{
-				"comment.url":"分类所在的地址，一般就是首页了，",
-				"comment.elements":"筛选出所有分类各自所在的结点，",
 				"elements":"div.k980 ul.nav li:not(.on)",
-				"comment.a.img.text":"在elements中精确指定(目标，缩略图，文本)所在结点，",
 				"a":"a",
 				"img":"null",
 				"text":"span"
+			}
+		}
+	},
+	"hanhan":{
+		"name":"汗汗",
+		"method":"GET",
+		"useragent":"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36",
+		"timeout":"8000",
+		"baseuri":"http://www.hhxiee.cc/",
+		"selector":{
+			"site":{
+				"img":"a img[src]",
+				"text":"",
+				"content":""
+			},
+			"search":{
+				"url":"http://somanhua.com/?key=%s",
+				"encoding":"GBK",
+				"elements":"div.ncont div.dSHtm > div",
+				"a":"a:has(img)",
+				"img":"img",
+				"text":"a:has(img)",
+				"content":":root",
+				"next":"div#rightmain2 div#dSABar1 a:contains(下一页)"
+			},
+			"item":{
+				"elements":"div#container > div#mainContent > div#content > div.m_list > ul.list li.list_small",
+				"a":"a:has(imt)",
+				"img":"img",
+				"text":"h3",
+				"next":"div#container > div#mainContent > div#content > div.replz a:contains(下一页)"
+			},
+			"classification":{
+				"elements":"div#container > div#menu a",
+				"a":":root",
+				"text":":root"
 			}
 		}
 	}
