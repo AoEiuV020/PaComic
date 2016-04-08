@@ -6,12 +6,16 @@
 *************************************************** */
 package com.aoeiuv020.reptile;
 import com.aoeiuv020.stream.Stream;
+import com.aoeiuv020.tool.Tool;
 import com.aoeiuv020.comic.Item;
 import com.aoeiuv020.comic.Main;
+import android.app.Activity;
 import android.content.Context;
 import android.content.*;
 import android.widget.*;
+import android.webkit.*;
 import android.view.*;
+import android.util.Log;
 import org.json.*;
 import org.jsoup.*;
 import org.jsoup.nodes.*;
@@ -24,7 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.io.IOException;
 /**
-  * Reptile reptile=new Reptile();
+  * Reptile reptile=new Reptile(mContext);
   * reptile.setSite(siteJson); //设置网站，不耗时，不抛异常，
   * List<Item> list=reptile.getItems(); //耗时，只抛RuntimeException,
   * reptile.loadNext(); //耗时，不抛异常，返回是否有Next,boolean
@@ -43,20 +47,65 @@ public class Reptile
 	private List<Item> mClassificationList=null;
 	private JSONObject mItemsSelectorJson=null;
 	private Item mSiteInfo=null;
-	public Reptile()
+	private static Context mContext=null;
+	public Reptile(Context context)
 	{
+		mContext=context;
 	}
 	/**
 	 * 耗时方法，
 	 */
+	private Document getHtmlJavascriptEnable(String str)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"getHtmlJavascriptEnable "+str);
+		WebView webView=null;
+		webView=((com.aoeiuv020.comic.ComicPagerActivity)mContext).getWebView();
+		webView.setWebViewClient(new MyWebViewClient());
+		webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+		webView.getSettings().setJavaScriptEnabled(true);
+		webView.getSettings().setLoadsImagesAutomatically(false);
+		Thread current=Thread.currentThread();
+		StringHolder holder=new StringHolder();
+		JsGetHtml js=new JsGetHtml(current,holder);
+		webView.addJavascriptInterface(js,"JsGetHtml_JavascriptInterface");
+		webView.loadUrl(str);
+		try
+		{
+			if(Main.DEBUG)
+				Log.v(""+this,"wait "+current);
+			synchronized(current)
+			{
+				current.wait();
+			}
+		}
+		catch(InterruptedException e)
+		{
+			if(Main.DEBUG)
+				Log.v(""+this,"InterruptedException "+e.getMessage());
+		}
+		if(Main.DEBUG)
+			Log.v(""+this,"wait ok "+holder.string.length());
+		return Jsoup.parse(holder.string,baseUrl.toString());
+	}
 	public List<Item> getPages(String str)
 	{
+		if(Main.DEBUG)
+			Log.v(""+this,"getPages "+str);
 		List<Item> list=null;
 		try
 		{
-			URL url=new URL(baseUrl,str);
-			Document document=mConnection.url(url).execute().parse();
 			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("page");
+			Document document=null;
+			if(!Tool.isEmpty(siteSelector)&&siteSelector.has("js"))
+			{
+				document=getHtmlJavascriptEnable(str);
+			}
+			else
+			{
+				URL url=new URL(baseUrl,str);
+				document=mConnection.url(url).execute().parse();
+			}
 			list=new Selector(siteSelector,mConnection,document).getItems();
 		}
 		catch(JSONException e)
@@ -143,7 +192,7 @@ public class Reptile
 			try
 			{
 				String name=iterator.next();
-				Reptile reptile=new Reptile();
+				Reptile reptile=new Reptile(mContext);
 				reptile.setSite(sitesJson.getJSONObject(name));
 				item=reptile.getSiteInfo();
 				if(item.title==null)
@@ -339,4 +388,43 @@ public class Reptile
 		}
 		return list;
 	}
+}
+class JsGetHtml
+{
+	private String mHtml=null;
+	private Thread mThread=null;
+	private StringHolder mHolder=null;
+	public JsGetHtml(Thread thread,StringHolder holder)
+	{
+		mThread=thread;
+		mHolder=holder;
+	}
+	@JavascriptInterface
+	public void setHtml(String html)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"setHtml "+html.length());
+		mHtml=html;
+		mHolder.string=html;
+		mThread.interrupt();
+	}
+}
+class MyWebViewClient extends WebViewClient
+{
+	@Override
+	public void onPageFinished(WebView view,String url)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"onPageFinished "+url);
+		view.loadUrl("javascript:JsGetHtml_JavascriptInterface.setHtml(document.firstElementChild.innerHTML)");
+	}
+	@Override
+	public boolean shouldOverrideUrlLoading(WebView view,String url)
+	{
+		return true;
+	}
+}
+class StringHolder
+{
+	public String string;
 }

@@ -88,7 +88,7 @@ public class ComicInfoActivity extends Activity implements AdapterView.OnItemCli
 		{
 			String json=intent.getStringExtra("sitejson");
 			JSONObject siteJson=new JSONObject(json);
-			mReptile=new Reptile();
+			mReptile=new Reptile(this);
 			mReptile.setSite(siteJson);
 		}
 		catch(JSONException e)
