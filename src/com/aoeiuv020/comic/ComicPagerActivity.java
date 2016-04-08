@@ -18,6 +18,7 @@ import android.content.*;
 import android.view.*;
 import android.os.*;
 import android.widget.*;
+import android.webkit.*;
 
 import java.util.*;
 
@@ -29,20 +30,32 @@ public class ComicPagerActivity extends Activity implements AdapterView.OnItemCl
 	private String mUrl=null;
 	private ItemAdapter mAdapter=null;
 	private ViewGroup mInfo=null;
+	private WebView mWebView=null;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-		if(Main.DEBUG)
-			System.out.println("onCreate "+this);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.layout_activity_comic_pager);
-		ListView listView=(ListView)findViewById(R.id.listview);
-		mAdapter=new ItemAdapter(this,R.layout.layout_page,null,R.id.page_image);
-		listView.setAdapter(mAdapter);
-		listView.setOnItemClickListener(this);
+        setContentView(R.layout.layout_webview);
 		init();
+		mWebView=(WebView)findViewById(R.id.webview);
+		WebSettings webSettings=mWebView.getSettings();
+		webSettings.setJavaScriptEnabled(true);
+		webSettings.setSupportZoom(true);
+		webSettings.setUseWideViewPort(true);
+		webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+		webSettings.setLoadWithOverviewMode(true);
+		mWebView.loadUrl(mUrl);
+		WebViewClient wvc=new WebViewClient(){
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view,String url)
+			{
+				view.loadUrl(url);
+				return true;
+			}
+		};
+		mWebView.setWebViewClient(wvc);
     }
 	@Override
 	public void onItemClick(AdapterView<?> parent,View view,int position,long id)
