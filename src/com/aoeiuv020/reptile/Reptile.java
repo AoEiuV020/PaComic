@@ -6,12 +6,16 @@
 *************************************************** */
 package com.aoeiuv020.reptile;
 import com.aoeiuv020.stream.Stream;
+import com.aoeiuv020.tool.Tool;
 import com.aoeiuv020.comic.Item;
 import com.aoeiuv020.comic.Main;
+import android.app.Activity;
 import android.content.Context;
 import android.content.*;
 import android.widget.*;
+import android.webkit.*;
 import android.view.*;
+import android.util.Log;
 import org.json.*;
 import org.jsoup.*;
 import org.jsoup.nodes.*;
@@ -24,7 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.io.IOException;
 /**
-  * Reptile reptile=new Reptile();
+  * Reptile reptile=new Reptile(mContext);
   * reptile.setSite(siteJson); //设置网站，不耗时，不抛异常，
   * List<Item> list=reptile.getItems(); //耗时，只抛RuntimeException,
   * reptile.loadNext(); //耗时，不抛异常，返回是否有Next,boolean
@@ -43,20 +47,111 @@ public class Reptile
 	private List<Item> mClassificationList=null;
 	private JSONObject mItemsSelectorJson=null;
 	private Item mSiteInfo=null;
-	public Reptile()
+	private static Context mContext=null;
+	public Reptile(Context context)
 	{
+		mContext=context;
 	}
 	/**
 	 * 耗时方法，
 	 */
+	private Document getHtmlJavascriptEnable(String str)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"getHtmlJavascriptEnable "+str);
+		mWebView=((com.aoeiuv020.comic.ComicPagerActivity)mContext).getWebView();
+		mWebView.setWebViewClient(new MyWebViewClient(this));
+		mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+		mWebView.getSettings().setJavaScriptEnabled(true);
+		mWebView.getSettings().setLoadsImagesAutomatically(false);
+		Thread current=Thread.currentThread();
+		StringHolder htmlHolder=new StringHolder();
+		JsGetHtml jsGetHtml=new JsGetHtml(current,htmlHolder);
+		mWebView.addJavascriptInterface(jsGetHtml,"JsGetHtml_JavascriptInterface");
+		StringHolder urlHolder=new StringHolder();
+		JsGetNext jsGetNext=new JsGetNext(current,urlHolder);
+		mWebView.addJavascriptInterface(jsGetNext,"JsGetUrl_JavascriptInterface");
+		mWebView.loadUrl(str);
+		try
+		{
+			if(Main.DEBUG)
+				Log.v(""+this,"wait page "+current);
+			synchronized(current)
+			{
+				current.wait();
+			}
+		}
+		catch(InterruptedException e)
+		{
+			if(Main.DEBUG)
+				Log.v(""+this,"InterruptedException "+e.getMessage());
+		}
+		if(Main.DEBUG)
+			Log.v(""+this,"wait page ok "+htmlHolder.string.length());
+		mWebView.loadUrl("javascript:nextpage()");
+		try
+		{
+			if(Main.DEBUG)
+				Log.v(""+this,"wait next "+current);
+			synchronized(current)
+			{
+				current.wait();
+			}
+		}
+		catch(InterruptedException e)
+		{
+			if(Main.DEBUG)
+				Log.v(""+this,"InterruptedException "+e.getMessage());
+		}
+		if(Main.DEBUG)
+			Log.v(""+this,"wait next ok "+urlHolder.string);
+		if(urlHolder.string.equals(PageUrl))
+		{
+			PageUrl="";
+		}
+		else
+		{
+			PageUrl=urlHolder.string;
+		}
+		return Jsoup.parse(htmlHolder.string,baseUrl.toString());
+	}
+	private WebView mWebView=null;
+	public void setNextPageUrl(String url)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"setNextPageUrl "+url);
+		mWebView.loadUrl("javascript:JsGetUrl_JavascriptInterface.setUrl('"+url+"')");
+	}
+	private String PageUrl=null;
 	public List<Item> getPages(String str)
 	{
+		if(Main.DEBUG)
+		{
+			Log.v(""+this,"getPages "+str);
+			Log.v(""+this,"PageUrl="+PageUrl);
+		}
+		if(PageUrl==null)
+		{
+			PageUrl=str;
+		}
+		else if(PageUrl.equals(""))
+		{
+			return null;
+		}
 		List<Item> list=null;
 		try
 		{
-			URL url=new URL(baseUrl,str);
-			Document document=mConnection.url(url).execute().parse();
 			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("page");
+			Document document=null;
+			if(!Tool.isEmpty(siteSelector)&&siteSelector.has("js"))
+			{
+				document=getHtmlJavascriptEnable(PageUrl);
+			}
+			else
+			{
+				URL url=new URL(baseUrl,str);
+				document=mConnection.url(url).execute().parse();
+			}
 			list=new Selector(siteSelector,mConnection,document).getItems();
 		}
 		catch(JSONException e)
@@ -143,7 +238,7 @@ public class Reptile
 			try
 			{
 				String name=iterator.next();
-				Reptile reptile=new Reptile();
+				Reptile reptile=new Reptile(mContext);
 				reptile.setSite(sitesJson.getJSONObject(name));
 				item=reptile.getSiteInfo();
 				if(item.title==null)
@@ -339,4 +434,71 @@ public class Reptile
 		}
 		return list;
 	}
+}
+class JsGetHtml
+{
+	private String mHtml=null;
+	private Thread mThread=null;
+	private StringHolder mHolder=null;
+	public JsGetHtml(Thread thread,StringHolder holder)
+	{
+		mThread=thread;
+		mHolder=holder;
+	}
+	@JavascriptInterface
+	public void setHtml(String html)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"setHtml "+html.length());
+		mHtml=html;
+		mHolder.string=html;
+		mThread.interrupt();
+	}
+}
+class JsGetNext
+{
+	private String mHtml=null;
+	private Thread mThread=null;
+	private StringHolder mHolder=null;
+	public JsGetNext(Thread thread,StringHolder holder)
+	{
+		mThread=thread;
+		mHolder=holder;
+	}
+	@JavascriptInterface
+	public void setUrl(String url)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"setUrl "+url);
+		mHtml=url;
+		mHolder.string=url;
+		mThread.interrupt();
+	}
+}
+class MyWebViewClient extends WebViewClient
+{
+	private Reptile mReptile=null;
+	public MyWebViewClient(Reptile reptile)
+	{
+		mReptile=reptile;
+	}
+	@Override
+	public void onPageFinished(WebView view,String url)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"onPageFinished "+url);
+		view.loadUrl("javascript:JsGetHtml_JavascriptInterface.setHtml(document.firstElementChild.innerHTML)");
+	}
+	@Override
+	public boolean shouldOverrideUrlLoading(WebView view,String url)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"shouldOverrideUrlLoading "+url);
+		mReptile.setNextPageUrl(url);
+		return true;
+	}
+}
+class StringHolder
+{
+	public String string;
 }

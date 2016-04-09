@@ -4,6 +4,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
+<WebView
+	android:id="@+id/webview"
+    android:layout_width="500dp"
+    android:layout_height="200dp"
+    />
 <ListView
 	android:id="@+id/listview"
     android:layout_width="fill_parent"

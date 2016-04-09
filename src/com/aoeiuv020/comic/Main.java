@@ -35,7 +35,7 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 		first();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
-		mReptile=new Reptile();
+		mReptile=new Reptile(this);
 		setDefaultSite();
 		setDefaultFragment();
     }
