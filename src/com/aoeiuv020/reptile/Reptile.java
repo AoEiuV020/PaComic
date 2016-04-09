@@ -59,21 +59,23 @@ public class Reptile
 	{
 		if(Main.DEBUG)
 			Log.v(""+this,"getHtmlJavascriptEnable "+str);
-		WebView webView=null;
-		webView=((com.aoeiuv020.comic.ComicPagerActivity)mContext).getWebView();
-		webView.setWebViewClient(new MyWebViewClient());
-		webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-		webView.getSettings().setJavaScriptEnabled(true);
-		webView.getSettings().setLoadsImagesAutomatically(false);
+		mWebView=((com.aoeiuv020.comic.ComicPagerActivity)mContext).getWebView();
+		mWebView.setWebViewClient(new MyWebViewClient(this));
+		mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+		mWebView.getSettings().setJavaScriptEnabled(true);
+		mWebView.getSettings().setLoadsImagesAutomatically(false);
 		Thread current=Thread.currentThread();
-		StringHolder holder=new StringHolder();
-		JsGetHtml js=new JsGetHtml(current,holder);
-		webView.addJavascriptInterface(js,"JsGetHtml_JavascriptInterface");
-		webView.loadUrl(str);
+		StringHolder htmlHolder=new StringHolder();
+		JsGetHtml jsGetHtml=new JsGetHtml(current,htmlHolder);
+		mWebView.addJavascriptInterface(jsGetHtml,"JsGetHtml_JavascriptInterface");
+		StringHolder urlHolder=new StringHolder();
+		JsGetNext jsGetNext=new JsGetNext(current,urlHolder);
+		mWebView.addJavascriptInterface(jsGetNext,"JsGetUrl_JavascriptInterface");
+		mWebView.loadUrl(str);
 		try
 		{
 			if(Main.DEBUG)
-				Log.v(""+this,"wait "+current);
+				Log.v(""+this,"wait page "+current);
 			synchronized(current)
 			{
 				current.wait();
@@ -85,13 +87,57 @@ public class Reptile
 				Log.v(""+this,"InterruptedException "+e.getMessage());
 		}
 		if(Main.DEBUG)
-			Log.v(""+this,"wait ok "+holder.string.length());
-		return Jsoup.parse(holder.string,baseUrl.toString());
+			Log.v(""+this,"wait page ok "+htmlHolder.string.length());
+		mWebView.loadUrl("javascript:nextpage()");
+		try
+		{
+			if(Main.DEBUG)
+				Log.v(""+this,"wait next "+current);
+			synchronized(current)
+			{
+				current.wait();
+			}
+		}
+		catch(InterruptedException e)
+		{
+			if(Main.DEBUG)
+				Log.v(""+this,"InterruptedException "+e.getMessage());
+		}
+		if(Main.DEBUG)
+			Log.v(""+this,"wait next ok "+urlHolder.string);
+		if(urlHolder.string.equals(PageUrl))
+		{
+			PageUrl="";
+		}
+		else
+		{
+			PageUrl=urlHolder.string;
+		}
+		return Jsoup.parse(htmlHolder.string,baseUrl.toString());
 	}
+	private WebView mWebView=null;
+	public void setNextPageUrl(String url)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"setNextPageUrl "+url);
+		mWebView.loadUrl("javascript:JsGetUrl_JavascriptInterface.setUrl('"+url+"')");
+	}
+	private String PageUrl=null;
 	public List<Item> getPages(String str)
 	{
 		if(Main.DEBUG)
+		{
 			Log.v(""+this,"getPages "+str);
+			Log.v(""+this,"PageUrl="+PageUrl);
+		}
+		if(PageUrl==null)
+		{
+			PageUrl=str;
+		}
+		else if(PageUrl.equals(""))
+		{
+			return null;
+		}
 		List<Item> list=null;
 		try
 		{
@@ -99,7 +145,7 @@ public class Reptile
 			Document document=null;
 			if(!Tool.isEmpty(siteSelector)&&siteSelector.has("js"))
 			{
-				document=getHtmlJavascriptEnable(str);
+				document=getHtmlJavascriptEnable(PageUrl);
 			}
 			else
 			{
@@ -409,8 +455,33 @@ class JsGetHtml
 		mThread.interrupt();
 	}
 }
+class JsGetNext
+{
+	private String mHtml=null;
+	private Thread mThread=null;
+	private StringHolder mHolder=null;
+	public JsGetNext(Thread thread,StringHolder holder)
+	{
+		mThread=thread;
+		mHolder=holder;
+	}
+	@JavascriptInterface
+	public void setUrl(String url)
+	{
+		if(Main.DEBUG)
+			Log.v(""+this,"setUrl "+url);
+		mHtml=url;
+		mHolder.string=url;
+		mThread.interrupt();
+	}
+}
 class MyWebViewClient extends WebViewClient
 {
+	private Reptile mReptile=null;
+	public MyWebViewClient(Reptile reptile)
+	{
+		mReptile=reptile;
+	}
 	@Override
 	public void onPageFinished(WebView view,String url)
 	{
@@ -421,6 +492,9 @@ class MyWebViewClient extends WebViewClient
 	@Override
 	public boolean shouldOverrideUrlLoading(WebView view,String url)
 	{
+		if(Main.DEBUG)
+			Log.v(""+this,"shouldOverrideUrlLoading "+url);
+		mReptile.setNextPageUrl(url);
 		return true;
 	}
 }

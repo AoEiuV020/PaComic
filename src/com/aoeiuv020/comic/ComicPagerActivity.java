@@ -97,6 +97,8 @@ class ComicPageLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 	private Throwable mThrowable=null;
 	public ComicPageLoadAsyncTask(Reptile reptile,ItemAdapter adapter,String url)
 	{
+		if(Main.DEBUG)
+			Log.v(""+this,"ComicPageLoadAsyncTask "+this);
 		mReptile=reptile;
 		mAdapter=adapter;
 		mUrl=url;
@@ -104,6 +106,8 @@ class ComicPageLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 	@Override
 	protected List<Item> doInBackground(Void... parms)
 	{
+		if(Main.DEBUG)
+			Log.v(""+this,"doInBackground "+mUrl);
 		List<Item> list=null;
 		try
 		{
@@ -121,11 +125,13 @@ class ComicPageLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 	@Override
 	protected void onPostExecute(List<Item> list)
 	{
-		if(Main.DEBUG)
-			Log.v(""+this,list.get(0).image);
 		if(list!=null)
 		{
+			if(Main.DEBUG)
+				Log.v(""+this,"img="+list.get(0).image);
 			mAdapter.addAll(list);
+			ComicPageLoadAsyncTask task=new ComicPageLoadAsyncTask(mReptile,mAdapter,mUrl);
+			task.execute();
 		}
 	}
 }
