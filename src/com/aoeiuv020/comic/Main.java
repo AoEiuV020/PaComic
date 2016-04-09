@@ -6,6 +6,7 @@
 *************************************************** */
 package com.aoeiuv020.comic;
 import com.aoeiuv020.stream.Stream;
+import com.aoeiuv020.widget.SimpleDialog;
 import com.aoeiuv020.reptile.Reptile;
 
 import android.app.Activity;
@@ -120,5 +121,6 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 		//把assets中的配置文件写到files，
 		String sitesjson="sites.json";
 		Stream.write(this,sitesjson,Stream.read(this.getAssets(),sitesjson));
+		SimpleDialog.show(this,"说明",Stream.read(this.getAssets(),"info.txt"),null);
 	}
 }
