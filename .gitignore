@@ -1,5 +1,6 @@
 bin/
 gen/
 obj/
+screen.png
 ant.properties
 .keystore
