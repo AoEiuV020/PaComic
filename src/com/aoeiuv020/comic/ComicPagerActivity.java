@@ -42,6 +42,7 @@ public class ComicPagerActivity extends Activity implements AdapterView.OnItemCl
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.layout_activity_comic_pager);
 		mWebView=(WebView)findViewById(R.id.webview);
+		mWebView.setVisibility(View.GONE);
 		ListView listView=(ListView)findViewById(R.id.listview);
 		mAdapter=new ItemAdapter(this,R.layout.layout_page,null,R.id.page_image);
 		listView.setAdapter(mAdapter);

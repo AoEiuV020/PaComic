@@ -29,33 +29,46 @@ public class ImageLoader
 			imageView.setImageBitmap(null);
 			return;
 		}
-		ShowImageAsyncTask task=new ShowImageAsyncTask(imageView,url);
-		imageView.setTag(url);
-		task.execute();
+		Bitmap bitmap=getBitmap(url);
+		if(bitmap!=null)
+		{
+			imageView.setImageBitmap(bitmap);
+		}
+		else
+		{
+			imageView.setTag(url);
+			ShowImageAsyncTask task=new ShowImageAsyncTask(imageView,url);
+			task.execute();
+		}
 	}
 	/**
 	  * 耗时方法，
 	  * 失败返回null;
 	  */
+	public static Bitmap downloadBitmap(String str)
+	{
+		Bitmap bitmap=null;
+		try
+		{
+			URL url=new URL(str);
+			InputStream input=url.openStream();
+			bitmap=BitmapFactory.decodeStream(input);
+			if(bitmap!=null)
+			{
+				mCache.put(str,bitmap);
+			}
+		}
+		catch(Exception e)
+		{
+		}
+		return bitmap;
+	}
+	/**
+	 * 不耗时方法，
+	 */
 	public static Bitmap getBitmap(String str)
 	{
 		Bitmap bitmap=mCache.get(str);
-		if(bitmap==null)
-		{
-			try
-			{
-				URL url=new URL(str);
-				InputStream input=url.openStream();
-				bitmap=BitmapFactory.decodeStream(input);
-				if(bitmap!=null)
-				{
-					mCache.put(str,bitmap);
-				}
-			}
-			catch(Exception e)
-			{
-			}
-		}
 		return bitmap;
 	}
 }
@@ -77,10 +90,7 @@ class ShowImageAsyncTask extends AsyncTask<Void,Integer,Bitmap>
 	@Override
 	protected Bitmap doInBackground(Void... parms)
 	{
-		synchronized(mLock)
-		{
-			return ImageLoader.getBitmap(mUrl);
-		}
+		return ImageLoader.downloadBitmap(mUrl);
 	}
 	@Override
 	protected void onPostExecute(Bitmap bitmap)
@@ -99,13 +109,13 @@ class ShowImageAsyncTask extends AsyncTask<Void,Integer,Bitmap>
 	}
 }
 /**
-  * 现在是内存cache，
-  * 以后加上外存cache,
-  * 只用使用两个方法，
-  * Bitmap get(String url);
-  * void put(String url,Bitmap bitmap);
-  * 不抛空指针异常，
-  */
+ * 现在是内存cache，
+ * 以后加上外存cache,
+ * 只用使用两个方法，
+ * Bitmap get(String url);
+ * void put(String url,Bitmap bitmap);
+ * 不抛空指针异常，
+ */
 class BitmapCachea
 {
 	private LruCache<String,Bitmap> mLruCache;
