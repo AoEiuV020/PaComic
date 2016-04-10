@@ -2,14 +2,14 @@
 	"hanhan":{
 		"name":"汗汗",
 		"method":"GET",
+		"encoding":"GBK",
 		"useragent":"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36",
 		"timeout":"8000",
 		"baseuri":"http://www.hhxiee.cc/",
+		"baseurl":"http://www.hhxiee.cc/",
 		"selector":{
 			"site":{
-				"img":"a img[src]",
-				"text":"",
-				"content":""
+				"image":"//a//img[@src]/@src"
 			},
 			"search":{
 				"url":"http://somanhua.com/?key=%s",
@@ -52,6 +52,8 @@
 	"1kkk":{
 		"comment.name":"网站的名字，先找selector.site.text，没有就找这个name,再没有就和当前对象的名字一样，",
 		"name":"1kkk极速漫画",
+		"comment.encoding":"网站的编码，",
+		"encoding":"GBK",
 		"comment.method":"网站请求方式，正常只要GET就可以，不写默认就是GET",
 		"method":"GET",
 		"comment.useragent":"网站请求使用的ua，默认就是这个，windows+chrome",
@@ -60,15 +62,15 @@
 		"timeout":"5000",
 		"comment.baseuri":"网站根地址，",
 		"baseuri":"http://www.1kkk.com/",
+		"baseurl":"http://www.1kkk.com/",
 		"comment.main":"主页的爬虫配置，",
 		"selector":{
 			"comment.site":"网站信息的选择器，只选一个元素,",
 			"site":{
 				"comment.elements":"因为只选一个，所以不需要elements，",
 				"comment.img.text.content":"网站的图标，标题，详情，",
-				"img":"div.bodyc div.hd div.k980 div[class*=k200] a[target=_parent] img",
-				"text":"null",
-				"content":"div.main div#hy span.lj_lv"
+				"image":"//div[@class='k200 z']/a/img/@src",
+				"content":"//span[@id='lj_lv']/text()]"
 			},
 			"comment.search":"搜索页面的选择器，",
 			"search":{

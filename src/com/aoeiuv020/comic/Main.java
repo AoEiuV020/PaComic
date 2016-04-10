@@ -18,14 +18,14 @@ import android.content.*;
 import android.view.*;
 import android.os.*;
 import android.widget.*;
-
+import android.util.Log;
 import java.util.*;
 
 import org.json.*;
 
 public class Main extends Activity implements BottomFragment.OnItemClickListener,OnTaskFinishListener
 {
-	public static final boolean DEBUG=true;
+	public static final boolean DEBUG=false;
 	JSONObject mSiteJson=null;
 	Reptile mReptile=null;
     /** Called when the activity is first created. */
@@ -43,7 +43,7 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 	@Override
 	public void onFinish()
 	{
-		setDefaultFragment();
+		changeTab(BottomFragment.MAIN);
 		InputMethodManager imm=(InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE);
 		if(getCurrentFocus()!=null)
 			imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
@@ -91,20 +91,18 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 	}
 	private void setDefaultFragment()
 	{
-		Fragment fContent=null;
 		Fragment fTitle=null;
 		BottomFragment fBottom=null;
 		FragmentTransaction ft=getFragmentManager().beginTransaction();
 
-		fContent=new ItemsFragment();
 		fTitle=new TitleFragment();
 		fBottom=new BottomFragment();
 		fBottom.setOnItemClickListener(this);
 
-		ft.replace(R.id.fragment_content,fContent);
 		ft.replace(R.id.fragment_title,fTitle);
 		ft.replace(R.id.fragment_bottom,fBottom);
 		ft.commit();
+		changeTab(BottomFragment.SITE);
 	}
 	private void first()
 	{

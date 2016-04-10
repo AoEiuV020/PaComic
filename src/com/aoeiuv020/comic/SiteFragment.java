@@ -133,9 +133,7 @@ class SiteLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 		mAdapter=adapter;
 	}
 	@Override
-	protected void onPreExecute()
-	{
-	}
+	protected void onPreExecute() { }
 	@Override
 	protected List<Item> doInBackground(Void... parms)
 	{

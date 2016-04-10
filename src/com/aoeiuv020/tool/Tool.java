@@ -6,6 +6,7 @@
 *************************************************** */
 package com.aoeiuv020.tool;
 import android.widget.TextView;
+import org.json.*;
 public class Tool
 {
 	private Tool()
@@ -28,5 +29,35 @@ public class Tool
 			return true;
 		}
 		return false;
+	}
+	public static void put(JSONObject json,String key,Object obj)
+	{
+		if(isEmpty(key))
+			return;
+		if(obj==null)
+			obj=JSONObject.NULL;
+		try
+		{
+			json.put(key,obj);
+		}
+		catch(JSONException e)
+		{
+		}
+	}
+	public static String getString(JSONObject json,String str)
+	{
+		String result=null;
+		try
+		{
+			result=json.getString(str);
+		}
+		catch(JSONException e)
+		{
+		}
+		return result;
+	}
+	public static boolean isEmpty(JSONObject json,String str)
+	{
+		return isEmpty(getString(json,str));
 	}
 }

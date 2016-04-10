@@ -5,8 +5,9 @@
 	^> Created Time: 2016/04/05 - 00:22:32
 *************************************************** */
 package com.aoeiuv020.reptile;
-import com.aoeiuv020.stream.Stream;
+import com.aoeiuv020.tool.Stream;
 import com.aoeiuv020.tool.Tool;
+import com.aoeiuv020.tool.Logger;
 import com.aoeiuv020.comic.Item;
 import com.aoeiuv020.comic.Main;
 import android.app.Activity;
@@ -37,18 +38,17 @@ import java.io.IOException;
   */
 public class Reptile
 {
-	private String mClassificationUrl=null;
-	private int mClassificationIndex=0;
-	private JSONObject mJsonSite=null;
-	private String encoding=null;
-	private URL baseUrl=null;
-	private Selector mItemsSelector=null;
-	private Connection mConnection=null;
-	private List<Item> mClassificationList=null;
-	private JSONObject mItemsSelectorJson=null;
-	private Item mSiteInfo=null;
 	private static Context mContext=null;
+	private JSONObject mSiteJson=null;
+	public Reptile()
+	{
+	}
 	public Reptile(Context context)
+	{
+		this();
+		setContext(context);
+	}
+	public static void setContext(Context context)
 	{
 		mContext=context;
 	}
@@ -57,170 +57,30 @@ public class Reptile
 	 */
 	private Document getHtmlJavascriptEnable(String str)
 	{
-		if(Main.DEBUG)
-			Log.v(""+this,"getHtmlJavascriptEnable "+str);
-		mWebView=((com.aoeiuv020.comic.ComicPagerActivity)mContext).getWebView();
-		mWebView.setWebViewClient(new MyWebViewClient(this));
-		mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-		mWebView.getSettings().setJavaScriptEnabled(true);
-		mWebView.getSettings().setLoadsImagesAutomatically(false);
-		Thread current=Thread.currentThread();
-		StringHolder htmlHolder=new StringHolder();
-		JsGetHtml jsGetHtml=new JsGetHtml(current,htmlHolder);
-		mWebView.addJavascriptInterface(jsGetHtml,"JsGetHtml_JavascriptInterface");
-		StringHolder urlHolder=new StringHolder();
-		JsGetNext jsGetNext=new JsGetNext(current,urlHolder);
-		mWebView.addJavascriptInterface(jsGetNext,"JsGetUrl_JavascriptInterface");
-		mWebView.loadUrl(str);
-		try
-		{
-			if(Main.DEBUG)
-				Log.v(""+this,"wait page "+current);
-			synchronized(current)
-			{
-				current.wait();
-			}
-		}
-		catch(InterruptedException e)
-		{
-			if(Main.DEBUG)
-				Log.v(""+this,"InterruptedException "+e.getMessage());
-		}
-		if(Main.DEBUG)
-			Log.v(""+this,"wait page ok "+htmlHolder.string.length());
-		mWebView.loadUrl("javascript:nextpage()");
-		try
-		{
-			if(Main.DEBUG)
-				Log.v(""+this,"wait next "+current);
-			synchronized(current)
-			{
-				current.wait();
-			}
-		}
-		catch(InterruptedException e)
-		{
-			if(Main.DEBUG)
-				Log.v(""+this,"InterruptedException "+e.getMessage());
-		}
-		if(Main.DEBUG)
-			Log.v(""+this,"wait next ok "+urlHolder.string);
-		if(urlHolder.string.equals(PageUrl))
-		{
-			PageUrl="";
-		}
-		else
-		{
-			PageUrl=urlHolder.string;
-		}
-		return Jsoup.parse(htmlHolder.string,baseUrl.toString());
+		return null;
 	}
 	private WebView mWebView=null;
 	public void setNextPageUrl(String url)
 	{
-		if(Main.DEBUG)
-			Log.v(""+this,"setNextPageUrl "+url);
-		mWebView.loadUrl("javascript:JsGetUrl_JavascriptInterface.setUrl('"+url+"')");
 	}
 	private String PageUrl=null;
 	public List<Item> getPages(String str)
 	{
-		if(Main.DEBUG)
-		{
-			Log.v(""+this,"getPages "+str);
-			Log.v(""+this,"PageUrl="+PageUrl);
-		}
-		if(PageUrl==null)
-		{
-			PageUrl=str;
-		}
-		else if(PageUrl.equals(""))
-		{
-			return null;
-		}
-		List<Item> list=null;
-		try
-		{
-			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("page");
-			Document document=null;
-			if(!Tool.isEmpty(siteSelector)&&siteSelector.has("js"))
-			{
-				document=getHtmlJavascriptEnable(PageUrl);
-			}
-			else
-			{
-				URL url=new URL(baseUrl,str);
-				document=mConnection.url(url).execute().parse();
-			}
-			list=new Selector(siteSelector,mConnection,document).getItems();
-		}
-		catch(JSONException e)
-		{
-			throw new RuntimeException("json中没有目录的选择器",e);
-		}
-		catch(MalformedURLException e)
-		{
-			throw new RuntimeException("uri参数错误",e);
-		}
-		catch(IOException e)
-		{
-			throw new RuntimeException("可能是网络不通",e);
-		}
-		return list;
+		return null;
 	}
 	/**
 	 * 耗时方法，
 	 */
 	public List<Item> getCatalog(String str)
 	{
-		List<Item> list=null;
-		try
-		{
-			URL url=new URL(baseUrl,str);
-			Document document=mConnection.url(url).execute().parse();
-			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("catalog");
-			list=new Selector(siteSelector,mConnection,document).getItems();
-		}
-		catch(JSONException e)
-		{
-			throw new RuntimeException("json中没有目录的选择器",e);
-		}
-		catch(MalformedURLException e)
-		{
-			throw new RuntimeException("uri参数错误",e);
-		}
-		catch(IOException e)
-		{
-			throw new RuntimeException("可能是网络不通",e);
-		}
-		return list;
+		return null;
 	}
 	/**
 	 * 耗时方法，
 	 */
 	public Item getComicInfo(String str)
 	{
-		Item item=null;
-		try
-		{
-			URL url=new URL(baseUrl,str);
-			Document document=mConnection.url(url).execute().parse();
-			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("info");
-			item=new Selector(siteSelector,mConnection,document).getItems().get(0);
-		}
-		catch(JSONException e)
-		{
-			throw new RuntimeException("json中没有info的选择器",e);
-		}
-		catch(MalformedURLException e)
-		{
-			throw new RuntimeException("uri参数错误",e);
-		}
-		catch(IOException e)
-		{
-			throw new RuntimeException("可能是网络不通",e);
-		}
-		return item;
+		return null;
 	}
 	/**
 	 * 耗时方法，
@@ -238,7 +98,7 @@ public class Reptile
 			try
 			{
 				String name=iterator.next();
-				Reptile reptile=new Reptile(mContext);
+				Reptile reptile=new Reptile();
 				reptile.setSite(sitesJson.getJSONObject(name));
 				item=reptile.getSiteInfo();
 				if(item.title==null)
@@ -247,6 +107,8 @@ public class Reptile
 			catch(Exception e)
 			{
 				//无视任何错误，
+				if(Logger.DEBUG)
+					throw new RuntimeException(e);
 			}
 			finally
 			{
@@ -262,85 +124,37 @@ public class Reptile
 	 */
 	public Item getSiteInfo()
 	{
-		if(mSiteInfo!=null)
-		{
-			return mSiteInfo;
-		}
+		if(mSiteJson==null)
+			return null;
+		Item item=new Item();
+		Logger.v("getSiteInfo ");
 		try
 		{
-			Document document=mConnection.url(baseUrl).execute().parse();
-			JSONObject siteSelector=mJsonSite.getJSONObject("selector").getJSONObject("site");
-			mSiteInfo=new Selector(siteSelector,mConnection,document).getItems().get(0);
-			if(mSiteInfo.title==null&&mJsonSite.has("name"))
-				mSiteInfo.title=mJsonSite.getString("name");
+			JSONObject siteSelector=mSiteJson.getJSONObject("selector").getJSONObject("site");
+			item=Selector.select(siteSelector).get(0);
+			String name=Tool.getString(mSiteJson,"name");
+			if(Tool.isEmpty(item)&&!Tool.isEmpty(name))
+				item.title=name;
 		}
 		catch(JSONException e)
 		{
 			throw new RuntimeException("json中没有网站信息的选择器",e);
 		}
-		catch(MalformedURLException e)
-		{
-			throw new RuntimeException("uri参数错误",e);
-		}
-		catch(IOException e)
-		{
-			throw new RuntimeException("可能是网络不通",e);
-		}
-		return mSiteInfo;
+		Logger.v("getSiteInfo item=%s",item);
+		return item;
 	}
 	public void setSite(JSONObject json)
 	{
-		mJsonSite=json;
-		initSite();
-		mClassificationList=null;
-		mItemsSelectorJson=null;
-		setClassification(0);
+		mSiteJson=json;
+		Connector.getInstance().putAll(mSiteJson);
 	}
 	public JSONObject getSiteJson()
 	{
-		return mJsonSite;
-	}
-	private void initSite()
-	{
-		String method="GET";
-		String baseuri=null;
-		String useragent="Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36";
-		int timeout=3000;
-		try
-		{
-			baseuri=mJsonSite.getString("baseuri");
-			if(mJsonSite.has("method"))
-				method=mJsonSite.getString("method");
-			if(mJsonSite.has("timeout"))
-				timeout=mJsonSite.getInt("timeout");
-			if(mJsonSite.has("useragent"))
-				useragent=mJsonSite.getString("useragent");
-		}
-		catch(JSONException e)
-		{
-			throw new RuntimeException(e);
-		}
-		try
-		{
-			baseUrl=new URL(baseuri);
-		}
-		catch(MalformedURLException e)
-		{
-			throw new RuntimeException("baseuri不规范:"+baseuri,e);
-		}
-		mConnection=Jsoup.connect(baseUrl.toString());
-		mConnection.timeout(timeout);
-		mConnection.userAgent(useragent);
-		mConnection.method(Connection.Method.valueOf(method));
+		return mSiteJson;
 	}
 	public boolean loadNext()
 	{
-		boolean hasNext=false;
-		if(mItemsSelector!=null)
-		{
-			hasNext=mItemsSelector.loadNext();
-		}
-		return hasNext;
+		return false;
 	}
 	/**
 	  * 不抛异常，
@@ -348,91 +162,23 @@ public class Reptile
 	  */
 	public void setSearch(String sSearch)
 	{
-		try
-		{
-			String encoding="UTF-8";
-			JSONObject searchSelectorJson=mJsonSite.getJSONObject("selector").getJSONObject("search");
-			if(searchSelectorJson.has("encoding"))
-				encoding=searchSelectorJson.getString("encoding");
-			sSearch=URLEncoder.encode(sSearch,encoding);
-			String sUrl=searchSelectorJson.getString("url");
-			sUrl=String.format(sUrl,sSearch);
-			URL url=new URL(baseUrl,sUrl);
-			Document document=mConnection.url(url).execute().parse();
-			mItemsSelector=new Selector(searchSelectorJson,mConnection,document);
-		}
-		catch(Exception e)
-		{
-		}
 	}
 	public void setClassification(int index)
 	{
-		mClassificationIndex=index;
-		mClassificationUrl=null;
-		mItemsSelector=null;
 	}
 	/**
 	 * 耗时方法，
 	 */
 	public List<Item> getClassifications()
 	{
-		if(mClassificationList!=null)
-		{
-			return mClassificationList;
-		}
-		try
-		{
-			Document document=mConnection.url(baseUrl).execute().parse();
-			mClassificationList=new Selector(mJsonSite.getJSONObject("selector").getJSONObject("classification"),mConnection,document).getItems();
-		}
-		catch(JSONException e)
-		{
-			throw new RuntimeException("json中没有网站信息的选择器",e);
-		}
-		catch(MalformedURLException e)
-		{
-			throw new RuntimeException("uri参数错误",e);
-		}
-		catch(IOException e)
-		{
-			throw new RuntimeException("可能是网络不通",e);
-		}
-		return mClassificationList;
+		return null;
 	}
 	/**
 	 * 耗时方法，
 	 */
 	public List<Item> getItems()
 	{
-		List<Item> list=null;
-		try
-		{
-			if(mItemsSelector==null)
-			{
-				JSONObject itemsSelectorJson=mJsonSite.getJSONObject("selector").getJSONObject("item");
-				if(mClassificationUrl==null)
-				{
-					mClassificationUrl=getClassifications().get(mClassificationIndex).url;
-				}
-				URL url=new URL(baseUrl,mClassificationUrl);
-				Document document=mConnection.url(url).execute().parse();
-				mItemsSelector=new Selector(itemsSelectorJson,mConnection,document);
-			}
-			list=mItemsSelector.getItems();
-		}
-		catch(MalformedURLException e)
-		{
-			throw new RuntimeException("uri参数错误",e);
-		}
-		catch(JSONException e)
-		{
-			throw new RuntimeException("指定分类的json解析错误",e);
-		}
-		catch(IOException e)
-		{
-			throw new RuntimeException("可能是网络不通",e);
-		}
-		return list;
+		return null;
 	}
 }
 class JsGetHtml
@@ -442,17 +188,10 @@ class JsGetHtml
 	private StringHolder mHolder=null;
 	public JsGetHtml(Thread thread,StringHolder holder)
 	{
-		mThread=thread;
-		mHolder=holder;
 	}
 	@JavascriptInterface
 	public void setHtml(String html)
 	{
-		if(Main.DEBUG)
-			Log.v(""+this,"setHtml "+html.length());
-		mHtml=html;
-		mHolder.string=html;
-		mThread.interrupt();
 	}
 }
 class JsGetNext
@@ -462,17 +201,10 @@ class JsGetNext
 	private StringHolder mHolder=null;
 	public JsGetNext(Thread thread,StringHolder holder)
 	{
-		mThread=thread;
-		mHolder=holder;
 	}
 	@JavascriptInterface
 	public void setUrl(String url)
 	{
-		if(Main.DEBUG)
-			Log.v(""+this,"setUrl "+url);
-		mHtml=url;
-		mHolder.string=url;
-		mThread.interrupt();
 	}
 }
 class MyWebViewClient extends WebViewClient
@@ -480,22 +212,15 @@ class MyWebViewClient extends WebViewClient
 	private Reptile mReptile=null;
 	public MyWebViewClient(Reptile reptile)
 	{
-		mReptile=reptile;
 	}
 	@Override
 	public void onPageFinished(WebView view,String url)
 	{
-		if(Main.DEBUG)
-			Log.v(""+this,"onPageFinished "+url);
-		view.loadUrl("javascript:JsGetHtml_JavascriptInterface.setHtml(document.firstElementChild.innerHTML)");
 	}
 	@Override
 	public boolean shouldOverrideUrlLoading(WebView view,String url)
 	{
-		if(Main.DEBUG)
-			Log.v(""+this,"shouldOverrideUrlLoading "+url);
-		mReptile.setNextPageUrl(url);
-		return true;
+		return false;
 	}
 }
 class StringHolder
