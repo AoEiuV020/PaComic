@@ -46,6 +46,13 @@ public class Connector
 		InputStream input=getInputStream(url);
 		return Stream.read(input,Tool.getString(mArgs,"encoding"));
 	}
+	public String getEncoding()
+	{
+		String encoding=Tool.getString(mArgs,"encoding");
+		if(Tool.isEmpty(encoding))
+			encoding="UTF-8";
+		return encoding;
+	}
 	public InputStream getInputStream(String url)
 	{
 		if(Tool.isEmpty(url))

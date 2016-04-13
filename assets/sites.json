@@ -13,14 +13,14 @@
 				"content":"string('日本漫画比较多')"
 			},
 			"search":{
-				"url":"http://somanhua.com/?key=%s",
+				"searchurl":"http://somanhua.com/?key=%s",
 				"encoding":"GBK",
-				"elements":"div.ncont div.dSHtm > div",
-				"a":"a:has(img)",
-				"img":"img",
-				"text":"a:has(img)",
-				"content":":root",
-				"next":"div#rightmain2 div#dSABar1 a:contains(下一页)"
+				"elements":"//div[@class='ncont']//div[@class='dSHtm']/div",
+				"url":"./a[img]/@href",
+				"image":"./a/img/@src",
+				"title":"./a[img]/text()",
+				"content":"concat(./span[1],./span[2],./text()[3])",
+				"next":"//div[@id='rightmain2']//div[@id='dSABar1']/a[contains(text(),'下一页')]/@href"
 			},
 			"item":{
 				"elements":"//div[@id='container']/div[@id='mainContent']/div[@id='content']/div[@class='m_list']/ul[@class='list']/li[@class='list_small']",
@@ -76,18 +76,18 @@
 			},
 			"comment.search":"搜索页面的选择器，",
 			"search":{
-				"comment.url":"搜索的地址，%s会用搜索内容替代,",
-				"url":"/search?title=%s",
+				"comment.searchurl":"搜索的地址，%s会用搜索内容替代,",
+				"searchurl":"/search?title=%s",
 				"comment.encoding":"网站的编码，默认就是UTF-8搜索的字符串要用和网站相同的编码做Url encode,",
 				"encoding":"UTF-8",
 				"comment.elements":"筛选出所有目标各自所在的结点，",
-				"elements":"div.main div.in_02 dl",
+				"elements":"//div[@class='main']/div/div[@class='in_02']/ul/li/dl",
 				"comment.a.img.text.content.next":"在elements中精确指定(目标，缩略图，文本，详情，下一页)所在结点，",
-				"a":"a",
-				"img":"dt img",
-				"text":"dd a",
-				"content":"dd span.lj_hei",
-				"next":"div.main div#search_fy a:contains(下一页)"
+				"url":"./dd/span/a/@href",
+				"image":"./dt/img/@src",
+				"title":"string(./dd/span/a)",
+				"content":"./dd/span/span/a/text()",
+				"next":"//div[@class='main']//div[@id='search_fy']//a[contains(text(),'下一页')]/@href"
 			},
 			"comment.item":"在具体分类的页面里选择漫画列表元素的选择器，",
 			"item":{

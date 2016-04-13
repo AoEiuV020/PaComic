@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 /**
   * Reptile reptile=new Reptile(mContext);
   * reptile.setSite(siteJson); //设置网站，不耗时，不抛异常，
@@ -198,7 +199,31 @@ public class Reptile
 	 */
 	public void setSearch(String sSearch)
 	{
+		if(mSiteJson==null)
+			return ;
 		mMode="search";
+		String encoding=null;
+		try
+		{
+			JSONObject searchSelectorJson=mSiteJson.getJSONObject("selector").getJSONObject("search");
+			if(searchSelectorJson.has("encoding"))
+				encoding=searchSelectorJson.getString("encoding");
+			else
+				encoding=Connector.getInstance().getEncoding();
+			sSearch=URLEncoder.encode(sSearch,encoding);
+			String sUrl=searchSelectorJson.getString("searchurl");
+			sUrl=String.format(sUrl,sSearch);
+			mClassificationUrl=sUrl;
+			Logger.v("setSearch %s",mClassificationUrl);
+		}
+		catch(UnsupportedEncodingException e)
+		{
+			Logger.e(e);
+		}
+		catch(JSONException e)
+		{
+			Logger.e(e);
+		}
 	}
 	public void setClassification(int index)
 	{
@@ -233,7 +258,7 @@ public class Reptile
 		if(mSiteJson==null)
 			return null;
 		List<Item> list=null;
-		Logger.v("getItems %s",str);
+		Logger.v("getItems %s,%s",str,url);
 		try
 		{
 			JSONObject selectorJson=mSiteJson.getJSONObject("selector").getJSONObject(str);
