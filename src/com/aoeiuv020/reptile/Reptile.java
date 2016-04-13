@@ -38,8 +38,10 @@ import java.io.IOException;
   */
 public class Reptile
 {
+	private String mClassificationUrl=null;
 	private static Context mContext=null;
 	private JSONObject mSiteJson=null;
+	private static JSONObject mAllSitesJson=null;
 	public Reptile()
 	{
 	}
@@ -73,35 +75,38 @@ public class Reptile
 	 */
 	public List<Item> getCatalog(String str)
 	{
-		return null;
+		return getItems("catalog",str);
 	}
 	/**
 	 * 耗时方法，
 	 */
 	public Item getComicInfo(String str)
 	{
-		return null;
+		return getItems("info",str).get(0);
 	}
 	/**
 	 * 耗时方法，
 	 */
-	public static List<Item> getSites(JSONObject sitesJson)
+	public static List<Item> getSites(JSONObject sites)
 	{
-		if(sitesJson==null)
-			return null;
+		Logger.v("getSites sites=%s",sites);
+		mAllSitesJson=sites;
+		return getSites();
+	}
+	public static List<Item> getSites()
+	{
 		List<Item> list=new LinkedList<Item>();
-		Iterator<String> iterator=sitesJson.keys();
-		while(iterator.hasNext())
+		List<JSONObject> sitesList=getSitesJsonList();
+		if(sitesList==null)
+			return null;
+		for(JSONObject site:sitesList)
 		{
 			Item item=null;
 			try
 			{
-				String name=iterator.next();
 				Reptile reptile=new Reptile();
-				reptile.setSite(sitesJson.getJSONObject(name));
+				reptile.setSite(site);
 				item=reptile.getSiteInfo();
-				if(item.title==null)
-					item.title=name;
 			}
 			catch(Exception e)
 			{
@@ -114,7 +119,7 @@ public class Reptile
 				//毕竟只是网站信息爬不出来，说不定网站其他还能爬的，
 				list.add(item);
 			}
-			Logger.v("getSiteInfo "+item);
+			Logger.v("getSiteInfo %s",item);
 		}
 		return list;
 	}
@@ -132,8 +137,6 @@ public class Reptile
 			JSONObject siteSelector=mSiteJson.getJSONObject("selector").getJSONObject("site");
 			item=Selector.select(siteSelector).get(0);
 			String name=Tool.getString(mSiteJson,"name");
-			if(Tool.isEmpty(item)&&!Tool.isEmpty(name))
-				item.title=name;
 		}
 		catch(JSONException e)
 		{
@@ -142,10 +145,43 @@ public class Reptile
 		Logger.v("getSiteInfo item=%s",item);
 		return item;
 	}
+	public static void setSitesJson(JSONObject sites)
+	{
+		mAllSitesJson=sites;
+	}
+	public static List<JSONObject> getSitesJsonList()
+	{
+		if(mAllSitesJson==null)
+			return null;
+		List<JSONObject> list=null;
+		list=new LinkedList<JSONObject>();
+		Iterator<String> iterator=mAllSitesJson.keys();
+		while(iterator.hasNext())
+		{
+			try
+			{
+				String name=iterator.next();
+				JSONObject site=mAllSitesJson.getJSONObject(name);
+				list.add(site);
+			}
+			catch(JSONException e)
+			{
+				Logger.e(e);
+			}
+		}
+		return list;
+	}
+	public void setSite(int index)
+	{
+		Logger.v("setSite i="+index);
+		JSONObject site=getSitesJsonList().get(index);
+		setSite(site);
+	}
 	public void setSite(JSONObject json)
 	{
 		mSiteJson=json;
 		Connector.getInstance().putAll(mSiteJson);
+		mClassificationUrl=null;
 	}
 	public JSONObject getSiteJson()
 	{
@@ -156,28 +192,52 @@ public class Reptile
 		return false;
 	}
 	/**
-	  * 不抛异常，
-	  * 所有错误都无视，
-	  */
+	 * 不抛异常，
+	 * 所有错误都无视，
+	 */
 	public void setSearch(String sSearch)
 	{
 	}
 	public void setClassification(int index)
 	{
 	}
+	public void setClassification(String url)
+	{
+		mClassificationUrl=url;
+	}
 	/**
 	 * 耗时方法，
 	 */
 	public List<Item> getClassifications()
 	{
-		return null;
+		return getItems("classification",Connector.getInstance().getBaseurl());
 	}
 	/**
 	 * 耗时方法，
 	 */
 	public List<Item> getItems()
 	{
-		return null;
+		if(mClassificationUrl==null)
+			mClassificationUrl=getClassifications().get(0).url;
+		return getItems("item",mClassificationUrl);
+	}
+	public List<Item> getItems(String str,String url)
+	{
+		if(mSiteJson==null)
+			return null;
+		List<Item> list=null;
+		Logger.v("getItems %s",str);
+		try
+		{
+			JSONObject selectorJson=mSiteJson.getJSONObject("selector").getJSONObject(str);
+			list=Selector.select(selectorJson,url);
+		}
+		catch(JSONException e)
+		{
+			throw new RuntimeException("json中没有"+str+"的选择器",e);
+		}
+		Logger.v("item list size %d",list.size());
+		return list;
 	}
 }
 class JsGetHtml

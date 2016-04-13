@@ -81,8 +81,7 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 		try
 		{
 			JSONObject sitesJson=new JSONObject(Stream.read(this,"sites.json"));
-			mSiteJson=sitesJson.getJSONObject(sitesJson.keys().next());
-			mReptile.setSite(mSiteJson);
+			Reptile.setSitesJson(sitesJson);
 		}
 		catch(JSONException e)
 		{

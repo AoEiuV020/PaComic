@@ -5,7 +5,8 @@
 	^> Created Time: 2016/04/07 - 02:01:42
 *************************************************** */
 package com.aoeiuv020.comic;
-import com.aoeiuv020.stream.Stream;
+import com.aoeiuv020.tool.Stream;
+import com.aoeiuv020.tool.Logger;
 import com.aoeiuv020.reptile.Reptile;
 
 import android.app.Activity;
@@ -89,7 +90,11 @@ public class ClassificationFragment extends Fragment implements View.OnClickList
 		int headerCount=0;
 		if(parent instanceof ListView)
 			headerCount=((ListView)parent).getHeaderViewsCount();
-		mReptile.setClassification(position-headerCount);
+		//position-=headerCount;
+		Item item=(Item)parent.getAdapter().getItem(position);
+		Logger.v("onItemClick %s",item);
+		if(item!=null)
+			mReptile.setClassification(item.url);
 		callOnFinish();
 	}
 	private void loadClassifications()

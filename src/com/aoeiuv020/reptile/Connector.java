@@ -6,6 +6,7 @@
 *************************************************** */
 package com.aoeiuv020.reptile;
 import com.aoeiuv020.tool.Tool;
+import com.aoeiuv020.tool.Logger;
 import com.aoeiuv020.tool.Stream;
 import android.util.Log;
 import org.json.*;
@@ -18,6 +19,7 @@ public class Connector
 	private static final String TAG="aoeiuv020 Connector";
 	private String mEncoding=null;
 	private JSONObject mArgs=null;
+	private URL mLastUrl=null;
 	private Connector()
 	{
 		mArgs=new JSONObject();
@@ -29,6 +31,18 @@ public class Connector
 	 */
 	public String load(String url)
 	{
+		//mLastUrl存起来作Referer伪装用，
+		try
+		{
+			if(mLastUrl==null)
+				mLastUrl=new URL(getBaseurl());
+			else
+				mLastUrl=new URL(mLastUrl,url);
+		}
+		catch(MalformedURLException e)
+		{
+			Logger.e(e);
+		}
 		InputStream input=getInputStream(url);
 		return Stream.read(input,Tool.getString(mArgs,"encoding"));
 	}
@@ -48,12 +62,15 @@ public class Connector
 	}
 	private HttpURLConnection openConnection(String sUrl)throws IOException,MalformedURLException
 	{
-		URL url=new URL(getBaseurl());
-		url=new URL(url,sUrl);
+		if(mLastUrl==null)
+			mLastUrl=new URL(getBaseurl());
+		URL url=new URL(mLastUrl,sUrl);
 		HttpURLConnection http=(HttpURLConnection)url.openConnection();
 		String useragent=Tool.getString(mArgs,"useragent");
 		if(useragent!=null)
 			http.setRequestProperty("User-Agent",useragent);
+		if(mLastUrl!=null)
+			http.setRequestProperty("Referer",mLastUrl.toString());
 		http.setUseCaches(true);
 		return http;
 	}

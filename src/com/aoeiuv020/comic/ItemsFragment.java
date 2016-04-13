@@ -57,6 +57,8 @@ public class ItemsFragment extends Fragment implements View.OnClickListener,Adap
 	@Override
 	public void onItemClick(AdapterView<?> parent,View view,int position,long id)
 	{
+		if(parent instanceof ListView)
+			position-=((ListView)parent).getHeaderViewsCount();
 		String url=((Item)parent.getAdapter().getItem(position)).url;
 		if(Tool.isEmpty(url))
 			return;

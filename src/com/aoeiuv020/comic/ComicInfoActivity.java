@@ -5,8 +5,9 @@
 	^> Created Time: 2016/04/07 - 22:51:03
 *************************************************** */
 package com.aoeiuv020.comic;
-import com.aoeiuv020.stream.Stream;
+import com.aoeiuv020.tool.Stream;
 import com.aoeiuv020.tool.Tool;
+import com.aoeiuv020.tool.Logger;
 import com.aoeiuv020.reptile.Reptile;
 
 import android.app.Activity;
@@ -33,6 +34,7 @@ public class ComicInfoActivity extends Activity implements AdapterView.OnItemCli
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+		Logger.v("ComicInfoActivity onCreate");
         super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.layout_activity_comic_info);
@@ -61,25 +63,13 @@ public class ComicInfoActivity extends Activity implements AdapterView.OnItemCli
 	}
 	private void loadCatalog()
 	{
-		ComicInfoLoadAsyncTask task=new ComicInfoLoadAsyncTask(mReptile,mAdapter,mUrl);
+		ComicCatalogLoadAsyncTask task=new ComicCatalogLoadAsyncTask(mReptile,mAdapter,mUrl);
 		task.execute();
 	}
 	private void loadInfo()
 	{
-		//耗时操作，连网下载一个页面，
-		TextView title=(TextView)mInfo.findViewById(R.id.info_title);
-		TextView content=(TextView)mInfo.findViewById(R.id.info_content);
-		ImageView image=(ImageView)mInfo.findViewById(R.id.info_image);
-		Item item=mReptile.getComicInfo(mUrl);
-		if(item!=null)
-		{
-			if(!Tool.isEmpty(item.title))
-				title.setText(item.title);
-			if(!Tool.isEmpty(item.content))
-				content.setText(item.content);
-			if(!Tool.isEmpty(item.image))
-				ImageLoader.showImage(image,item.image);
-		}
+		ComicInfoLoadAsyncTask task=new ComicInfoLoadAsyncTask(mReptile,mInfo,mUrl);
+		task.execute();
 	}
 	private void init()
 	{
@@ -108,13 +98,13 @@ public class ComicInfoActivity extends Activity implements AdapterView.OnItemCli
 		}
 	}
 }
-class ComicInfoLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
+class ComicCatalogLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 {
 	Reptile mReptile=null;
 	ItemAdapter mAdapter=null;
 	String mUrl=null;
 	private Throwable mThrowable=null;
-	public ComicInfoLoadAsyncTask(Reptile reptile,ItemAdapter adapter,String url)
+	public ComicCatalogLoadAsyncTask(Reptile reptile,ItemAdapter adapter,String url)
 	{
 		mReptile=reptile;
 		mAdapter=adapter;
@@ -143,6 +133,52 @@ class ComicInfoLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 		if(list!=null)
 		{
 			mAdapter.addAll(list);
+		}
+	}
+}
+class ComicInfoLoadAsyncTask extends AsyncTask<Void,Integer,Item>
+{
+	Reptile mReptile=null;
+	String mUrl=null;
+	TextView mTitle=null;
+	TextView mContext=null;
+	ImageView mImageView=null;
+	private Throwable mThrowable=null;
+	public ComicInfoLoadAsyncTask(Reptile reptile,View view,String url)
+	{
+		mReptile=reptile;
+		mUrl=url;
+		mTitle=(TextView)view.findViewById(R.id.info_title);
+		mContext=(TextView)view.findViewById(R.id.info_content);
+		mImageView=(ImageView)view.findViewById(R.id.info_image);
+	}
+	@Override
+	protected Item doInBackground(Void... parms)
+	{
+		Item item=null;
+		try
+		{
+			item=mReptile.getComicInfo(mUrl);
+		}
+		catch(RuntimeException e)
+		{
+			//任何异常都表示没有内容了，
+			mThrowable=e.getCause();
+			Logger.e(e);
+		}
+		return item;
+	}
+	@Override
+	protected void onPostExecute(Item item)
+	{
+		if(item!=null)
+		{
+			if(!Tool.isEmpty(item.title))
+				mTitle.setText(item.title);
+			if(!Tool.isEmpty(item.content))
+				mContext.setText(item.content);
+			if(!Tool.isEmpty(item.image))
+				ImageLoader.showImage(mImageView,item.image);
 		}
 	}
 }

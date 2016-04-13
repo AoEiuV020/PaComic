@@ -6,6 +6,7 @@
 *************************************************** */
 package com.aoeiuv020.comic;
 import com.aoeiuv020.tool.Tool;
+import com.aoeiuv020.reptile.Connector;
 import android.widget.ImageView;
 import android.os.AsyncTask;
 import android.graphics.Bitmap;
@@ -50,8 +51,7 @@ public class ImageLoader
 		Bitmap bitmap=null;
 		try
 		{
-			URL url=new URL(str);
-			InputStream input=url.openStream();
+			InputStream input=Connector.getInstance().getInputStream(str);
 			bitmap=BitmapFactory.decodeStream(input);
 			if(bitmap!=null)
 			{

@@ -1,6 +1,5 @@
 {
 	"hanhan":{
-		"name":"汗汗",
 		"method":"GET",
 		"encoding":"GBK",
 		"useragent":"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36",
@@ -9,7 +8,9 @@
 		"baseurl":"http://www.hhxiee.cc/",
 		"selector":{
 			"site":{
-				"image":"//a//img[@src]/@src"
+				"image":"string('http://www.hhxiee.cc/images/logo01.jpg')",
+				"title":"string('汗汗漫画')",
+				"content":"string('日本漫画比较多')"
 			},
 			"search":{
 				"url":"http://somanhua.com/?key=%s",
@@ -22,26 +23,27 @@
 				"next":"div#rightmain2 div#dSABar1 a:contains(下一页)"
 			},
 			"item":{
-				"elements":"div#container > div#mainContent > div#content > div.m_list > ul.list li.list_small",
-				"a":"a:has(img)",
-				"img":"img",
-				"text":"h3",
-				"next":"div#container > div#mainContent > div#content > div.replz a:contains(下一页)"
+				"elements":"//div[@id='container']/div[@id='mainContent']/div[@id='content']/div[@class='m_list']/ul[@class='list']/li[@class='list_small']",
+				"url":".//a[img]/@href",
+				"image":".//img/@src",
+				"title":".//h3/a/text()",
+				"content":".//img/@alt",
+				"next":"//div[@id='container']/div[@id='mainContent']/div[@id='content']/div[@class='replz']//a[contains(text(),'下一页')]/@href"
 			},
 			"classification":{
-				"elements":"div#container > div#menu a",
-				"a":":root",
-				"text":":root"
+				"elements":"//div[@id='container']/div[@id='menu']//a",
+				"url":"./@href",
+				"title":".//text()"
 			},
 			"info":{
-				"img":"div#content div.replc table tbody tr td:has(img) img",
-				"text":"div#content div.replc table tbody tr td img:not(img)",
-				"content":"div#content div.replc table tbody tr td div.2replh"
+				"image":"//div[@id='content']/div[@class='replc']/table/tbody/tr/td[img]//img/@src",
+				"title":"//div[@id='content']/div[@class='replc']/table/tbody/tr/td/img/@alt",
+				"content":"//div[@id='content']/div[@class='replc']/table/tbody/tr/td/b/text()"
 			},
 			"catalog":{
-				"elements":"div.vol > ul.bi li",
-				"a":"a",
-				"text":"a"
+				"elements":"//div[@id='content']/div[@class='vol']/ul[@class='bi']/li",
+				"url":"./a/@href",
+				"title":"./a/text()"
 			},
 			"page":{
 				"js":"true",
@@ -53,7 +55,7 @@
 		"comment.name":"网站的名字，先找selector.site.text，没有就找这个name,再没有就和当前对象的名字一样，",
 		"name":"1kkk极速漫画",
 		"comment.encoding":"网站的编码，",
-		"encoding":"GBK",
+		"encoding":"UTF-8",
 		"comment.method":"网站请求方式，正常只要GET就可以，不写默认就是GET",
 		"method":"GET",
 		"comment.useragent":"网站请求使用的ua，默认就是这个，windows+chrome",
@@ -61,7 +63,6 @@
 		"comment.timeout":"超时时间，毫秒，默认3000",
 		"timeout":"5000",
 		"comment.baseuri":"网站根地址，",
-		"baseuri":"http://www.1kkk.com/",
 		"baseurl":"http://www.1kkk.com/",
 		"comment.main":"主页的爬虫配置，",
 		"selector":{
@@ -70,7 +71,8 @@
 				"comment.elements":"因为只选一个，所以不需要elements，",
 				"comment.img.text.content":"网站的图标，标题，详情，",
 				"image":"//div[@class='k200 z']/a/img/@src",
-				"content":"//span[@id='lj_lv']/text()]"
+				"title":"string('1kkk极速漫画')",
+				"content":"//div[@class='main']//div[@id='hy']//span[@class='lj_lv']/text()"
 			},
 			"comment.search":"搜索页面的选择器，",
 			"search":{
@@ -89,33 +91,32 @@
 			},
 			"comment.item":"在具体分类的页面里选择漫画列表元素的选择器，",
 			"item":{
-				"elements":"div.main ul.in_01 li p.cover",
-				"a":"a",
-				"img":"img",
-				"text":"a",
-				"content":"span.lj_h1",
+				"elements":"//div[@class='main']//ul[@class='in_01']/li/p[@class='cover']",
+				"url":"./a/@href",
+				"image":"./a/img/@src",
+				"title":"./a/text()[2]",
+				"content":"concat(./span[@class='lj_h1']/a/text(),./text())",
 				"next":"div.main div#search_fy a:contains(下一页)"
 			},
 			"comment.classification":"具体分类的选择器，这是决定分类所在的链接，",
 			"classification":{
-				"elements":"div.k980 ul.nav li:not(.on)",
-				"a":"a",
-				"img":"null",
-				"text":"span"
+				"elements":"//div[@class='k980']//ul[@class='nav']//li[@class!='on']",
+				"url":"./a/@href",
+				"title":"./a/span/text()"
 			},
 			"comment.info":"漫画详情页的选择器，",
 			"info":{
-				"img":"div.main > div.sy_k div:eq(0) img",
-				"text":"div.main div.sy_k21 span.y h1",
-				"content":"div.main ul li[class=mt10 z555]"
+				"image":"//div[@class='main']/div[@class='sy_k']/div/img/@src",
+				"title":"//div[@class='main']/div[@class='sy_k']/div/div/h1/text()",
+				"content":"//div[@class='main']/div[@class='sy_k']/div/ul/li[@class='mt10 z555']/text()"
 			},
 			"comment.catalog":"漫画目录的选择器，",
 			"catalog":{
-				"elements":"div.main div#cp_a1 ul li:has(a.tg)",
-				"a":"a",
-				"img":"img",
-				"text":"a",
-				"content":":root"
+				"elements":"//div[@class='main']/div[@id='cp_a1']/ul/li",
+				"url":"./a/@href",
+				"image":"./a/img/@src",
+				"title":"./a/text()",
+				"content":"concat(./text(),./span/text())"
 			},
 			"comment.page":"漫画页面的选择器，",
 			"page":{

@@ -80,18 +80,11 @@ public class SiteFragment extends Fragment implements View.OnClickListener,Adapt
 	@Override
 	public void onItemClick(AdapterView<?> parent,View view,int position,long id)
 	{
-		try
-		{
-			int headerCount=0;
-			if(parent instanceof ListView)
-				headerCount=((ListView)parent).getHeaderViewsCount();
-			JSONObject site=mSitesJson.getJSONObject(mSitesJson.names().getString(position-headerCount));
-			mReptile.setSite(site);
-		}
-		catch(JSONException e)
-		{
-			Logger.e(e);
-		}
+		int headerCount=0;
+		if(parent instanceof ListView)
+			headerCount=((ListView)parent).getHeaderViewsCount();
+		position=position-headerCount;
+		mReptile.setSite(position);
 		callOnFinish();
 	}
 	public void setOnTaskFinishListener(OnTaskFinishListener listener)
@@ -142,7 +135,7 @@ class SiteLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 		List<Item> list=null;
 		try
 		{
-			list=Reptile.getSites(mSitesJson);
+			list=Reptile.getSites();
 		}
 		catch(RuntimeException e)
 		{

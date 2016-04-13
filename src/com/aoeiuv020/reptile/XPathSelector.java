@@ -59,6 +59,7 @@ public class XPathSelector implements SelectorInterface
 			for(int i=0;i<nodes.getLength();++i)
 			{
 				list.add(nodes.item(i));
+				Logger.v("selectElements %s",nodes.item(i));
 			}
 		}
 		catch(XPathExpressionException e)
@@ -72,9 +73,7 @@ public class XPathSelector implements SelectorInterface
 		String result=null;
 		try
 		{
-			Logger.v("selectString %s %s",query,html.getClass().getName());
 			result=mXPath.evaluate(query,html,XPathConstants.STRING).toString();
-			Logger.v("result %s",result);
 		}
 		catch(XPathExpressionException e)
 		{

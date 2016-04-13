@@ -20,11 +20,10 @@ public class Tool
 				return true;
 			if(object instanceof CharSequence)
 				return "".equals(object);
-			if(object instanceof TextView)
-				return "".equals(((TextView)object).getText());
 		}
 		catch(Exception e)
 		{
+			Logger.v("%s is empty",object);
 			//不抛异常;
 			return true;
 		}

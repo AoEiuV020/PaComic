@@ -1,0 +1,1 @@
+adb push assets/sites.json /data/data/com.aoeiuv020.comic/files/sites.json

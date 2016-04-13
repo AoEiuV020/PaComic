@@ -54,16 +54,15 @@ public class Selector
 		}
 		else
 			elements=mSelectorInterface.selectElements(elementsQuery,html);
+		if(elements==null)
+			return null;
 		Item item=null;
 		for(Object e:elements)
 		{
-			Logger.v("select %s %s",url,e.getClass().getName());
 			item=new Item();
 			Field[] fields=Item.class.getFields();
-			Logger.v("fields length %d",fields.length);
 			for(Field f:fields)
 			{
-				Logger.v("fileds %s",f);
 				String fName=f.getName();
 				String fQuery=Tool.getString(json,fName);
 				try
@@ -75,6 +74,7 @@ public class Selector
 					Logger.e(ee);
 				}
 			}
+			Logger.v("select item=%s",item);
 			list.add(item);
 		}
 		return list;
