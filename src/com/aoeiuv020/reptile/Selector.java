@@ -11,12 +11,9 @@ import com.aoeiuv020.tool.Tool;
 import com.aoeiuv020.tool.Logger;
 import android.content.*;
 import android.util.Log;
-import org.json.*;
-import org.jsoup.*;
-import org.jsoup.nodes.*;
-import org.jsoup.select.Elements;
 import java.lang.reflect.Field;
 import java.util.*;
+import org.json.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.ByteArrayInputStream;
@@ -26,9 +23,6 @@ import java.io.IOException;
 public class Selector
 {
 	private static SelectorInterface mSelectorInterface=new XPathSelector();
-	public Selector(JSONObject json,Connection parmConnection,Element parmElement)
-	{
-	}
 	/**
 	 * 耗时方法，
 	 */
@@ -39,21 +33,33 @@ public class Selector
 	/**
 	 * 耗时方法，
 	 */
+	public static String select(String query,String url)
+	{
+		List<Item> list=new LinkedList<Item>();
+		String html=Connector.getInstance().load(url);
+		Object root=mSelectorInterface.getDocument(html);
+		String result=mSelectorInterface.selectString(query,root);
+		return result;
+	}
+	/**
+	 * 耗时方法，
+	 */
 	public static List<Item> select(JSONObject json,String url)
 	{
 		if(Tool.isEmpty(url))
 			return null;
 		List<Item> list=new LinkedList<Item>();
 		String html=Connector.getInstance().load(url);
+		Object root=mSelectorInterface.getDocument(html);
 		String elementsQuery=Tool.getString(json,"elements");
 		List<Object> elements=null;
 		if(Tool.isEmpty(elementsQuery))
 		{
 			elements=new LinkedList<Object>();
-			elements.add(mSelectorInterface.getDocument(html));
+			elements.add(root);
 		}
 		else
-			elements=mSelectorInterface.selectElements(elementsQuery,html);
+			elements=mSelectorInterface.selectElements(elementsQuery,root);
 		if(elements==null)
 			return null;
 		Item item=null;
@@ -74,9 +80,9 @@ public class Selector
 					Logger.e(ee);
 				}
 			}
-			Logger.v("select item=%s",item);
 			list.add(item);
 		}
+		Logger.v("select %s",list);
 		return list;
 	}
 	public String toString()

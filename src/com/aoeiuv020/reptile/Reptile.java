@@ -18,9 +18,6 @@ import android.webkit.*;
 import android.view.*;
 import android.util.Log;
 import org.json.*;
-import org.jsoup.*;
-import org.jsoup.nodes.*;
-import org.jsoup.select.Elements;
 import java.util.*;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -35,13 +32,14 @@ import java.io.IOException;
   * reptile.loadNext(); //耗时，不抛异常，返回是否有Next,boolean
   * reptile.setClassification(3); //设置分类，不耗时，
   * List<Item> classList=reptile.getClassifications(); //耗时，
-  */
+ */
 public class Reptile
 {
 	private String mClassificationUrl=null;
 	private static Context mContext=null;
 	private JSONObject mSiteJson=null;
 	private static JSONObject mAllSitesJson=null;
+	private String mMode=null;
 	public Reptile()
 	{
 	}
@@ -57,10 +55,6 @@ public class Reptile
 	/**
 	 * 耗时方法，
 	 */
-	private Document getHtmlJavascriptEnable(String str)
-	{
-		return null;
-	}
 	private WebView mWebView=null;
 	public void setNextPageUrl(String url)
 	{
@@ -130,19 +124,9 @@ public class Reptile
 	{
 		if(mSiteJson==null)
 			return null;
-		Item item=new Item();
-		Logger.v("getSiteInfo ");
-		try
-		{
-			JSONObject siteSelector=mSiteJson.getJSONObject("selector").getJSONObject("site");
-			item=Selector.select(siteSelector).get(0);
-			String name=Tool.getString(mSiteJson,"name");
-		}
-		catch(JSONException e)
-		{
-			throw new RuntimeException("json中没有网站信息的选择器",e);
-		}
-		Logger.v("getSiteInfo item=%s",item);
+		Item item=null;
+		item=getItems("site").get(0);
+		Logger.v("getSiteInfo %s",item);
 		return item;
 	}
 	public static void setSitesJson(JSONObject sites)
@@ -189,7 +173,24 @@ public class Reptile
 	}
 	public boolean loadNext()
 	{
-		return false;
+		Logger.v("loadNext %s",mClassificationUrl);
+		if(mSiteJson==null||Tool.isEmpty(mClassificationUrl))
+			return false;
+		String next=null;
+		try
+		{
+			String query=mSiteJson.getJSONObject("selector").getJSONObject(mMode).getString("next");
+			next=Selector.select(query,mClassificationUrl);
+		}
+		catch(JSONException e)
+		{
+			throw new RuntimeException("json中没有"+mMode+"的选择器",e);
+		}
+		Logger.v("loadNext ok %s",next);
+		if(next==null||next.equals(mClassificationUrl))
+			return false;
+		mClassificationUrl=next;
+		return true;
 	}
 	/**
 	 * 不抛异常，
@@ -197,6 +198,7 @@ public class Reptile
 	 */
 	public void setSearch(String sSearch)
 	{
+		mMode="search";
 	}
 	public void setClassification(int index)
 	{
@@ -204,6 +206,7 @@ public class Reptile
 	public void setClassification(String url)
 	{
 		mClassificationUrl=url;
+		mMode="item";
 	}
 	/**
 	 * 耗时方法，
@@ -218,8 +221,12 @@ public class Reptile
 	public List<Item> getItems()
 	{
 		if(mClassificationUrl==null)
-			mClassificationUrl=getClassifications().get(0).url;
-		return getItems("item",mClassificationUrl);
+			setClassification(getClassifications().get(0).url);
+		return getItems(mMode,mClassificationUrl);
+	}
+	public List<Item> getItems(String str)
+	{
+		return getItems(str,Connector.getInstance().getBaseurl());
 	}
 	public List<Item> getItems(String str,String url)
 	{
@@ -236,7 +243,6 @@ public class Reptile
 		{
 			throw new RuntimeException("json中没有"+str+"的选择器",e);
 		}
-		Logger.v("item list size %d",list.size());
 		return list;
 	}
 }

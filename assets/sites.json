@@ -96,7 +96,7 @@
 				"image":"./a/img/@src",
 				"title":"./a/text()[2]",
 				"content":"concat(./span[@class='lj_h1']/a/text(),./text())",
-				"next":"div.main div#search_fy a:contains(下一页)"
+				"next":"//div[@class='main']//div[@id='search_fy']//a[contains(text(),'下一页')]/@href"
 			},
 			"comment.classification":"具体分类的选择器，这是决定分类所在的链接，",
 			"classification":{

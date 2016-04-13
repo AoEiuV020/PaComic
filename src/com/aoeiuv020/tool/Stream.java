@@ -19,6 +19,8 @@ public class Stream
 	}
 	public static String read(InputStream input,String charset)
 	{
+		if(Tool.isEmpty(input))
+			return "";
 		if(Tool.isEmpty(charset))
 			charset=defaultEncoding;
 		String result="";
@@ -34,6 +36,8 @@ public class Stream
 	}
 	public static String read(Reader input)
 	{
+		if(Tool.isEmpty(input))
+			return "";
 		StringBuffer sb=new StringBuffer();
 		char[] buf=new char[bufLenght];
 		int len=0;

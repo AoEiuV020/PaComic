@@ -59,8 +59,8 @@ public class XPathSelector implements SelectorInterface
 			for(int i=0;i<nodes.getLength();++i)
 			{
 				list.add(nodes.item(i));
-				Logger.v("selectElements %s",nodes.item(i));
 			}
+			Logger.v("selectElements %s",nodes);
 		}
 		catch(XPathExpressionException e)
 		{}

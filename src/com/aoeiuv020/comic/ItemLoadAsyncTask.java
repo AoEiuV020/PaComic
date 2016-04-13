@@ -41,7 +41,8 @@ public class ItemLoadAsyncTask extends AsyncTask<Integer,Integer,List<Item>>
 			switch(parms[0])
 			{
 				case NEXT:
-					mReptile.loadNext();
+					if(!mReptile.loadNext())
+						break;
 				case FIRST:
 					list=mReptile.getItems();
 					break;
