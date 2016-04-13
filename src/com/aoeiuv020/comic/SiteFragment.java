@@ -6,6 +6,7 @@
 *************************************************** */
 package com.aoeiuv020.comic;
 import com.aoeiuv020.stream.Stream;
+import com.aoeiuv020.tool.Logger;
 import com.aoeiuv020.reptile.Reptile;
 
 import android.app.Activity;
@@ -68,6 +69,7 @@ public class SiteFragment extends Fragment implements View.OnClickListener,Adapt
 		}
 		catch(JSONException e)
 		{
+			Logger.e(e);
 			callOnFinish();
 		}
 	}
@@ -88,7 +90,7 @@ public class SiteFragment extends Fragment implements View.OnClickListener,Adapt
 		}
 		catch(JSONException e)
 		{
-			throw new RuntimeException(e);
+			Logger.e(e);
 		}
 		callOnFinish();
 	}
@@ -146,8 +148,7 @@ class SiteLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 		{
 			//任何异常都表示没有内容了，
 			mThrowable=e.getCause();
-			if(Main.DEBUG)
-				throw e;
+			Logger.e(e);
 		}
 		return list;
 	}

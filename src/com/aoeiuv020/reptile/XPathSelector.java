@@ -73,13 +73,12 @@ public class XPathSelector implements SelectorInterface
 		try
 		{
 			Logger.v("selectString %s %s",query,html.getClass().getName());
-			result=(String)mXPath.evaluate(query,html,XPathConstants.STRING);
+			result=mXPath.evaluate(query,html,XPathConstants.STRING).toString();
 			Logger.v("result %s",result);
 		}
 		catch(XPathExpressionException e)
 		{
-			if(Logger.DEBUG)
-				throw new RuntimeException(e);
+			Logger.e(e);
 		}
 		return result;
 	}

@@ -84,7 +84,6 @@ public class Reptile
 	}
 	/**
 	 * 耗时方法，
-	 * 整个过程其实也可以在其他类里执行，
 	 */
 	public static List<Item> getSites(JSONObject sitesJson)
 	{
@@ -107,8 +106,7 @@ public class Reptile
 			catch(Exception e)
 			{
 				//无视任何错误，
-				if(Logger.DEBUG)
-					throw new RuntimeException(e);
+				Logger.e(e);
 			}
 			finally
 			{
@@ -116,6 +114,7 @@ public class Reptile
 				//毕竟只是网站信息爬不出来，说不定网站其他还能爬的，
 				list.add(item);
 			}
+			Logger.v("getSiteInfo "+item);
 		}
 		return list;
 	}

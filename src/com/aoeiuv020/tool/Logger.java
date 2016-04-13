@@ -18,4 +18,10 @@ public class Logger
 		if(DEBUG)
 			Log.v(TAG,String.format(format+"\n",parms));
 	}
+	public static void e(Throwable throwable)
+	{
+		v("e "+throwable);
+		if(DEBUG)
+			throw new RuntimeException(throwable);
+	}
 }

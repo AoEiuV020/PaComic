@@ -72,8 +72,7 @@ public class Selector
 				}
 				catch(IllegalAccessException ee)
 				{
-					if(Logger.DEBUG)
-						throw new RuntimeException(ee);
+					Logger.e(ee);
 				}
 			}
 			list.add(item);

@@ -4,3 +4,4 @@ obj/
 screen.png
 ant.properties
 .keystore
+nohup.out
