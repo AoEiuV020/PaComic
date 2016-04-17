@@ -7,9 +7,12 @@
 package com.aoeiuv020.tool;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.util.Log;
 import java.io.*;
 public class Stream
 {
+	public static final boolean DEBUG=false;
+	public static final String TAG="aoeiuv020 Strem";
 	public static final String UTF8="UTF-8";
 	public static String defaultEncoding=UTF8;
 	public static int bufLenght=4096;
@@ -208,6 +211,8 @@ public class Stream
 		}
 		catch(FileNotFoundException e)
 		{
+			if(DEBUG)
+				Log.e(TAG,""+e);
 		}
 		return result;
 	}

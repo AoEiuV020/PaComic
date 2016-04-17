@@ -6,6 +6,7 @@
 *************************************************** */
 package com.aoeiuv020.reptile;
 import com.aoeiuv020.tool.Logger;
+import com.aoeiuv020.tool.Stream;
 import android.os.*;
 import android.view.*;
 import android.content.*;
@@ -30,6 +31,7 @@ public class WebViewDaemon
 	public void setWebView(WebView webview)
 	{
 		mWebView=webview;
+		mContext=mWebView.getContext();
 		init();
 	}
 	public void setContext(Context context)
@@ -72,6 +74,7 @@ public class WebViewDaemon
 		{
 			Logger.v("%s",e);
 		}
+		Logger.v("%s",holder.string);
 		return holder.string;
 	}
 	class StringHolder
@@ -124,6 +127,7 @@ public class WebViewDaemon
 		private StringHolder mHolder;
 		private MyThread mThread;
 		private WebView mWebView;
+		private int count=0;
 		public JsLoadNext(WebView w)
 		{
 			mWebView=w;
@@ -145,6 +149,8 @@ public class WebViewDaemon
 			//if(mHolder!=null)
 				mHolder.string=html;
 			Logger.v("setHtml %s,%d",mHolder,html.length());
+			Stream.write(mContext,"html"+count,html,"UTF-8");
+			++count;
 			mThread.interrupt();
 		}
 	}
@@ -194,6 +200,7 @@ public class WebViewDaemon
 		public boolean shouldOverrideUrlLoading(WebView view,String url)
 		{
 			Logger.v("%s","shouldOverrideUrlLoading url="+url);
+			view.loadUrl(url);
 			return true;
 		}
 	}

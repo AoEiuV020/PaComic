@@ -62,9 +62,9 @@ public class Reptile
 	 */
 	public List<Item> getPages(String str)
 	{
-		if(PageUrl==null)
-			PageUrl=str;
-		List<Item> list=getItems("page",PageUrl);
+		if(str==null)
+			str=PageUrl;
+		List<Item> list=getItems("page",str);
 		return list;
 	}
 	public boolean loadNextPage()
@@ -90,7 +90,7 @@ public class Reptile
 			throw new RuntimeException("json中没有"+mMode+"的选择器",e);
 		}
 		Logger.v("loadNext ok %s",next);
-		if(next==null||next.equals(PageUrl))
+		if(next==null)
 		{
 			Logger.v("no next");
 			PageUrl=null;

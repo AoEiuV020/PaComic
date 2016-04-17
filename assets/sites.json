@@ -47,7 +47,6 @@
 			},
 			"page":{
 				"jsenable":"true",
-				"title":"//img/@src",
 				"image":"//img[@id='ComicPic']/@src",
 				"next":"string('javascript:nextpage()')"
 			}
@@ -122,8 +121,9 @@
 			},
 			"comment.page":"漫画页面的选择器，",
 			"page":{
-				"js":"true",
-				"img":"img#cpimg"
+				"jsenable":"true",
+				"image":"//img[@id='cpimg']/@src",
+				"next":"string(\"javascript:document.getElementById('next').click()\")"
 			}
 		}
 	}

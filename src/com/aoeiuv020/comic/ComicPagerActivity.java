@@ -41,10 +41,10 @@ public class ComicPagerActivity extends Activity implements AdapterView.OnItemCl
 		if(Main.DEBUG)
 			System.out.println("onCreate "+this);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		WebViewDaemon.getInstance().setContext(this);
         setContentView(R.layout.layout_activity_comic_pager);
 		mWebView=(WebView)findViewById(R.id.webview);
-		mWebView.setVisibility(View.GONE);
+		WebViewDaemon.getInstance().setWebView(mWebView);
+		//mWebView.setVisibility(View.GONE);
 		ListView listView=(ListView)findViewById(R.id.listview);
 		mAdapter=new ItemAdapter(this,R.layout.layout_page,null,R.id.page_image);
 		listView.setAdapter(mAdapter);
@@ -117,8 +117,9 @@ class ComicPageLoadAsyncTask extends AsyncTask<Integer,Integer,List<Item>>
 			switch(parms[0])
 			{
 				case NEXT:
-					if(!mReptile.loadNextPage())
-						break;
+					if(mReptile.loadNextPage())
+						list=mReptile.getPages(null);
+					break;
 				case FIRST:
 					list=mReptile.getPages(mUrl);
 					break;
