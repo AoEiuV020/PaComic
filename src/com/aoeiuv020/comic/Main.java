@@ -8,6 +8,7 @@ package com.aoeiuv020.comic;
 import com.aoeiuv020.stream.Stream;
 import com.aoeiuv020.widget.SimpleDialog;
 import com.aoeiuv020.reptile.Reptile;
+import com.aoeiuv020.reptile.WebViewDaemon;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -37,6 +38,7 @@ public class Main extends Activity implements BottomFragment.OnItemClickListener
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
 		mReptile=new Reptile(this);
+		WebViewDaemon.getInstance().setContext(this);
 		setDefaultSite();
 		setDefaultFragment();
     }

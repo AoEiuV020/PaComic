@@ -49,7 +49,6 @@ public class XPathSelector implements SelectorInterface
 	}
 	public List<Object> selectElements(String query,Object html)
 	{
-		Logger.v("selectElements %s",query);
 		if(Tool.isEmpty(query)||Tool.isEmpty(html))
 			return null;
 		List<Object> list=null;
@@ -70,7 +69,6 @@ public class XPathSelector implements SelectorInterface
 	{
 		if(Tool.isEmpty(query)||Tool.isEmpty(html))
 			return null;
-		Logger.v("selectString %s",query);
 		String result=null;
 		try
 		{

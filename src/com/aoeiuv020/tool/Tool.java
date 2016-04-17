@@ -55,6 +55,18 @@ public class Tool
 		}
 		return result;
 	}
+	public static Integer getInt(JSONObject json,String key)
+	{
+		Integer result=null;
+		try
+		{
+			result=json.getInt(key);
+		}
+		catch(JSONException e)
+		{
+		}
+		return result;
+	}
 	public static boolean isEmpty(JSONObject json,String str)
 	{
 		return isEmpty(getString(json,str));

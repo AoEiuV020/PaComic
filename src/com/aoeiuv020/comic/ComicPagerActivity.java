@@ -8,6 +8,7 @@ package com.aoeiuv020.comic;
 import com.aoeiuv020.stream.Stream;
 import com.aoeiuv020.tool.Tool;
 import com.aoeiuv020.reptile.Reptile;
+import com.aoeiuv020.reptile.WebViewDaemon;
 
 import android.app.Activity;
 import android.util.Log;
@@ -40,6 +41,7 @@ public class ComicPagerActivity extends Activity implements AdapterView.OnItemCl
 		if(Main.DEBUG)
 			System.out.println("onCreate "+this);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		WebViewDaemon.getInstance().setContext(this);
         setContentView(R.layout.layout_activity_comic_pager);
 		mWebView=(WebView)findViewById(R.id.webview);
 		mWebView.setVisibility(View.GONE);
@@ -57,7 +59,7 @@ public class ComicPagerActivity extends Activity implements AdapterView.OnItemCl
 	private void loadPages()
 	{
 		ComicPageLoadAsyncTask task=new ComicPageLoadAsyncTask(mReptile,mAdapter,mUrl);
-		task.execute();
+		task.execute(ComicPageLoadAsyncTask.FIRST);
 	}
 	@Override
 	public void onItemClick(AdapterView<?> parent,View view,int position,long id)
@@ -90,12 +92,14 @@ public class ComicPagerActivity extends Activity implements AdapterView.OnItemCl
 		}
 	}
 }
-class ComicPageLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
+class ComicPageLoadAsyncTask extends AsyncTask<Integer,Integer,List<Item>>
 {
 	Reptile mReptile=null;
 	ItemAdapter mAdapter=null;
 	String mUrl=null;
 	private Throwable mThrowable=null;
+	public static final int FIRST=0;
+	public static final int NEXT=1;
 	public ComicPageLoadAsyncTask(Reptile reptile,ItemAdapter adapter,String url)
 	{
 		if(Main.DEBUG)
@@ -105,14 +109,20 @@ class ComicPageLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 		mUrl=url;
 	}
 	@Override
-	protected List<Item> doInBackground(Void... parms)
+	protected List<Item> doInBackground(Integer... parms)
 	{
-		if(Main.DEBUG)
-			Log.v(""+this,"doInBackground "+mUrl);
 		List<Item> list=null;
 		try
 		{
-			list=mReptile.getPages(mUrl);
+			switch(parms[0])
+			{
+				case NEXT:
+					if(!mReptile.loadNextPage())
+						break;
+				case FIRST:
+					list=mReptile.getPages(mUrl);
+					break;
+			}
 		}
 		catch(RuntimeException e)
 		{
@@ -132,7 +142,7 @@ class ComicPageLoadAsyncTask extends AsyncTask<Void,Integer,List<Item>>
 				Log.v(""+this,"img="+list.get(0).image);
 			mAdapter.addAll(list);
 			ComicPageLoadAsyncTask task=new ComicPageLoadAsyncTask(mReptile,mAdapter,mUrl);
-			task.execute();
+			task.execute(NEXT);
 		}
 	}
 }

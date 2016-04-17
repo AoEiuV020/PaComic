@@ -53,17 +53,51 @@ public class Reptile
 	{
 		mContext=context;
 	}
-	/**
-	 * 耗时方法，
-	 */
-	private WebView mWebView=null;
 	public void setNextPageUrl(String url)
 	{
 	}
 	private String PageUrl=null;
+	/**
+	 * 耗时方法，
+	 */
 	public List<Item> getPages(String str)
 	{
-		return null;
+		if(PageUrl==null)
+			PageUrl=str;
+		List<Item> list=getItems("page",PageUrl);
+		return list;
+	}
+	public boolean loadNextPage()
+	{
+		Logger.v("loadNextPage ");
+		if(mSiteJson==null)
+			return false;
+		String next=null;
+		try
+		{
+			String query=mSiteJson.getJSONObject("selector").getJSONObject("page").getString("next");
+			String sJs=mSiteJson.getJSONObject("selector").getJSONObject("page").getString("jsenable");
+			boolean bJs=false;
+			if(sJs!=null&&sJs.equals("true"))
+			{
+				bJs=true;
+			}
+			Logger.v("query=%s,js=%s,bjs=%s",query,sJs,bJs);
+			next=Selector.select(query,null,bJs);
+		}
+		catch(JSONException e)
+		{
+			throw new RuntimeException("json中没有"+mMode+"的选择器",e);
+		}
+		Logger.v("loadNext ok %s",next);
+		if(next==null||next.equals(PageUrl))
+		{
+			Logger.v("no next");
+			PageUrl=null;
+			return false;
+		}
+		PageUrl=next;
+		return true;
 	}
 	/**
 	 * 耗时方法，
@@ -181,13 +215,19 @@ public class Reptile
 		try
 		{
 			String query=mSiteJson.getJSONObject("selector").getJSONObject(mMode).getString("next");
-			next=Selector.select(query,mClassificationUrl);
+			String sJs=mSiteJson.getJSONObject("selector").getJSONObject("page").getString("jsenable");
+			boolean bJs=false;
+			if(sJs!=null&&sJs.equals("true"))
+			{
+				bJs=true;
+			}
+			next=Selector.select(query,mClassificationUrl,bJs);
 		}
 		catch(JSONException e)
 		{
 			throw new RuntimeException("json中没有"+mMode+"的选择器",e);
 		}
-		Logger.v("loadNext ok %s",next);
+		Logger.v("loadNextPage ok %s",next);
 		if(next==null||next.equals(mClassificationUrl))
 			return false;
 		mClassificationUrl=next;
@@ -270,50 +310,4 @@ public class Reptile
 		}
 		return list;
 	}
-}
-class JsGetHtml
-{
-	private String mHtml=null;
-	private Thread mThread=null;
-	private StringHolder mHolder=null;
-	public JsGetHtml(Thread thread,StringHolder holder)
-	{
-	}
-	@JavascriptInterface
-	public void setHtml(String html)
-	{
-	}
-}
-class JsGetNext
-{
-	private String mHtml=null;
-	private Thread mThread=null;
-	private StringHolder mHolder=null;
-	public JsGetNext(Thread thread,StringHolder holder)
-	{
-	}
-	@JavascriptInterface
-	public void setUrl(String url)
-	{
-	}
-}
-class MyWebViewClient extends WebViewClient
-{
-	private Reptile mReptile=null;
-	public MyWebViewClient(Reptile reptile)
-	{
-	}
-	@Override
-	public void onPageFinished(WebView view,String url)
-	{
-	}
-	@Override
-	public boolean shouldOverrideUrlLoading(WebView view,String url)
-	{
-		return false;
-	}
-}
-class StringHolder
-{
-	public String string;
 }

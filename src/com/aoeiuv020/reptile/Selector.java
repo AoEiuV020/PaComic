@@ -33,12 +33,21 @@ public class Selector
 	/**
 	 * 耗时方法，
 	 */
-	public static String select(String query,String url)
+	public static String select(String query,String url,boolean jsEnable)
 	{
 		List<Item> list=new LinkedList<Item>();
-		String html=Connector.getInstance().load(url);
+		String html=null;
+		if(url!=null)
+		{
+			if(jsEnable)
+				Connector.getInstance().loadWithJs(url,4000);
+			else
+				Connector.getInstance().load(url);
+		}
+		html=Connector.getInstance().getHtml();
 		Object root=mSelectorInterface.getDocument(html);
 		String result=mSelectorInterface.selectString(query,root);
+		Logger.v("query=%s,url=%s,jsEnable=",query,url,jsEnable);
 		return result;
 	}
 	/**
@@ -46,10 +55,22 @@ public class Selector
 	 */
 	public static List<Item> select(JSONObject json,String url)
 	{
-		if(Tool.isEmpty(url))
+		if(json==null)
 			return null;
 		List<Item> list=new LinkedList<Item>();
-		String html=Connector.getInstance().load(url);
+		String html=null;
+		Integer timeout=Tool.getInt(json,"timeout");
+		if(timeout==null||timeout<=0)
+			timeout=4000;
+		String jsenable=Tool.getString(json,"jsenable");
+		if(url!=null)
+		{
+			if(jsenable!=null&&jsenable.equals("true"))
+				Connector.getInstance().loadWithJs(url,timeout);
+			else
+				Connector.getInstance().load(url);
+		}
+		html=Connector.getInstance().getHtml();
 		Object root=mSelectorInterface.getDocument(html);
 		String elementsQuery=Tool.getString(json,"elements");
 		List<Object> elements=null;

@@ -46,8 +46,10 @@
 				"title":"./a/text()"
 			},
 			"page":{
-				"js":"true",
-				"img":"img#ComicPic"
+				"jsenable":"true",
+				"title":"//img/@src",
+				"image":"//img[@id='ComicPic']/@src",
+				"next":"string('javascript:nextpage()')"
 			}
 		}
 	},

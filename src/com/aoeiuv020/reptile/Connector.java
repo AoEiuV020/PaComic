@@ -9,6 +9,8 @@ import com.aoeiuv020.tool.Tool;
 import com.aoeiuv020.tool.Logger;
 import com.aoeiuv020.tool.Stream;
 import android.util.Log;
+import android.webkit.*;
+import android.content.Context;
 import org.json.*;
 import java.util.*;
 import java.net.*;
@@ -20,31 +22,62 @@ public class Connector
 	private String mEncoding=null;
 	private JSONObject mArgs=null;
 	private URL mLastUrl=null;
+	private Context mContext=null;
+	private String mHtml=null;
 	private Connector()
 	{
 		mArgs=new JSONObject();
 		Tool.put(mArgs,"encoding","UTF-8");
 		Tool.put(mArgs,"useragent","Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36");
 	}
+	public void setContext(Context context)
+	{
+		mContext=context;
+	}
 	/**
 	 * 耗时方法，
+	 * 后台开个WebView处理Js,
 	 */
-	public String load(String url)
+	public void loadWithJs(String url,int timeout)
 	{
 		//mLastUrl存起来作Referer伪装用，
 		try
 		{
 			if(mLastUrl==null)
 				mLastUrl=new URL(getBaseurl());
-			else
-				mLastUrl=new URL(mLastUrl,url);
+			mLastUrl=new URL(mLastUrl,url);
+			url=mLastUrl.toString();
+		}
+		catch(MalformedURLException e)
+		{
+		}
+		mHtml=WebViewDaemon.getInstance().load(url,timeout);
+	}
+	/**
+	 * 不耗时方法，
+	 */
+	public String getHtml()
+	{
+		return mHtml;
+	}
+	/**
+	 * 耗时方法，
+	 */
+	public void load(String url)
+	{
+		//mLastUrl存起来作Referer伪装用，
+		try
+		{
+			if(mLastUrl==null)
+				mLastUrl=new URL(getBaseurl());
+			mLastUrl=new URL(mLastUrl,url);
 		}
 		catch(MalformedURLException e)
 		{
 			Logger.e(e);
 		}
 		InputStream input=getInputStream(url);
-		return Stream.read(input,Tool.getString(mArgs,"encoding"));
+		mHtml=Stream.read(input,Tool.getString(mArgs,"encoding"));
 	}
 	public String getEncoding()
 	{
