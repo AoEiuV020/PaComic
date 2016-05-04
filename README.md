@@ -11,11 +11,11 @@
 然后爬出漫画，  
 计划未来要支持大多数漫画网站，  
 【涉及技术】  
-1. 解析json,解析html,
-2. Fragment实现多标签的Activity，
-3. ListView和BaseAdapter的使用，
-4. AsyncTask异步加载数据和图片，
-5. 利用后台WebView处理javascript，
+1. 解析json,解析html,  
+2. Fragment实现多标签的Activity，  
+3. ListView和BaseAdapter的使用，  
+4. AsyncTask异步加载数据和图片，  
+5. 利用后台WebView处理javascript，  
 
 ##预览版
 
