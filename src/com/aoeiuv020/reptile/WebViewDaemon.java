@@ -99,11 +99,12 @@ public class WebViewDaemon
 			try
 			{
 				Thread.sleep(mTimeout);
-				Logger.v("%s","awake ");
+				Logger.v("awake timeout=%d",mTimeout);
 				if(mWebView!=null)
 				{
 					mWebView.stopLoading();
 				}
+				Thread.sleep(2000);
 			}
 			catch(InterruptedException e)
 			{
@@ -149,9 +150,16 @@ public class WebViewDaemon
 			//if(mHolder!=null)
 				mHolder.string=html;
 			Logger.v("setHtml %s,%d",mHolder,html.length());
-			Stream.write(mContext,"html"+count,html,"UTF-8");
-			++count;
 			mThread.interrupt();
+			try
+			{
+			Logger.s(mContext,"html"+count,html);
+			++count;
+			}
+			catch(Exception e)
+			{
+				Logger.v("setHtml Exception "+e);
+			}
 		}
 	}
 	class MyWebViewClient extends WebViewClient

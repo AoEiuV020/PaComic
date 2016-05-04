@@ -180,8 +180,12 @@ public class Stream
 		{
 			InputStream input=context.openFileInput(fileName);
 			result=read(input,charset);
+			input.close();
 		}
 		catch(FileNotFoundException e)
+		{
+		}
+		catch(IOException e)
 		{
 		}
 		return result;
@@ -197,8 +201,12 @@ public class Stream
 		{
 			OutputStream output=context.openFileOutput(fileName,Context.MODE_PRIVATE);
 			result=write(output,string,charset);
+			output.close();
 		}
 		catch(FileNotFoundException e)
+		{
+		}
+		catch(IOException e)
 		{
 		}
 		return result;

@@ -181,7 +181,13 @@ public class Reptile
 			{
 				String name=iterator.next();
 				JSONObject site=mAllSitesJson.getJSONObject(name);
-				list.add(site);
+				String enable=Tool.getString(site,"enable");
+				if(enable!=null&&enable.equals("false"))
+				{ }
+				else
+				{
+					list.add(site);
+				}
 			}
 			catch(JSONException e)
 			{
