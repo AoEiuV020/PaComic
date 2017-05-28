@@ -1,4 +1,4 @@
-package com.aoeiuv020.comic;
+package cc.aoeiuv020.comic;
 
 import android.app.Fragment;
 import android.os.AsyncTask;
@@ -8,30 +8,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
-import com.aoeiuv020.reptile.Reptile;
-import com.aoeiuv020.stream.Stream;
-import com.aoeiuv020.tool.Logger;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.widget.TextView;
 
 import java.util.List;
 
+import cc.aoeiuv020.reptile.Reptile;
+import cc.aoeiuv020.tool.Logger;
+
 /**
- * Created by AoEiuV020 on 2016/04/07 - 02:05:40
+ * Created by AoEiuV020 on 2016/04/07 - 02:01:42
  */
-public class SiteFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class ClassificationFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private ListView mListView = null;
     private Reptile mReptile = null;
     private ItemAdapter mAdapter = null;
     private OnTaskFinishListener mListener = null;
-    private JSONObject mSitesJson = null;
+    private TextView mEditText = null;
 
-    public SiteFragment() {
+    public ClassificationFragment() {
     }
 
-    public SiteFragment(Reptile reptile) {
+    public ClassificationFragment(Reptile reptile) {
         mReptile = reptile;
     }
 
@@ -40,46 +37,35 @@ public class SiteFragment extends Fragment implements View.OnClickListener, Adap
         if (mReptile == null) {
             mReptile = ((Main) getActivity()).getReptitle();
         }
-        View view = inflater.inflate(R.layout.layout_fragment_site, container, false);
+        View view = inflater.inflate(R.layout.layout_fragment_classification, container, false);
         mListView = (ListView) view.findViewById(R.id.listview);
+        View vSearch = inflater.inflate(R.layout.layout_search, null);
+        mListView.addHeaderView(vSearch);
+        View bSearch = vSearch.findViewById(R.id.search_button);
+        bSearch.setOnClickListener(this);
+        mEditText = (TextView) vSearch.findViewById(R.id.search_edit);
         mAdapter = new ItemAdapter(getActivity(), R.layout.layout_item, R.id.item_title, R.id.item_image, R.id.item_content);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
+        loadClassifications();
         setDefaultListener();
-        setDefaultSitesJson();
-        loadSites();
         return view;
+    }
+
+    @Override
+    public void onClick(View view) {
+        String sSearch = "" + mEditText.getText();
+        if (sSearch.equals(""))
+            return;
+        //耗时操作，以后可能要改，
+        mReptile.setSearch(sSearch);
+        callOnFinish();
     }
 
     private void setDefaultListener() {
         if (getActivity() instanceof OnTaskFinishListener && mListener == null) {
             setOnTaskFinishListener((OnTaskFinishListener) getActivity());
         }
-    }
-
-    private void setDefaultSitesJson() {
-        if (mSitesJson != null)
-            return;
-        try {
-            mSitesJson = new JSONObject(Stream.read(getActivity(), "sites.json"));
-        } catch (JSONException e) {
-            Logger.e(e);
-            callOnFinish();
-        }
-    }
-
-    public void setSitesJson(JSONObject sites) {
-        mSitesJson = sites;
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        int headerCount = 0;
-        if (parent instanceof ListView)
-            headerCount = ((ListView) parent).getHeaderViewsCount();
-        position = position - headerCount;
-        mReptile.setSite(position);
-        callOnFinish();
     }
 
     public void setOnTaskFinishListener(OnTaskFinishListener listener) {
@@ -93,31 +79,32 @@ public class SiteFragment extends Fragment implements View.OnClickListener, Adap
     }
 
     @Override
-    public void onClick(View view) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        int headerCount = 0;
+        if (parent instanceof ListView)
+            headerCount = ((ListView) parent).getHeaderViewsCount();
+        //position-=headerCount;
+        Item item = (Item) parent.getAdapter().getItem(position);
+        Logger.v("onItemClick %s", item);
+        if (item != null)
+            mReptile.setClassification(item.url);
+        callOnFinish();
     }
 
-    private void loadSites() {
-        SiteLoadAsyncTask task = new SiteLoadAsyncTask(mReptile, mAdapter, mSitesJson);
+    private void loadClassifications() {
+        ClassificationLoadAsyncTask task = new ClassificationLoadAsyncTask(mReptile, mAdapter);
         task.execute();
     }
 }
 
-/**
- * 这个类可能没必要，
- * 只是顺便从ClassificationLoadAsyncTask复制过来，
- * 因为解析json不是耗时操作，
- * 但如果要加载图片之类的就要连网耗时了，
- */
-class SiteLoadAsyncTask extends AsyncTask<Void, Integer, List<Item>> {
-    JSONObject mSitesJson = null;
+class ClassificationLoadAsyncTask extends AsyncTask<Void, Integer, List<Item>> {
     Reptile mReptile = null;
     ItemAdapter mAdapter = null;
     //加载失败的原因，
     private Throwable mThrowable = null;
 
-    public SiteLoadAsyncTask(Reptile reptile, ItemAdapter adapter, JSONObject sites) {
+    public ClassificationLoadAsyncTask(Reptile reptile, ItemAdapter adapter) {
         mReptile = reptile;
-        mSitesJson = sites;
         mAdapter = adapter;
     }
 
@@ -129,11 +116,11 @@ class SiteLoadAsyncTask extends AsyncTask<Void, Integer, List<Item>> {
     protected List<Item> doInBackground(Void... parms) {
         List<Item> list = null;
         try {
-            list = Reptile.getSites();
+            list = mReptile.getClassifications();
         } catch (RuntimeException e) {
             //任何异常都表示没有内容了，
             mThrowable = e.getCause();
-            Logger.e(e);
+            if (Main.DEBUG) throw new RuntimeException(e);
         }
         return list;
     }

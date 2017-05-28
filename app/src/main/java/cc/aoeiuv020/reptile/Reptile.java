@@ -1,10 +1,6 @@
-package com.aoeiuv020.reptile;
+package cc.aoeiuv020.reptile;
 
 import android.content.Context;
-
-import com.aoeiuv020.comic.Item;
-import com.aoeiuv020.tool.Logger;
-import com.aoeiuv020.tool.Tool;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +10,10 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import cc.aoeiuv020.comic.Item;
+import cc.aoeiuv020.tool.Logger;
+import cc.aoeiuv020.tool.Tool;
 
 /**
  * Reptile reptile=new Reptile(mContext);

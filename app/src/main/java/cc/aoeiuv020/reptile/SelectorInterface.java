@@ -1,4 +1,4 @@
-package com.aoeiuv020.reptile;
+package cc.aoeiuv020.reptile;
 
 import java.util.List;
 

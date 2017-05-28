@@ -1,4 +1,4 @@
-package com.aoeiuv020.comic;
+package cc.aoeiuv020.comic;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -11,8 +11,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.aoeiuv020.reptile.Reptile;
-import com.aoeiuv020.tool.Tool;
+import cc.aoeiuv020.reptile.Reptile;
+import cc.aoeiuv020.tool.Tool;
 
 /**
  * Created by AoEiuV020 on 2016/04/06 - 19:24:19

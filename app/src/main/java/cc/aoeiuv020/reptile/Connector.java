@@ -1,10 +1,6 @@
-package com.aoeiuv020.reptile;
+package cc.aoeiuv020.reptile;
 
 import android.content.Context;
-
-import com.aoeiuv020.tool.Logger;
-import com.aoeiuv020.tool.Stream;
-import com.aoeiuv020.tool.Tool;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,6 +11,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
+
+import cc.aoeiuv020.tool.Logger;
+import cc.aoeiuv020.tool.Stream;
+import cc.aoeiuv020.tool.Tool;
 
 /**
  * Created by AoEiuV020 on 2016/04/10 - 22:02:39

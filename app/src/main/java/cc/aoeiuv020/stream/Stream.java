@@ -1,8 +1,7 @@
-package com.aoeiuv020.tool;
+package cc.aoeiuv020.stream;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,21 +20,15 @@ import java.io.Writer;
  * Created by AoEiuV020 on 2016/04/02 - 17:31:48
  */
 public class Stream {
-    public static final boolean DEBUG = false;
-    public static final String TAG = "aoeiuv020 Strem";
     public static final String UTF8 = "UTF-8";
     public static String defaultEncoding = UTF8;
-    public static int bufLenght = 4096;
+    public static int bufLenght = 100;
 
     public static String read(InputStream input) {
         return read(input, defaultEncoding);
     }
 
     public static String read(InputStream input, String charset) {
-        if (Tool.isEmpty(input))
-            return "";
-        if (Tool.isEmpty(charset))
-            charset = defaultEncoding;
         String result = "";
         try {
             Reader reader = new InputStreamReader(input, charset);
@@ -46,8 +39,6 @@ public class Stream {
     }
 
     public static String read(Reader input) {
-        if (Tool.isEmpty(input))
-            return "";
         StringBuffer sb = new StringBuffer();
         char[] buf = new char[bufLenght];
         int len = 0;
@@ -91,8 +82,6 @@ public class Stream {
     }
 
     public static boolean write(OutputStream output, String context, String charset) {
-        if (Tool.isEmpty(charset))
-            charset = defaultEncoding;
         boolean result = false;
         try {
             Writer writer = new OutputStreamWriter(output, charset);
@@ -181,7 +170,9 @@ public class Stream {
         try {
             InputStream input = context.openFileInput(fileName);
             result = read(input, charset);
+            input.close();
         } catch (FileNotFoundException e) {
+        } catch (IOException e) {
         }
         return result;
     }
@@ -195,9 +186,9 @@ public class Stream {
         try {
             OutputStream output = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             result = write(output, string, charset);
+            output.close();
         } catch (FileNotFoundException e) {
-            if (DEBUG)
-                Log.e(TAG, "" + e);
+        } catch (IOException e) {
         }
         return result;
     }

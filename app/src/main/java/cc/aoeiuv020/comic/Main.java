@@ -1,4 +1,4 @@
-package com.aoeiuv020.comic;
+package cc.aoeiuv020.comic;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -9,13 +9,13 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 
-import com.aoeiuv020.reptile.Reptile;
-import com.aoeiuv020.reptile.WebViewDaemon;
-import com.aoeiuv020.stream.Stream;
-import com.aoeiuv020.widget.SimpleDialog;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import cc.aoeiuv020.reptile.Reptile;
+import cc.aoeiuv020.reptile.WebViewDaemon;
+import cc.aoeiuv020.stream.Stream;
+import cc.aoeiuv020.widget.SimpleDialog;
 
 /**
  * Created by AoEiuV020 on 2016/04/06 - 05:44:25

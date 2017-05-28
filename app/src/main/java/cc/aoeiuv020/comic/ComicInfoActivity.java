@@ -1,4 +1,4 @@
-package com.aoeiuv020.comic;
+package cc.aoeiuv020.comic;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,14 +12,14 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.aoeiuv020.reptile.Reptile;
-import com.aoeiuv020.tool.Logger;
-import com.aoeiuv020.tool.Tool;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+
+import cc.aoeiuv020.reptile.Reptile;
+import cc.aoeiuv020.tool.Logger;
+import cc.aoeiuv020.tool.Tool;
 
 /**
  * Created by AoEiuV020 on 2016/04/07 - 22:51:03

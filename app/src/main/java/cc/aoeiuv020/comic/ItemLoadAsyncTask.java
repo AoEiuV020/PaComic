@@ -1,11 +1,11 @@
-package com.aoeiuv020.comic;
+package cc.aoeiuv020.comic;
 
 import android.os.AsyncTask;
 import android.widget.Button;
 
-import com.aoeiuv020.reptile.Reptile;
-
 import java.util.List;
+
+import cc.aoeiuv020.reptile.Reptile;
 
 /**
  * Created by AoEiuV020 on 2016/04/06 - 19:10:07

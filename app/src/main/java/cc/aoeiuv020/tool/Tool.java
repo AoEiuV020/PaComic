@@ -1,4 +1,4 @@
-package com.aoeiuv020.tool;
+package cc.aoeiuv020.tool;
 
 import org.json.JSONException;
 import org.json.JSONObject;

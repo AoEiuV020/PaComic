@@ -1,4 +1,4 @@
-package com.aoeiuv020.reptile;
+package cc.aoeiuv020.reptile;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,7 +7,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.aoeiuv020.tool.Logger;
+import cc.aoeiuv020.tool.Logger;
 
 /**
  * Created by AoEiuV020 on 2016/04/16 - 00:15:23

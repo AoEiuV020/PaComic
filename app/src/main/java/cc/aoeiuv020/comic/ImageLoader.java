@@ -1,4 +1,4 @@
-package com.aoeiuv020.comic;
+package cc.aoeiuv020.comic;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -6,10 +6,10 @@ import android.os.AsyncTask;
 import android.util.LruCache;
 import android.widget.ImageView;
 
-import com.aoeiuv020.reptile.Connector;
-import com.aoeiuv020.tool.Tool;
-
 import java.io.InputStream;
+
+import cc.aoeiuv020.reptile.Connector;
+import cc.aoeiuv020.tool.Tool;
 
 /**
  * Created by AoEiuV020 on 2016/04/06 - 16:19:22

@@ -1,14 +1,14 @@
-package com.aoeiuv020.reptile;
-
-import com.aoeiuv020.comic.Item;
-import com.aoeiuv020.tool.Logger;
-import com.aoeiuv020.tool.Tool;
+package cc.aoeiuv020.reptile;
 
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
+
+import cc.aoeiuv020.comic.Item;
+import cc.aoeiuv020.tool.Logger;
+import cc.aoeiuv020.tool.Tool;
 
 /**
  * Created by AoEiuV020 on 2016/04/07 - 01:06:58

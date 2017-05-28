@@ -1,4 +1,4 @@
-package com.aoeiuv020.comic;
+package cc.aoeiuv020.comic;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,13 +12,13 @@ import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.aoeiuv020.reptile.Reptile;
-import com.aoeiuv020.reptile.WebViewDaemon;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+
+import cc.aoeiuv020.reptile.Reptile;
+import cc.aoeiuv020.reptile.WebViewDaemon;
 
 /**
  * Created by AoEiuV020 on 2016/04/08 - 04:45:26

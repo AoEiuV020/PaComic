@@ -1,4 +1,4 @@
-package com.aoeiuv020.widget;
+package cc.aoeiuv020.widget;
 
 import android.app.AlertDialog;
 import android.content.Context;

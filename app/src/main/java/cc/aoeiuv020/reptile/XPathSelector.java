@@ -1,7 +1,4 @@
-package com.aoeiuv020.reptile;
-
-import com.aoeiuv020.tool.Logger;
-import com.aoeiuv020.tool.Tool;
+package cc.aoeiuv020.reptile;
 
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.DomSerializer;
@@ -17,6 +14,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import cc.aoeiuv020.tool.Logger;
+import cc.aoeiuv020.tool.Tool;
 
 /**
  * Created by AoEiuV020 on 2016/04/11 - 00:52:48
