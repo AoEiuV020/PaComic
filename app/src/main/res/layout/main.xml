@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    >
-<FrameLayout
-	android:id="@+id/fragment_title"
-    android:layout_width="fill_parent"
-	android:layout_alignParentTop="true"
-	android:layout_alignParentLeft="true"
-    android:layout_height="20dp"
-    />
-<FrameLayout
-	android:id="@+id/fragment_bottom"
-    android:layout_width="fill_parent"
-    android:layout_height="40dp"
-	android:layout_alignParentBottom="true"
-    />
-<FrameLayout
-	android:id="@+id/fragment_content"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-	android:layout_below="@id/fragment_title"
-	android:layout_above="@id/fragment_bottom"
-    />
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/fragment_title"
+        android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
+
+    <FrameLayout
+        android:id="@+id/fragment_bottom"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true" />
+
+    <FrameLayout
+        android:id="@+id/fragment_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/fragment_bottom"
+        android:layout_below="@id/fragment_title" />
 </RelativeLayout>
 
