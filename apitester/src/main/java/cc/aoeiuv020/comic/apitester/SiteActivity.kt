@@ -1,23 +1,20 @@
 package cc.aoeiuv020.comic.apitester
 
 import android.app.ListActivity
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.ListAdapter
-import android.widget.TextView
+import android.widget.*
 import cc.aoeiuv020.comic.api.ApiManager
 import cc.aoeiuv020.comic.api.site.Site
-import org.jetbrains.anko.AnkoComponent
-import org.jetbrains.anko.AnkoContext
-import org.jetbrains.anko.textView
-import org.jetbrains.anko.verticalLayout
+import cc.aoeiuv020.lib.util.ImageUtil
+import org.jetbrains.anko.*
 
-class SiteTestActivity : ListActivity() {
+class SiteActivity : ListActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val listItems = ApiManager.siteManger.sites
+        val listItems = ApiManager.siteDAO.allSites
         listAdapter = object : BaseAdapter(), ListAdapter {
             override fun getItem(position: Int): Site = listItems[position]
 
@@ -26,20 +23,36 @@ class SiteTestActivity : ListActivity() {
             override fun getCount(): Int = listItems.size
 
             override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-                val ankoContext = AnkoContext.createReusable(this@SiteTestActivity)
-                val view = convertView ?: ItemUI().createView(ankoContext)
-                view.text = getItem(position).name
+                val view = if (convertView == null) {
+                    val ankoContext = AnkoContext.createReusable(this@SiteActivity)
+                    val ui = ItemUI()
+                    ui.createView(ankoContext).apply {
+                        tag = ui
+                    }
+                } else convertView
+                (view.tag as ItemUI).apply(getItem(position))
                 return view
             }
         }
     }
 }
 
-class ItemUI : AnkoComponent<Any> {
+class ItemUI : AnkoComponent<Context> {
     lateinit var name: TextView
-    override fun createView(ui: AnkoContext<Any>) = with(ui) {
-        verticalLayout {
+    lateinit var image: ImageView
+
+    override fun createView(ui: AnkoContext<Context>) = with(ui) {
+        linearLayout {
+            orientation = LinearLayout.HORIZONTAL
+            image = imageView(android.R.drawable.ic_menu_report_image)
+                    .lparams(dip(200), dip(50))
             name = textView()
         }
+    }
+
+    fun apply(site: Site) {
+        name.text = site.name
+        image.tag = site.logoUrl
+        ImageUtil.asyncSetImageUrl(image, site.logoUrl)
     }
 }
