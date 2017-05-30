@@ -6,4 +6,5 @@ package cc.aoeiuv020.comic.api.site
 class SiteDAO {
     private val allSitesType = listOf<Class<out Site>>(Popomh::class.java)
     val allSites by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { allSitesType.map { it.newInstance() } }
+    fun site(index: Int) = allSites[index]
 }

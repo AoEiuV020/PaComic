@@ -12,9 +12,11 @@ import cc.aoeiuv020.lib.util.ImageUtil
 import org.jetbrains.anko.*
 
 class SiteActivity : ListActivity() {
+    private lateinit var listItems: List<Site>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val listItems = ApiManager.siteDAO.allSites
+        listItems = ApiManager.siteDAO.allSites
         listAdapter = object : BaseAdapter(), ListAdapter {
             override fun getItem(position: Int): Site = listItems[position]
 
@@ -35,24 +37,30 @@ class SiteActivity : ListActivity() {
             }
         }
     }
-}
 
-class ItemUI : AnkoComponent<Context> {
-    lateinit var name: TextView
-    lateinit var image: ImageView
-
-    override fun createView(ui: AnkoContext<Context>) = with(ui) {
-        linearLayout {
-            orientation = LinearLayout.HORIZONTAL
-            image = imageView(android.R.drawable.ic_menu_report_image)
-                    .lparams(dip(200), dip(50))
-            name = textView()
-        }
+    override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
+        siteIndex = position
+        setResult(0)
+        finish()
     }
 
-    fun apply(site: Site) {
-        name.text = site.name
-        image.tag = site.logoUrl
-        ImageUtil.asyncSetImageUrl(image, site.logoUrl)
+    class ItemUI : AnkoComponent<Context> {
+        lateinit var name: TextView
+        lateinit var image: ImageView
+
+        override fun createView(ui: AnkoContext<Context>) = with(ui) {
+            linearLayout {
+                orientation = LinearLayout.HORIZONTAL
+                image = imageView(android.R.drawable.ic_menu_report_image)
+                        .lparams(dip(200), dip(50))
+                name = textView()
+            }
+        }
+
+        fun apply(site: Site) {
+            name.text = site.name
+            image.tag = site.logoUrl
+            ImageUtil.asyncSetImageUrl(image, site.logoUrl)
+        }
     }
 }

@@ -7,7 +7,10 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile 'org.slf4j:slf4j-simple:1.7.25'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile 'org.jsoup:jsoup:1.10.2'
 }
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+
+test.enabled = false
