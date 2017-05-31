@@ -12,4 +12,8 @@ class ComicDetailManager {
         get() = ApiManager.comicListManager.comicItemSpider?.comicDetail
     val comicDetailModel: ComicDetailModel?
         get() = comicDetailSpider?.let { ComicDetailModel(it) }
+
+    fun reset() {
+        ApiManager.comicContentsManager.reset()
+    }
 }

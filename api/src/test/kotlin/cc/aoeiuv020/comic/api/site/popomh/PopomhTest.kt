@@ -11,7 +11,7 @@ class PopomhTest {
         val site = Popomh()
         val cs = site.classificationSpiders
         cs.forEach {
-            println("${it.name}, ${it.url}")
+            println("${it.name}, ${it.classificationUrl}")
         }
     }
 }

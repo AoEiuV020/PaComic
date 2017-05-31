@@ -24,6 +24,7 @@
         <activity android:name=".ClassificationActivity" />
         <activity android:name=".ComicListActivity" />
         <activity android:name=".ComicDetailActivity" />
+        <activity android:name=".ComicContentsActivity"></activity>
     </application>
 
 </manifest>

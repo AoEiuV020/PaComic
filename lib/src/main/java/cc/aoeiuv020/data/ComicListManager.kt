@@ -17,4 +17,12 @@ class ComicListManager {
         get() = comicItemSpiders?.map { ComicListItemModel(it) }
     var comicPageIndex: Int = 1
     var comicIndex: Int? = null
+        set(value) {
+            field = value
+            ApiManager.comicDetailManager.reset()
+        }
+
+    fun reset() {
+        comicIndex = null;
+    }
 }

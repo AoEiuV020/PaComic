@@ -15,6 +15,10 @@ class ClassificationManager {
     val classificationModel: ClassificationModel?
         get() = classificationSpider?.let { ClassificationModel(it) }
     var classificationIndex: Int? = null
+        set(value) {
+            field = value
+            ApiManager.comicListManager.reset()
+        }
     val classificationModels: List<ClassificationModel>?
         get() = classificationSpiders?.map { ClassificationModel(it) }
 

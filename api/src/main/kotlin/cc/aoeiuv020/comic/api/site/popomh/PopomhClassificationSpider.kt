@@ -8,8 +8,8 @@ import org.jsoup.nodes.Element
 
 class PopomhClassificationSpider(private val popomh: Popomh, element: Element) : ClassificationSpider() {
     override val name: String = element.text()
-    val url: String = popomh.home + element.attr("href")
-    val urlTemplate: String = url.removeSuffix(".html").removeSuffix("/")
+    override val classificationUrl: String = popomh.home + element.attr("href")
+    val urlTemplate: String = classificationUrl.removeSuffix(".html").removeSuffix("/")
     override val pagesCount: Int by lazy {
         logger.debug("get classification page count $name")
         val elements = firstPage.select("#iComicPC1 > b:nth-child(3)")
@@ -17,8 +17,8 @@ class PopomhClassificationSpider(private val popomh: Popomh, element: Element) :
     }
     val firstPage: Document by lazy {
         logger.debug("get class page $name")
-        val conn = Jsoup.connect(url)
-        logger.debug("connect $url")
+        val conn = Jsoup.connect(classificationUrl)
+        logger.debug("connect $classificationUrl")
         val root = conn.get()
         logger.debug("title: ${root.title()}")
         root

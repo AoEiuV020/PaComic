@@ -21,6 +21,7 @@ class PopomhComicItemSpiderTest {
     fun comicList() {
         comics.forEach {
             println("${it.name}, ${it.imgUrl}")
+            println(it.comicDetailUrl)
         }
     }
 }

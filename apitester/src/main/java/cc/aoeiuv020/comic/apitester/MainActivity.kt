@@ -12,6 +12,7 @@ class MainActivity : Activity() {
     private lateinit var bClassification: Button
     private lateinit var bComicItem: Button
     private lateinit var bComicDetail: Button
+    private lateinit var bComicContents: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,20 +24,40 @@ class MainActivity : Activity() {
             }
             bClassification = button {
                 onClick {
-                    ApiManager.siteManager.siteModel?.let { startActivity<ClassificationActivity>() }
-                            ?: bSite.callOnClick()
+                    doAsync {
+                        val model = ApiManager.siteManager.siteModel
+                        uiThread {
+                            model?.let { startActivity<ClassificationActivity>() }
+                                    ?: bSite.callOnClick()
+                        }
+                    }
                 }
             }
             bComicItem = button {
                 onClick {
-                    ApiManager.classificationManager.classificationModel?.let { startActivity<ComicListActivity>() }
-                            ?: bClassification.callOnClick()
+                    doAsync {
+                        val model = ApiManager.classificationManager.classificationModel
+                        model?.let { startActivity<ComicListActivity>() }
+                                ?: bClassification.callOnClick()
+                    }
                 }
             }
             bComicDetail = button {
                 onClick {
-                    ApiManager.comicListManager.comicListItemModel?.let { startActivity<ComicDetailActivity>() }
-                            ?: bComicItem.callOnClick()
+                    doAsync {
+                        val model = ApiManager.comicListManager.comicListItemModel
+                        model?.let { startActivity<ComicDetailActivity>() }
+                                ?: bComicItem.callOnClick()
+                    }
+                }
+            }
+            bComicContents = button {
+                onClick {
+                    doAsync {
+                        val model = ApiManager.comicDetailManager.comicDetailModel
+                        model?.let { startActivity<ComicContentsActivity>() }
+                                ?: bComicDetail.callOnClick()
+                    }
                 }
             }
         }
@@ -49,11 +70,13 @@ class MainActivity : Activity() {
             val classificationName = ApiManager.classificationManager.classificationModel?.name
             val comicItemName = ApiManager.comicListManager.comicListItemModel?.name
             val comicDetailName = ApiManager.comicDetailManager.comicDetailModel?.name
+            val comicContentsName = ApiManager.comicContentsManager.comicContentsModel?.name
             uiThread {
                 bSite.text = siteName ?: "网站"
                 bClassification.text = classificationName ?: "分类"
-                bComicItem.text = comicItemName ?: "漫画"
-                bComicDetail.text = comicDetailName ?: "漫画"
+                bComicItem.text = comicItemName ?: "漫画列表"
+                bComicDetail.text = comicDetailName ?: "漫画详情"
+                bComicContents.text = comicContentsName ?: "目录"
             }
         }
     }

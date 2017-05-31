@@ -6,5 +6,6 @@ package cc.aoeiuv020.comic.api.site
 abstract class ClassificationSpider : Spider() {
     abstract val name: String
     abstract val pagesCount: Int
+    abstract val classificationUrl: String
     abstract fun comicList(i: Int): List<ComicItemSpider>
 }

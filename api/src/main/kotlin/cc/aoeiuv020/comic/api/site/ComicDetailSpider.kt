@@ -7,4 +7,5 @@ abstract class ComicDetailSpider : Spider() {
     abstract val name: String
     abstract val info: String
     abstract val imgUrl: String
+    abstract val contents: List<ComicContentsSpider>
 }

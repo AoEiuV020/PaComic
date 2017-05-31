@@ -29,4 +29,9 @@ class PopomhClassificationSpiderTest {
             println(it.name)
         }
     }
+
+    @Test
+    fun getClassificationUrl() {
+        println(c.classificationUrl)
+    }
 }

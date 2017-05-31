@@ -12,11 +12,7 @@ class PopomhComicDetailSpiderTest {
     @Before
     fun setUp() {
         val site = Popomh()
-        val cls = site.classificationSpiders
-        val cl = cls[2]
-        val comics = cl.comicList(3)
-        val comicItem = comics[4]
-        comic = comicItem.comicDetail
+        comic = PopomhComicDetailSpider(site, "http://www.popomh.com/manhua/28851.html", "妄想高校教员森下")
     }
 
     @Test
@@ -27,5 +23,13 @@ class PopomhComicDetailSpiderTest {
     @Test
     fun getImgUrl() {
         println(comic.imgUrl)
+    }
+
+    @Test
+    fun getContents() {
+        val contents = comic.contents
+        contents.forEach {
+            println("${it.name}, ${it.comicPageUrl}")
+        }
     }
 }

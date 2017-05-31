@@ -6,5 +6,6 @@ package cc.aoeiuv020.comic.api.site
 abstract class ComicItemSpider : Spider() {
     abstract val name: String
     abstract val imgUrl: String
+    abstract val comicDetailUrl: String
     abstract val comicDetail: ComicDetailSpider
 }
