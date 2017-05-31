@@ -9,7 +9,7 @@ class PopomhTest {
     @Test
     fun classifications() {
         val site = Popomh()
-        val cs = site.classifications
+        val cs = site.classificationSnipers
         cs.forEach(::println)
     }
 }

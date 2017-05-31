@@ -1,45 +1,41 @@
 package cc.aoeiuv020.comic.apitester
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import cc.aoeiuv020.comic.api.ApiManager
-import org.jetbrains.anko.button
+import cc.aoeiuv020.data.Comic
+import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.startActivityForResult
-import org.jetbrains.anko.verticalLayout
-
-var siteIndex: Int? = null
 
 class MainActivity : Activity() {
     private lateinit var bSite: Button
-    private val siteDao = ApiManager.siteDAO
+    private lateinit var bClassification: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         verticalLayout {
-            bSite = button("Site") {
+            bSite = button("SiteSniper") {
                 onClick {
-                    startActivityForResult<SiteActivity>(0)
+                    startActivity<SiteActivity>()
                 }
             }
-            button("Classification") {
+            bClassification = button("ClassificationSniper") {
                 onClick {
-                    siteIndex?.let { startActivity<ClassificationActivity>() }
+                    Comic.siteManager.siteModel?.let { startActivity<ClassificationActivity>() }
                             ?: bSite.callOnClick()
                 }
             }
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            0 -> {
-                siteIndex?.let {
-                    bSite.text = siteDao.site(it).name
-                }
+    override fun onResume() {
+        super.onResume()
+        doAsync {
+            val siteName = Comic.siteManager.siteModel?.name
+            val classificationName = Comic.classificationManager.classificationModel?.name
+            uiThread {
+                bSite.text = siteName ?: "网站"
+                bClassification.text = classificationName ?: "分类"
             }
         }
     }

@@ -1,4 +1,4 @@
-package cc.aoeiuv020.lib.util
+package cc.aoeiuv020.util
 
 import android.graphics.BitmapFactory
 import android.widget.ImageView

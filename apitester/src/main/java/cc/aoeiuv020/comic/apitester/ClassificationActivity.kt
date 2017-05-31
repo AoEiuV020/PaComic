@@ -2,24 +2,29 @@ package cc.aoeiuv020.comic.apitester
 
 import android.app.ListActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
-import cc.aoeiuv020.comic.api.ApiManager
-import cc.aoeiuv020.comic.api.site.Site
+import android.widget.ListView
+import cc.aoeiuv020.data.Comic
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
 class ClassificationActivity : ListActivity() {
-    private lateinit var site: Site
     private lateinit var listItems: List<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        siteIndex?.let { site = ApiManager.siteDAO.site(it) }
         doAsync {
-            listItems = site.classifications.map { it.name }
+            listItems = Comic.classificationManager.classificationModels?.map { it.name }
+                    ?: return@doAsync
             uiThread {
                 listAdapter = ArrayAdapter(this@ClassificationActivity, android.R.layout.simple_list_item_1, listItems)
             }
         }
+    }
+
+    override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
+        Comic.classificationManager.classificationIndex = position
+        finish()
     }
 }
