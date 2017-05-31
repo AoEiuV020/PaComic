@@ -6,18 +6,18 @@ import cc.aoeiuv020.comic.api.ComicPageSpider
 /**
  * Created by AoEiuV020 on 17-5-31.
  */
-class PopomhComicPageSpider(popomh: Popomh, comicPageUrl: String) : ComicPageSpider() {
+class PopomhComicPageSpider(popomh: Popomh, val firstPageUrl: String) : ComicPageSpider() {
     override val pagesCount: Int by lazy {
         logger.debug("get comic page count")
         val elements = firstPage.select("body > div.cHeader > div.cH1 > b")
         elements.first().text().split('/')[1].trim().toInt()
     }
-    val firstPageUrl = comicPageUrl
+
     internal fun pageUrl(i: Int): String {
         return firstPageUrl.replace(Regex("/\\d*.html"), "/$i.html")
     }
 
-    fun page(i: Int): org.jsoup.nodes.Document {
+    internal fun page(i: Int): org.jsoup.nodes.Document {
         logger.debug("get page $i")
         if (i == 1) return firstPage
         val pageUrl = pageUrl(i)
@@ -30,29 +30,32 @@ class PopomhComicPageSpider(popomh: Popomh, comicPageUrl: String) : ComicPageSpi
 
     internal val firstPage: org.jsoup.nodes.Document by lazy {
         logger.debug("get comic first page")
-        val conn = org.jsoup.Jsoup.connect(comicPageUrl)
-        logger.debug("connect $comicPageUrl")
+        val conn = org.jsoup.Jsoup.connect(firstPageUrl)
+        logger.debug("connect $firstPageUrl")
         val root = conn.get()
         logger.debug("title: ${root.title()}")
         root
     }
-    val domains: List<String> by lazy {
+    internal val domains: List<String> by lazy {
         firstPage.select("#hdDomain").first().attr("value").split('|')
     }
-    val domain: String by lazy {
+    internal val domain: String by lazy {
         domains[popomh.domainIndex]
     }
-    val cipher: String by lazy {
-        val elements = firstPage.select("#img7652, #img1021, #img2391, #imgCurr")
-        elements.first().attr("name")
+
+    internal fun cipher(i: Int): String {
+        val elements = page(i).select("#img7652, #img1021, #img2391, #imgCurr")
+        return elements.first().attr("name")
     }
-    val imgUrl: String by lazy {
-        domain + unsuan(cipher)
+
+    override fun getImgUrl(i: Int): String {
+        return domain + unsuan(cipher(i))
     }
 
     /**
      * 从js方法翻译过来，
      * 方法名意义未知，
+     * http://www.popomh.com/script/view.js
      */
     fun unsuan(cipher: String): String {
         var s = cipher

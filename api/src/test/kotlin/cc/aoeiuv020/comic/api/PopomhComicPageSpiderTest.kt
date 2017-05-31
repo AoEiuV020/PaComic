@@ -28,12 +28,12 @@ class PopomhComicPageSpiderTest {
 
     @org.junit.Test
     fun getCipher() {
-        println(page.cipher)
+        println(page.cipher(8))
     }
 
     @org.junit.Test
     fun getImgUrl() {
-        println(page.imgUrl)
+        println(page.getImgUrl(8))
     }
 
     @org.junit.Test

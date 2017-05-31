@@ -5,4 +5,5 @@ package cc.aoeiuv020.comic.api
  */
 abstract class ComicContentsSpider : Spider() {
     abstract val name: String
+    abstract val comicPage: ComicPageSpider
 }

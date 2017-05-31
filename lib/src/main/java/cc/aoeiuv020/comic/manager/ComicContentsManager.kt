@@ -14,6 +14,10 @@ class ComicContentsManager {
     val comicContentsModel: ComicContentsModel?
         get() = comicContentsSpider?.let { ComicContentsModel(it) }
     var comicContentsIndex: Int? = null
+        set(value) {
+            field = value
+            ApiManager.comicPageManager.reset()
+        }
     val comicContentsModels: List<ComicContentsModel>?
         get() = comicContentsSpiders?.map { ComicContentsModel(it) }
 

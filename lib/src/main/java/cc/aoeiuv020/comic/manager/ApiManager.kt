@@ -10,5 +10,6 @@ object ApiManager {
     val comicListManager = ComicListManager()
     val comicDetailManager = ComicDetailManager()
     val comicContentsManager = ComicContentsManager()
+    val comicPageManager = ComicPageManager()
 }
 

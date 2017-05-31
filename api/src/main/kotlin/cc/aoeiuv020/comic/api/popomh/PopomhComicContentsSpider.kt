@@ -8,7 +8,7 @@ import cc.aoeiuv020.comic.api.ComicContentsSpider
 class PopomhComicContentsSpider(popomh: Popomh, element: org.jsoup.nodes.Element) : ComicContentsSpider() {
     override val name: String = element.text()
     val comicPageUrl = popomh.home + element.attr("href")
-    val comicPage: PopomhComicPageSpider by lazy {
+    override val comicPage: PopomhComicPageSpider by lazy {
         PopomhComicPageSpider(popomh, comicPageUrl)
     }
 }
