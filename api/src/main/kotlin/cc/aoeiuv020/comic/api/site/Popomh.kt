@@ -1,21 +1,22 @@
 package cc.aoeiuv020.comic.api.site
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 
 /**
  * Created by AoEiuV020 on 17-5-28.
  */
-class Popomh : SiteSniper() {
+class Popomh : SiteSpider() {
     override val name = "泡泡漫画"
     override val baseUrl: String = "http://www.popomh.com"
     override val logoUrl = "http://www.popomh.com/images/logo.png"
-    override val classificationSnipers by lazy {
-        logger.debug("get classificationSnipers")
+    override val classificationSpiders by lazy {
+        logger.debug("get classificationSpiders")
         val ret = homePage.select("#iHBG > div.cHNav > div > span > a")
         logger.debug("classifications count: ${ret.size}")
-        ret.map { ClassificationSniper(this, it.text(), it.attr("href")) }
+        ret.map { ClassificationSpider(this, it.text(), it.attr("href")) }
     }
-    val homePage by lazy {
+    val homePage: Document by lazy {
         logger.debug("get home page")
         val conn = Jsoup.connect(baseUrl)
         logger.debug("connect $baseUrl")

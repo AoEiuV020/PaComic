@@ -14,12 +14,12 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         verticalLayout {
-            bSite = button("SiteSniper") {
+            bSite = button("SiteSpider") {
                 onClick {
                     startActivity<SiteActivity>()
                 }
             }
-            bClassification = button("ClassificationSniper") {
+            bClassification = button("ClassificationSpider") {
                 onClick {
                     Comic.siteManager.siteModel?.let { startActivity<ClassificationActivity>() }
                             ?: bSite.callOnClick()

@@ -1,6 +1,6 @@
 package cc.aoeiuv020.data
 
-import cc.aoeiuv020.comic.api.site.ClassificationSniper
+import cc.aoeiuv020.comic.api.site.ClassificationSpider
 import cc.aoeiuv020.model.ClassificationModel
 
 /**
@@ -8,13 +8,13 @@ import cc.aoeiuv020.model.ClassificationModel
  * 有的方法涉及网络访问，
  */
 class ClassificationManager {
-    internal val classificationSnipers: List<ClassificationSniper>?
-        get() = Comic.siteManager.siteSpider?.classificationSnipers
+    internal val classificationSpiders: List<ClassificationSpider>?
+        get() = Comic.siteManager.siteSpider?.classificationSpiders
     val classificationModel: ClassificationModel?
-        get() = classificationIndex?.let { i -> classificationSnipers?.let { s -> ClassificationModel(s[i]) } }
+        get() = classificationIndex?.let { i -> classificationSpiders?.let { s -> ClassificationModel(s[i]) } }
     var classificationIndex: Int? = null
     val classificationModels: List<ClassificationModel>?
-        get() = classificationSnipers?.map { ClassificationModel(it) }
+        get() = classificationSpiders?.map { ClassificationModel(it) }
 
     fun reset() {
         classificationIndex = null
