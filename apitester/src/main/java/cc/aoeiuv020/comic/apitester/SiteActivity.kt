@@ -6,9 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import cc.aoeiuv020.data.ApiManager
-import cc.aoeiuv020.model.SiteModel
-import cc.aoeiuv020.util.ImageUtil
+import cc.aoeiuv020.comic.manager.ApiManager
+import cc.aoeiuv020.comic.model.SiteModel
+import cc.aoeiuv020.comic.util.ImageUtil
 import org.jetbrains.anko.*
 
 class SiteActivity : ListActivity() {

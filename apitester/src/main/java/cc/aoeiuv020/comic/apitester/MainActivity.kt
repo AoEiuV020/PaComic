@@ -3,7 +3,7 @@ package cc.aoeiuv020.comic.apitester
 import android.app.Activity
 import android.os.Bundle
 import android.widget.Button
-import cc.aoeiuv020.data.ApiManager
+import cc.aoeiuv020.comic.manager.ApiManager
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 

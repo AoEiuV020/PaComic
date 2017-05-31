@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import cc.aoeiuv020.data.ApiManager
+import cc.aoeiuv020.comic.manager.ApiManager
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 

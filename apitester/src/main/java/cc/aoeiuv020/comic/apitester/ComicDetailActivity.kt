@@ -2,8 +2,8 @@ package cc.aoeiuv020.comic.apitester
 
 import android.app.Activity
 import android.os.Bundle
-import cc.aoeiuv020.data.ApiManager
-import cc.aoeiuv020.util.ImageUtil
+import cc.aoeiuv020.comic.manager.ApiManager
+import cc.aoeiuv020.comic.util.ImageUtil
 import org.jetbrains.anko.*
 
 class ComicDetailActivity : Activity() {
