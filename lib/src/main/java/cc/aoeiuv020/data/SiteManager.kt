@@ -1,6 +1,6 @@
 package cc.aoeiuv020.data
 
-import cc.aoeiuv020.comic.api.ApiManager
+import cc.aoeiuv020.comic.api.site.SiteDAO
 import cc.aoeiuv020.comic.api.site.SiteSpider
 import cc.aoeiuv020.model.SiteModel
 
@@ -9,7 +9,8 @@ import cc.aoeiuv020.model.SiteModel
  * 这里的方法都没有网络访问，
  */
 class SiteManager {
-    internal val siteSpiders by lazy { ApiManager.siteDAO.allSiteSpiders }
+    val siteDAO by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { SiteDAO() }
+    internal val siteSpiders by lazy { siteDAO.allSiteSpiders }
     val siteModel: SiteModel?
         get() = siteIndex?.let { siteModels[it] }
     internal var siteSpider: SiteSpider? = null
@@ -17,7 +18,7 @@ class SiteManager {
     var siteIndex: Int? = null
         set(value) {
             field = value
-            Comic.classificationManager.reset()
+            ApiManager.classificationManager.reset()
         }
     val siteModels by lazy { siteSpiders.map { SiteModel(it) } }
 }

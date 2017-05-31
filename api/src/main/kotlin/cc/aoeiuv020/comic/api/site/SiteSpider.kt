@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 abstract class SiteSpider {
     val logger: Logger = LoggerFactory.getLogger(this.javaClass)
     abstract val name: String
-    abstract val baseUrl: String
+    abstract val home: String
     abstract val logoUrl: String
     abstract val classificationSpiders: List<ClassificationSpider>
 }

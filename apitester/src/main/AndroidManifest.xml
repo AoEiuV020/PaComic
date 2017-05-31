@@ -21,7 +21,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".SiteActivity" />
-        <activity android:name=".ClassificationActivity"></activity>
+        <activity android:name=".ClassificationActivity" />
+        <activity android:name=".ComicListActivity" />
+        <activity android:name=".ComicDetailActivity" />
     </application>
 
 </manifest>

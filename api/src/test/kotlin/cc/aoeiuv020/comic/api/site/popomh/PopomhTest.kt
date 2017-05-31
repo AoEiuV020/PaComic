@@ -1,4 +1,4 @@
-package cc.aoeiuv020.comic.api.site
+package cc.aoeiuv020.comic.api.site.popomh
 
 import org.junit.Test
 
@@ -10,6 +10,8 @@ class PopomhTest {
     fun classifications() {
         val site = Popomh()
         val cs = site.classificationSpiders
-        cs.forEach(::println)
+        cs.forEach {
+            println("${it.name}, ${it.url}")
+        }
     }
 }

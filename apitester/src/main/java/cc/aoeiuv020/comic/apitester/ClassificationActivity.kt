@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import cc.aoeiuv020.data.Comic
+import cc.aoeiuv020.data.ApiManager
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
@@ -15,7 +15,7 @@ class ClassificationActivity : ListActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         doAsync {
-            listItems = Comic.classificationManager.classificationModels?.map { it.name }
+            listItems = ApiManager.classificationManager.classificationModels?.map { it.name }
                     ?: return@doAsync
             uiThread {
                 listAdapter = ArrayAdapter(this@ClassificationActivity, android.R.layout.simple_list_item_1, listItems)
@@ -24,7 +24,7 @@ class ClassificationActivity : ListActivity() {
     }
 
     override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
-        Comic.classificationManager.classificationIndex = position
+        ApiManager.classificationManager.classificationIndex = position
         finish()
     }
 }

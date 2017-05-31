@@ -7,19 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import cc.aoeiuv020.data.ApiManager
-import cc.aoeiuv020.model.SiteModel
+import cc.aoeiuv020.model.ComicListItemModel
 import cc.aoeiuv020.util.ImageUtil
 import org.jetbrains.anko.*
 
-class SiteActivity : ListActivity() {
+class ComicListActivity : ListActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         doAsync {
-            val listItems = ApiManager.siteManager.siteModels
+            val listItems = ApiManager.comicListManager.comicListItemModels?.let { it }
+                    ?: return@doAsync
             uiThread {
                 listAdapter = object : BaseAdapter(), ListAdapter {
-                    override fun getItem(position: Int): SiteModel = listItems[position]
+                    override fun getItem(position: Int): ComicListItemModel = listItems[position]
 
                     override fun getItemId(position: Int): Long = 0L
 
@@ -27,7 +28,7 @@ class SiteActivity : ListActivity() {
 
                     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
                         val view = if (convertView == null) {
-                            val ankoContext = AnkoContext.createReusable(this@SiteActivity)
+                            val ankoContext = AnkoContext.createReusable(this@ComicListActivity)
                             val ui = ItemUI()
                             ui.createView(ankoContext).apply {
                                 tag = ui
@@ -42,7 +43,7 @@ class SiteActivity : ListActivity() {
     }
 
     override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
-        ApiManager.siteManager.siteIndex = position
+        ApiManager.comicListManager.comicIndex = position
         finish()
     }
 
@@ -54,14 +55,14 @@ class SiteActivity : ListActivity() {
             linearLayout {
                 orientation = LinearLayout.HORIZONTAL
                 image = imageView(android.R.drawable.ic_menu_report_image)
-                        .lparams(dip(200), dip(50))
+                        .lparams(dip(200), dip(200))
                 name = textView()
             }
         }
 
-        fun apply(site: SiteModel) {
-            name.text = site.name
-            ImageUtil.asyncSetImageUrl(image, site.logoUrl)
+        fun apply(comicListItemModel: ComicListItemModel) {
+            name.text = comicListItemModel.name
+            ImageUtil.asyncSetImageUrl(image, comicListItemModel.imgUrl)
         }
     }
 }
