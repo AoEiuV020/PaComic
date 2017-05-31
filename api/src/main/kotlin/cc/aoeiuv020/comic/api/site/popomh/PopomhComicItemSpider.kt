@@ -10,11 +10,11 @@ class PopomhComicItemSpider(private val popomh: Popomh, element: Element) : Comi
     override val imgUrl: String = element.select("img").attr("src")
     val comicDetailUrl = popomh.home + element.attr("href")
     override val comicDetail: ComicDetailSpider by lazy {
-        popomh.logger.debug("get comic page $name")
+        logger.debug("get comic page $name")
         val conn = Jsoup.connect(comicDetailUrl)
-        popomh.logger.debug("connect $comicDetailUrl")
+        logger.debug("connect $comicDetailUrl")
         val root = conn.get()
-        popomh.logger.debug("title: ${root.title()}")
+        logger.debug("title: ${root.title()}")
         PopomhComicDetailSpider(popomh, root, name)
     }
 }

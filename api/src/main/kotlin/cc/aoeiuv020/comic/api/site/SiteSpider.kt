@@ -1,13 +1,9 @@
 package cc.aoeiuv020.comic.api.site
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-
 /**
  * Created by AoEiuV020 on 17-5-28.
  */
-abstract class SiteSpider {
-    val logger: Logger = LoggerFactory.getLogger(this.javaClass)
+abstract class SiteSpider : Spider() {
     abstract val name: String
     abstract val home: String
     abstract val logoUrl: String
