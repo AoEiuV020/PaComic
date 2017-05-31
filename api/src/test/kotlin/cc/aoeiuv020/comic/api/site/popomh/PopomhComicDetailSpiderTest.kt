@@ -1,6 +1,5 @@
 package cc.aoeiuv020.comic.api.site.popomh
 
-import cc.aoeiuv020.comic.api.site.ComicDetailSpider
 import org.junit.Before
 import org.junit.Test
 
@@ -8,7 +7,7 @@ import org.junit.Test
  * Created by AoEiuV020 on 17-5-31.
  */
 class PopomhComicDetailSpiderTest {
-    lateinit var comic: ComicDetailSpider
+    lateinit var comic: PopomhComicDetailSpider
     @Before
     fun setUp() {
         val site = Popomh()

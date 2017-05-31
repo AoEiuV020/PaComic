@@ -4,7 +4,7 @@ import cc.aoeiuv020.comic.api.site.ComicDetailSpider
 import cc.aoeiuv020.comic.api.site.ComicItemSpider
 import org.jsoup.nodes.Element
 
-class PopomhComicItemSpider(private val popomh: Popomh, element: Element) : ComicItemSpider() {
+class PopomhComicItemSpider(popomh: Popomh, element: Element) : ComicItemSpider() {
     override val name: String = element.text()
     override val imgUrl: String = element.select("img").attr("src")
     override val comicDetailUrl = popomh.home + element.attr("href")

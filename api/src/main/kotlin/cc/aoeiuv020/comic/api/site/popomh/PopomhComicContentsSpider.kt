@@ -8,5 +8,8 @@ import org.jsoup.nodes.Element
  */
 class PopomhComicContentsSpider(popomh: Popomh, element: Element) : ComicContentsSpider() {
     override val name: String = element.text()
-    override val comicPageUrl = popomh.home + element.attr("href")
+    val comicPageUrl = popomh.home + element.attr("href")
+    val comicPage: PopomhComicPageSpider by lazy {
+        PopomhComicPageSpider(popomh, comicPageUrl)
+    }
 }

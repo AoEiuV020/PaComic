@@ -26,4 +26,5 @@ class Popomh : SiteSpider() {
         logger.trace("charset: ${root.charset()}")
         root
     }
+    var domainIndex: Int = 0
 }

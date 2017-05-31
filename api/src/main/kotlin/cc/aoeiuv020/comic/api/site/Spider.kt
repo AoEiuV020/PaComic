@@ -9,5 +9,5 @@ import org.slf4j.LoggerFactory
  * Created by AoEiuV020 on 17-5-31.
  */
 abstract class Spider {
-    internal val logger: Logger = LoggerFactory.getLogger(this.javaClass)
+    protected val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 }

@@ -4,7 +4,7 @@ import cc.aoeiuv020.comic.api.site.ComicDetailSpider
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-class PopomhComicDetailSpider(private val popomh: Popomh, comicDetailUrl: String,
+class PopomhComicDetailSpider(popomh: Popomh, comicDetailUrl: String,
                               override val name: String) : ComicDetailSpider() {
     val comicDetail: Document
 
