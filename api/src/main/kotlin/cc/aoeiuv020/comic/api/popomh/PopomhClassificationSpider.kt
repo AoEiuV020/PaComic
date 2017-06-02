@@ -33,8 +33,8 @@ class PopomhClassificationSpider(private val popomh: Popomh, element: org.jsoup.
     }
 
     override fun comicList(i: Int): List<ComicItemSpider> {
-        logger.debug("get comic list on page $i")
-        val root = page(i)
+        logger.debug("get comic list on page ${i + 1}")
+        val root = page(i + 1)
         val elements = root.select("#list > div.cComicList > li > a")
         logger.debug("comic count ${elements.size}")
         return elements.map { PopomhComicItemSpider(popomh, it) }

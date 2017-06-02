@@ -68,7 +68,7 @@ class ComicPageActivity : Activity() {
         }
     }
 
-    class PagerUI : AnkoComponent<Context> {
+    class PagerUI : AnkoComponent<Context>, AnkoLogger {
         lateinit var image: ImageView
         override fun createView(ui: AnkoContext<Context>): View = with(ui) {
             verticalLayout {
@@ -81,6 +81,7 @@ class ComicPageActivity : Activity() {
             doAsync {
                 val url = ApiManager.comicPageManager.comicPageModelAt(position)?.imgUrl
                         ?: return@doAsync
+                debug { "<$position> $url" }
                 ImageUtil.asyncSetImageUrl(image, url)
             }
         }

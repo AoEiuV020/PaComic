@@ -15,7 +15,7 @@ class ComicListManager {
         get() = comicItemSpider?.let { ComicListItemModel(it) }
     val comicListItemModels: List<ComicListItemModel>?
         get() = comicItemSpiders?.map { ComicListItemModel(it) }
-    var comicPageIndex: Int = 1
+    var comicPageIndex: Int = 0
     var comicIndex: Int? = null
         set(value) {
             field = value
