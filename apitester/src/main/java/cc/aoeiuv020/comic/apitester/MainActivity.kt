@@ -81,14 +81,14 @@ class MainActivity : Activity() {
             val comicItemName = ApiManager.comicListManager.comicListItemModel?.name
             val comicDetailName = ApiManager.comicDetailManager.comicDetailModel?.name
             val comicContentsName = ApiManager.comicContentsManager.comicContentsModel?.name
-            val comicImgUrl = ApiManager.comicPageManager.comicPageModel?.imgUrl
+            val comicPagesCount = ApiManager.comicPageManager.comicPageModel?.pagesCount
             uiThread {
                 bSite.text = siteName ?: "网站"
                 bClassification.text = classificationName ?: "分类"
                 bComicItem.text = comicItemName ?: "漫画列表"
                 bComicDetail.text = comicDetailName ?: "漫画详情"
                 bComicContents.text = comicContentsName ?: "目录"
-                bComicPage.text = comicImgUrl ?: "漫画图片"
+                bComicPage.text = comicPagesCount?.toString() ?: "漫画图片"
             }
         }
     }

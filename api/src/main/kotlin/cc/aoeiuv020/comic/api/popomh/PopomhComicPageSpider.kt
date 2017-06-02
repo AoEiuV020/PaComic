@@ -49,7 +49,7 @@ class PopomhComicPageSpider(popomh: Popomh, val firstPageUrl: String) : ComicPag
     }
 
     override fun getImgUrl(i: Int): String {
-        return domain + unsuan(cipher(i))
+        return domain + unsuan(cipher(i + 1))
     }
 
     /**

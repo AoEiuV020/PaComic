@@ -10,8 +10,9 @@ class ComicPageManager {
     internal val comicPageSpider: ComicPageSpider?
         get() = ApiManager.comicContentsManager.comicContentsSpider?.comicPage
     val comicPageModel: ComicPageModel?
-        get() = comicPageSpider?.let { ComicPageModel(it, 1) }
+        get() = comicPageModelAt(0)
 
+    fun comicPageModelAt(index: Int) = comicPageSpider?.let { ComicPageModel(it, index) }
     fun reset() {
     }
 }

@@ -31,7 +31,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-//    compile "org.jetbrains.anko:anko:$anko_version"
+    //    compile "org.jetbrains.anko:anko:$anko_version"
+    implementation "org.jetbrains.anko:anko-support-v4:$anko_version"
     implementation "org.jetbrains.anko:anko-sdk25:$anko_version"
     implementation("org.jetbrains.anko:anko-sdk25-coroutines:$anko_version") {
         exclude group: 'com.google.android', module: 'android'
@@ -40,6 +41,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation project(':lib')
     runtimeOnly 'org.slf4j:slf4j-android:1.7.25'
+    implementation "com.android.support:support-v4:$support_version"
 }
 
 kotlin {
