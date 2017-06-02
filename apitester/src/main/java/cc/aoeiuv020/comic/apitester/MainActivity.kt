@@ -81,7 +81,7 @@ class MainActivity : Activity() {
             val comicItemName = ApiManager.comicListManager.comicListItemModel?.name
             val comicDetailName = ApiManager.comicDetailManager.comicDetailModel?.name
             val comicContentsName = ApiManager.comicContentsManager.comicContentsModel?.name
-            val comicPagesCount = ApiManager.comicPageManager.comicPageModel?.pagesCount
+            val comicPagesCount = ApiManager.comicPageManager.comicPagesCountModel?.pagesCount
             uiThread {
                 bSite.text = siteName ?: "网站"
                 bClassification.text = classificationName ?: "分类"

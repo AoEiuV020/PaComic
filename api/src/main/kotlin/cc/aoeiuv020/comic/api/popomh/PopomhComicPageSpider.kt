@@ -48,7 +48,7 @@ class PopomhComicPageSpider(popomh: Popomh, val firstPageUrl: String) : ComicPag
         return elements.first().attr("name")
     }
 
-    override fun getImgUrl(i: Int): String {
+    override fun imgUrl(i: Int): String {
         return domain + unsuan(cipher(i + 1))
     }
 

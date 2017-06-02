@@ -33,7 +33,7 @@ class PopomhComicPageSpiderTest {
 
     @org.junit.Test
     fun getImgUrl() {
-        println(page.getImgUrl(8))
+        println(page.imgUrl(8))
     }
 
     @org.junit.Test

@@ -5,5 +5,5 @@ package cc.aoeiuv020.comic.api
  */
 abstract class ComicPageSpider : Spider() {
     abstract val pagesCount: Int
-    abstract fun getImgUrl(i: Int): String
+    abstract fun imgUrl(i: Int): String
 }

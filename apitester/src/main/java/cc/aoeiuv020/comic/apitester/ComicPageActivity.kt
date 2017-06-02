@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import cc.aoeiuv020.comic.manager.ApiManager
-import cc.aoeiuv020.comic.model.ComicPageModel
+import cc.aoeiuv020.comic.model.ComicPagesCountModel
 import cc.aoeiuv020.comic.util.ImageUtil
 import org.jetbrains.anko.*
 import org.jetbrains.anko.support.v4.viewPager
@@ -22,24 +22,20 @@ class ComicPageActivity : Activity() {
         verticalLayout {
             viewPager {
                 doAsync {
-                    val comicPageModel = ApiManager.comicPageManager.comicPageModel
+                    val comicPagesCountModel = ApiManager.comicPageManager.comicPagesCountModel
                             ?: return@doAsync
                     uiThread {
-                        adapter = GalleryAdapter(comicPageModel)
+                        adapter = GalleryAdapter(comicPagesCountModel)
                     }
                 }
             }
         }
     }
 
-    class GalleryAdapter(val comicPageModel: ComicPageModel) : PagerAdapter(), AnkoLogger {
+    class GalleryAdapter(val comicPageCountModel: ComicPagesCountModel) : PagerAdapter(), AnkoLogger {
         val views: MutableList<View> = ArrayList(count)
 
-        init {
-            debug("init ${comicPageModel.imgUrl}")
-        }
-
-        override fun getCount(): Int = comicPageModel.pagesCount
+        override fun getCount(): Int = comicPageCountModel.pagesCount
         override fun isViewFromObject(p0: View?, p1: Any?): Boolean {
             return p0 === p1
         }
