@@ -19,6 +19,7 @@ class SiteManager {
         set(value) {
             field = value
             ComicManager.classificationManager.reset()
+            ComicManager.comicSearchManager.reset()
         }
     val siteModels by lazy { siteSpiders.map { SiteModel(it) } }
 }

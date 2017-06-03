@@ -25,7 +25,8 @@
         <activity android:name=".ComicListActivity" />
         <activity android:name=".ComicDetailActivity" />
         <activity android:name=".ComicContentsActivity" />
-        <activity android:name=".ComicPageActivity"></activity>
+        <activity android:name=".ComicPageActivity" />
+        <activity android:name=".ComicSearchActivity"></activity>
     </application>
 
 </manifest>

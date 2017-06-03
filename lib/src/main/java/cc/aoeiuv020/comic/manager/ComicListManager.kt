@@ -19,7 +19,7 @@ class ComicListManager {
     var comicIndex: Int? = null
         set(value) {
             field = value
-            ComicManager.comicDetailManager.reset()
+            ComicManager.comicDetailManager.reset(comicItemSpider?.comicDetail)
         }
 
     fun reset() {

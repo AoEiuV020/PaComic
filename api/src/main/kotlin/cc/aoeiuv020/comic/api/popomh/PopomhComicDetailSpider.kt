@@ -6,14 +6,13 @@ import org.jsoup.nodes.Document
 
 class PopomhComicDetailSpider(popomh: Popomh, comicDetailUrl: String,
                               override val name: String) : ComicDetailSpider() {
-    val comicDetail: Document
-
-    init {
+    val comicDetail: Document by lazy {
         logger.debug("get comic page $name")
         val conn = connect(comicDetailUrl)
         logger.debug("connect $comicDetailUrl")
-        comicDetail = conn.get()
+        val ret = conn.get()
         logger.debug("title: ${comicDetail.title()}")
+        ret
     }
 
     override val info: String by lazy {

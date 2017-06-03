@@ -11,6 +11,7 @@ class MainActivity : Activity() {
     private lateinit var bSite: Button
     private lateinit var bClassification: Button
     private lateinit var bComicItem: Button
+    private lateinit var bComicSearch: Button
     private lateinit var bComicDetail: Button
     private lateinit var bComicContents: Button
     private lateinit var bComicPage: Button
@@ -27,10 +28,8 @@ class MainActivity : Activity() {
                 onClick {
                     doAsync {
                         val model = ComicManager.siteManager.siteModel
-                        uiThread {
-                            model?.let { startActivity<ClassificationActivity>() }
-                                    ?: bSite.callOnClick()
-                        }
+                        model?.let { startActivity<ClassificationActivity>() }
+                                ?: bSite.callOnClick()
                     }
                 }
             }
@@ -40,6 +39,15 @@ class MainActivity : Activity() {
                         val model = ComicManager.classificationManager.classificationModel
                         model?.let { startActivity<ComicListActivity>() }
                                 ?: bClassification.callOnClick()
+                    }
+                }
+            }
+            bComicSearch = button("搜索") {
+                onClick {
+                    doAsync {
+                        val model = ComicManager.siteManager.siteModel
+                        model?.let { startActivity<ComicSearchActivity>() }
+                                ?: bSite.callOnClick()
                     }
                 }
             }

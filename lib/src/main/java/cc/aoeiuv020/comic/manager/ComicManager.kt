@@ -11,5 +11,6 @@ object ComicManager {
     val comicDetailManager = ComicDetailManager()
     val comicContentsManager = ComicContentsManager()
     val comicPageManager = ComicPageManager()
+    val comicSearchManager = ComicSearchManager()
 }
 
