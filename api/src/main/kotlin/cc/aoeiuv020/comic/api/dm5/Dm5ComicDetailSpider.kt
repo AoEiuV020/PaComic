@@ -1,11 +1,14 @@
-package cc.aoeiuv020.comic.api.popomh
+package cc.aoeiuv020.comic.api.dm5
 
 import cc.aoeiuv020.comic.api.ComicDetailSpider
 import org.jsoup.Jsoup.connect
 import org.jsoup.nodes.Document
 
-class PopomhComicDetailSpider(popomh: Popomh, comicDetailUrl: String,
-                              override val name: String) : ComicDetailSpider() {
+/**
+ * Created by AoEiuV020 on 17-6-3.
+ */
+class Dm5ComicDetailSpider(dm5: Dm5, comicDetailUrl: String,
+                           override val name: String) : ComicDetailSpider() {
     val comicDetail: Document by lazy {
         logger.debug("get comic page $name")
         val conn = connect(comicDetailUrl)
@@ -17,17 +20,17 @@ class PopomhComicDetailSpider(popomh: Popomh, comicDetailUrl: String,
 
     override val info: String by lazy {
         logger.debug("get comic info $name")
-        val elements = comicDetail.select("#about_kit > ul > li")
+        val elements = comicDetail.select("#mhinfo > div.innr9.innr9_min > div:nth-child(3) > p")
         elements.map { it.text() }.joinToString("\n")
     }
     override val imgUrl: String by lazy {
         logger.debug("get comic image $name")
-        val elements = comicDetail.select("#about_style > img")
+        val elements = comicDetail.select("#mhinfo > div.innr9.innr9_min > div.innr90 > div.innr91 > img")
         elements.attr("src")
     }
-    override val contents: List<PopomhComicContentsSpider> by lazy {
+    override val contents: List<Dm5ComicContentsSpider> by lazy {
         logger.debug("get comic image $name")
-        val elements = comicDetail.select("#permalink > div.cVolList > ul > li > a")
-        elements.map { PopomhComicContentsSpider(popomh, it) }
+        val elements = comicDetail.select("#tempc > div > ul.nr7 > li > a, #cbc_1 > li > a")
+        elements.map { Dm5ComicContentsSpider(dm5, it) }
     }
 }

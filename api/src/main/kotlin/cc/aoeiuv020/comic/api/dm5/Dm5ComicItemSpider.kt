@@ -10,6 +10,7 @@ class Dm5ComicItemSpider(dm5: Dm5,
                          override val name: String,
                          override val imgUrl: String,
                          override val comicDetailUrl: String) : ComicItemSpider() {
-    override val comicDetail: ComicDetailSpider
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val comicDetail: ComicDetailSpider by lazy {
+        Dm5ComicDetailSpider(dm5, comicDetailUrl, name)
+    }
 }
