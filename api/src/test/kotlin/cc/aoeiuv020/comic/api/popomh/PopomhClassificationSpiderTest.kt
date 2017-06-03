@@ -1,24 +1,26 @@
-package cc.aoeiuv020.comic.api
+package cc.aoeiuv020.comic.api.popomh
+
+import org.junit.Test
 
 /**
  * Created by AoEiuV020 on 17-5-31.
  */
 class PopomhClassificationSpiderTest {
-    lateinit var c: cc.aoeiuv020.comic.api.ClassificationSpider
+    lateinit var c: PopomhClassificationSpider
     @org.junit.Before
     fun setUp() {
-        val site = cc.aoeiuv020.comic.api.popomh.Popomh()
+        val site = Popomh()
         val cs = site.classificationSpiders
         c = cs[2]
     }
 
-    @org.junit.Test
+    @Test
     fun pageCount() {
-        val pageCount = c.pagesCount
+        val pageCount = c.pageCount
         println(pageCount)
     }
 
-    @org.junit.Test
+    @Test
     fun comicList() {
         val comicList = c.comicList(3)
         comicList.forEach {
@@ -26,7 +28,7 @@ class PopomhClassificationSpiderTest {
         }
     }
 
-    @org.junit.Test
+    @Test
     fun getClassificationUrl() {
         println(c.classificationUrl)
     }

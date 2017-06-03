@@ -1,6 +1,8 @@
 package cc.aoeiuv020.comic.api.popomh
 
 import cc.aoeiuv020.comic.api.SiteSpider
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 
 /**
  * Created by AoEiuV020 on 17-5-28.
@@ -15,9 +17,11 @@ class Popomh : SiteSpider() {
         logger.debug("classifications count: ${elements.size}")
         elements.map { PopomhClassificationSpider(this, it) }
     }
-    val homePage: org.jsoup.nodes.Document by lazy {
+
+    override fun search(name: String) = PopomhSearchResultSpider(this, name)
+    val homePage: Document by lazy {
         logger.debug("get home page")
-        val conn = org.jsoup.Jsoup.connect(home)
+        val conn = Jsoup.connect(home)
         logger.debug("connect $home")
         val root = conn.get()
         logger.debug("title: ${root.title()}")

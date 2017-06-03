@@ -1,6 +1,7 @@
 package cc.aoeiuv020.comic.api.popomh
 
 import cc.aoeiuv020.comic.api.ComicPageSpider
+import org.jsoup.Jsoup.connect
 
 
 /**
@@ -21,7 +22,7 @@ class PopomhComicPageSpider(popomh: Popomh, val firstPageUrl: String) : ComicPag
         logger.debug("get page $i")
         if (i == 1) return firstPage
         val pageUrl = pageUrl(i)
-        val conn = org.jsoup.Jsoup.connect(pageUrl)
+        val conn = connect(pageUrl)
         logger.debug("connect $pageUrl")
         val root = conn.get()
         logger.debug("title: ${root.title()}")
@@ -30,7 +31,7 @@ class PopomhComicPageSpider(popomh: Popomh, val firstPageUrl: String) : ComicPag
 
     internal val firstPage: org.jsoup.nodes.Document by lazy {
         logger.debug("get comic first page")
-        val conn = org.jsoup.Jsoup.connect(firstPageUrl)
+        val conn = connect(firstPageUrl)
         logger.debug("connect $firstPageUrl")
         val root = conn.get()
         logger.debug("title: ${root.title()}")

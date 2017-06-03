@@ -1,12 +1,12 @@
 package cc.aoeiuv020.comic.api
 
 /**
- * Created by AoEiuV020 on 17-5-30.
+ * Created by AoEiuV020 on 17-6-3.
  */
-abstract class ClassificationSpider : Spider() {
+abstract class SearchResultSpider : Spider() {
     abstract val name: String
     abstract val pageCount: Int
     abstract val comicCount: Int
-    abstract val classificationUrl: String
+    abstract val searchResultUrl: String
     abstract fun comicList(i: Int): List<ComicItemSpider>
 }

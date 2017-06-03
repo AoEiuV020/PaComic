@@ -1,14 +1,16 @@
 package cc.aoeiuv020.comic.api.popomh
 
 import cc.aoeiuv020.comic.api.ComicDetailSpider
+import org.jsoup.Jsoup.connect
+import org.jsoup.nodes.Document
 
 class PopomhComicDetailSpider(popomh: Popomh, comicDetailUrl: String,
                               override val name: String) : ComicDetailSpider() {
-    val comicDetail: org.jsoup.nodes.Document
+    val comicDetail: Document
 
     init {
         logger.debug("get comic page $name")
-        val conn = org.jsoup.Jsoup.connect(comicDetailUrl)
+        val conn = connect(comicDetailUrl)
         logger.debug("connect $comicDetailUrl")
         comicDetail = conn.get()
         logger.debug("title: ${comicDetail.title()}")

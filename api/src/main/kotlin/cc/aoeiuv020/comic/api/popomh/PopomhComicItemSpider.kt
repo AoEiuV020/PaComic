@@ -1,13 +1,12 @@
 package cc.aoeiuv020.comic.api.popomh
 
-import cc.aoeiuv020.comic.api.ComicDetailSpider
 import cc.aoeiuv020.comic.api.ComicItemSpider
 
-class PopomhComicItemSpider(popomh: Popomh, element: org.jsoup.nodes.Element) : ComicItemSpider() {
-    override val name: String = element.text()
-    override val imgUrl: String = element.select("img").attr("src")
-    override val comicDetailUrl = popomh.home + element.attr("href")
-    override val comicDetail: ComicDetailSpider by lazy {
+class PopomhComicItemSpider(popomh: Popomh,
+                            override val name: String,
+                            override val imgUrl: String,
+                            override val comicDetailUrl: String) : ComicItemSpider() {
+    override val comicDetail: PopomhComicDetailSpider by lazy {
         PopomhComicDetailSpider(popomh, comicDetailUrl, name)
     }
 }
