@@ -8,7 +8,7 @@ import android.support.v4.view.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import cc.aoeiuv020.comic.manager.ApiManager
+import cc.aoeiuv020.comic.manager.ComicManager
 import cc.aoeiuv020.comic.model.ComicPagesCountModel
 import cc.aoeiuv020.comic.util.ImageUtil
 import org.jetbrains.anko.*
@@ -22,7 +22,7 @@ class ComicPageActivity : Activity() {
         verticalLayout {
             viewPager {
                 doAsync {
-                    val comicPagesCountModel = ApiManager.comicPageManager.comicPagesCountModel
+                    val comicPagesCountModel = ComicManager.comicPageManager.comicPagesCountModel
                             ?: return@doAsync
                     uiThread {
                         adapter = GalleryAdapter(comicPagesCountModel)
@@ -79,7 +79,7 @@ class ComicPageActivity : Activity() {
 
         fun apply(position: Int) {
             doAsync {
-                val url = ApiManager.comicPageManager.comicPageModelAt(position)?.imgUrl
+                val url = ComicManager.comicPageManager.comicPageModelAt(position)?.imgUrl
                         ?: return@doAsync
                 debug { "<$position> $url" }
                 ImageUtil.asyncSetImageUrl(image, url)

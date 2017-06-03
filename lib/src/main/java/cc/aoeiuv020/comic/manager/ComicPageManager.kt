@@ -9,7 +9,7 @@ import cc.aoeiuv020.comic.model.ComicPagesCountModel
  */
 class ComicPageManager {
     internal val comicPageSpider: ComicPageSpider?
-        get() = ApiManager.comicContentsManager.comicContentsSpider?.comicPage
+        get() = ComicManager.comicContentsManager.comicContentsSpider?.comicPage
     val comicPagesCountModel: ComicPagesCountModel?
         get() = comicPageSpider?.let { ComicPagesCountModel(it.pagesCount) }
 

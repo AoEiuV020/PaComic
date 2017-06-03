@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import cc.aoeiuv020.comic.manager.ApiManager
+import cc.aoeiuv020.comic.manager.ComicManager
 import cc.aoeiuv020.comic.model.ComicListItemModel
 import cc.aoeiuv020.comic.util.ImageUtil
 import org.jetbrains.anko.*
@@ -16,7 +16,7 @@ class ComicListActivity : ListActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         doAsync {
-            val listItems = ApiManager.comicListManager.comicListItemModels?.let { it }
+            val listItems = ComicManager.comicListManager.comicListItemModels?.let { it }
                     ?: return@doAsync
             uiThread {
                 listAdapter = object : BaseAdapter(), ListAdapter {
@@ -43,7 +43,7 @@ class ComicListActivity : ListActivity() {
     }
 
     override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
-        ApiManager.comicListManager.comicIndex = position
+        ComicManager.comicListManager.comicIndex = position
         finish()
     }
 

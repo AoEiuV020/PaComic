@@ -18,7 +18,7 @@ class SiteManager {
     var siteIndex: Int? = null
         set(value) {
             field = value
-            ApiManager.classificationManager.reset()
+            ComicManager.classificationManager.reset()
         }
     val siteModels by lazy { siteSpiders.map { SiteModel(it) } }
 }

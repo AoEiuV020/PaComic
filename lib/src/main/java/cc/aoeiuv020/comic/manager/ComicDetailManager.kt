@@ -9,11 +9,11 @@ import cc.aoeiuv020.comic.model.ComicDetailModel
  */
 class ComicDetailManager {
     internal val comicDetailSpider: ComicDetailSpider?
-        get() = ApiManager.comicListManager.comicItemSpider?.comicDetail
+        get() = ComicManager.comicListManager.comicItemSpider?.comicDetail
     val comicDetailModel: ComicDetailModel?
         get() = comicDetailSpider?.let { ComicDetailModel(it) }
 
     fun reset() {
-        ApiManager.comicContentsManager.reset()
+        ComicManager.comicContentsManager.reset()
     }
 }

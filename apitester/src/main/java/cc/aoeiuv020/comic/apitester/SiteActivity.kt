@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import cc.aoeiuv020.comic.manager.ApiManager
+import cc.aoeiuv020.comic.manager.ComicManager
 import cc.aoeiuv020.comic.model.SiteModel
 import cc.aoeiuv020.comic.util.ImageUtil
 import org.jetbrains.anko.*
@@ -16,7 +16,7 @@ class SiteActivity : ListActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         doAsync {
-            val listItems = ApiManager.siteManager.siteModels
+            val listItems = ComicManager.siteManager.siteModels
             uiThread {
                 listAdapter = object : BaseAdapter(), ListAdapter {
                     override fun getItem(position: Int): SiteModel = listItems[position]
@@ -42,7 +42,7 @@ class SiteActivity : ListActivity() {
     }
 
     override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
-        ApiManager.siteManager.siteIndex = position
+        ComicManager.siteManager.siteIndex = position
         finish()
     }
 

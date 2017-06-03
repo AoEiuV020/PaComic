@@ -9,7 +9,7 @@ import cc.aoeiuv020.comic.model.ClassificationModel
  */
 class ClassificationManager {
     internal val classificationSpiders: List<ClassificationSpider>?
-        get() = ApiManager.siteManager.siteSpider?.classificationSpiders
+        get() = ComicManager.siteManager.siteSpider?.classificationSpiders
     internal val classificationSpider: ClassificationSpider?
         get() = classificationIndex?.let { i -> classificationSpiders?.let { s -> s[i] } }
     val classificationModel: ClassificationModel?
@@ -17,7 +17,7 @@ class ClassificationManager {
     var classificationIndex: Int? = null
         set(value) {
             field = value
-            ApiManager.comicListManager.reset()
+            ComicManager.comicListManager.reset()
         }
     val classificationModels: List<ClassificationModel>?
         get() = classificationSpiders?.map { ClassificationModel(it) }

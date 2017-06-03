@@ -8,7 +8,7 @@ import cc.aoeiuv020.comic.model.ComicContentsModel
  */
 class ComicContentsManager {
     internal val comicContentsSpiders: List<ComicContentsSpider>?
-        get() = ApiManager.comicDetailManager.comicDetailSpider?.contents
+        get() = ComicManager.comicDetailManager.comicDetailSpider?.contents
     internal val comicContentsSpider: ComicContentsSpider?
         get() = comicContentsIndex?.let { i -> comicContentsSpiders?.let { s -> s[i] } }
     val comicContentsModel: ComicContentsModel?
@@ -16,7 +16,7 @@ class ComicContentsManager {
     var comicContentsIndex: Int? = null
         set(value) {
             field = value
-            ApiManager.comicPageManager.reset()
+            ComicManager.comicPageManager.reset()
         }
     val comicContentsModels: List<ComicContentsModel>?
         get() = comicContentsSpiders?.map { ComicContentsModel(it) }

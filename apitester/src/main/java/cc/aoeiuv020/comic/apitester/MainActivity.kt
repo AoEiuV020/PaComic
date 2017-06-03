@@ -3,7 +3,7 @@ package cc.aoeiuv020.comic.apitester
 import android.app.Activity
 import android.os.Bundle
 import android.widget.Button
-import cc.aoeiuv020.comic.manager.ApiManager
+import cc.aoeiuv020.comic.manager.ComicManager
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
@@ -26,7 +26,7 @@ class MainActivity : Activity() {
             bClassification = button {
                 onClick {
                     doAsync {
-                        val model = ApiManager.siteManager.siteModel
+                        val model = ComicManager.siteManager.siteModel
                         uiThread {
                             model?.let { startActivity<ClassificationActivity>() }
                                     ?: bSite.callOnClick()
@@ -37,7 +37,7 @@ class MainActivity : Activity() {
             bComicItem = button {
                 onClick {
                     doAsync {
-                        val model = ApiManager.classificationManager.classificationModel
+                        val model = ComicManager.classificationManager.classificationModel
                         model?.let { startActivity<ComicListActivity>() }
                                 ?: bClassification.callOnClick()
                     }
@@ -46,7 +46,7 @@ class MainActivity : Activity() {
             bComicDetail = button {
                 onClick {
                     doAsync {
-                        val model = ApiManager.comicListManager.comicListItemModel
+                        val model = ComicManager.comicListManager.comicListItemModel
                         model?.let { startActivity<ComicDetailActivity>() }
                                 ?: bComicItem.callOnClick()
                     }
@@ -55,7 +55,7 @@ class MainActivity : Activity() {
             bComicContents = button {
                 onClick {
                     doAsync {
-                        val model = ApiManager.comicDetailManager.comicDetailModel
+                        val model = ComicManager.comicDetailManager.comicDetailModel
                         model?.let { startActivity<ComicContentsActivity>() }
                                 ?: bComicDetail.callOnClick()
                     }
@@ -64,7 +64,7 @@ class MainActivity : Activity() {
             bComicPage = button {
                 onClick {
                     doAsync {
-                        val model = ApiManager.comicContentsManager.comicContentsModel
+                        val model = ComicManager.comicContentsManager.comicContentsModel
                         model?.let { startActivity<ComicPageActivity>() }
                                 ?: bComicContents.callOnClick()
                     }
@@ -76,12 +76,12 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         doAsync {
-            val siteName = ApiManager.siteManager.siteModel?.name
-            val classificationName = ApiManager.classificationManager.classificationModel?.name
-            val comicItemName = ApiManager.comicListManager.comicListItemModel?.name
-            val comicDetailName = ApiManager.comicDetailManager.comicDetailModel?.name
-            val comicContentsName = ApiManager.comicContentsManager.comicContentsModel?.name
-            val comicPagesCount = ApiManager.comicPageManager.comicPagesCountModel?.pagesCount
+            val siteName = ComicManager.siteManager.siteModel?.name
+            val classificationName = ComicManager.classificationManager.classificationModel?.name
+            val comicItemName = ComicManager.comicListManager.comicListItemModel?.name
+            val comicDetailName = ComicManager.comicDetailManager.comicDetailModel?.name
+            val comicContentsName = ComicManager.comicContentsManager.comicContentsModel?.name
+            val comicPagesCount = ComicManager.comicPageManager.comicPagesCountModel?.pagesCount
             uiThread {
                 bSite.text = siteName ?: "网站"
                 bClassification.text = classificationName ?: "分类"

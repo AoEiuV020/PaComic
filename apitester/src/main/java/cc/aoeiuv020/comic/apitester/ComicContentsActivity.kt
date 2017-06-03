@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import cc.aoeiuv020.comic.manager.ApiManager
+import cc.aoeiuv020.comic.manager.ComicManager
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
@@ -15,7 +15,7 @@ class ComicContentsActivity : ListActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         doAsync {
-            listItems = ApiManager.comicContentsManager.comicContentsModels?.map { it.name }
+            listItems = ComicManager.comicContentsManager.comicContentsModels?.map { it.name }
                     ?: return@doAsync
             uiThread {
                 listAdapter = ArrayAdapter(this@ComicContentsActivity, android.R.layout.simple_list_item_1, listItems)
@@ -24,7 +24,7 @@ class ComicContentsActivity : ListActivity() {
     }
 
     override fun onListItemClick(l: ListView?, v: View?, position: Int, id: Long) {
-        ApiManager.comicContentsManager.comicContentsIndex = position
+        ComicManager.comicContentsManager.comicContentsIndex = position
         finish()
     }
 }
