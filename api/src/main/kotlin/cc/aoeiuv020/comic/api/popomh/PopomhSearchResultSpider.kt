@@ -2,7 +2,7 @@ package cc.aoeiuv020.comic.api.popomh
 
 import cc.aoeiuv020.comic.api.ComicItemSpider
 import cc.aoeiuv020.comic.api.SearchResultSpider
-import org.jsoup.Jsoup.connect
+import org.jsoup.helper.HttpConnection.connect
 import org.jsoup.nodes.Document
 import java.net.URL
 import java.net.URLEncoder
@@ -26,8 +26,7 @@ class PopomhSearchResultSpider(val popomh: Popomh, override val name: String) : 
     val firstPage: Document by lazy {
         logger.debug("get search result $name")
         // UTF-8 是默认编码，所以其实不用URL也一样，
-        val conn = connect(searchResultUrl)
-                .url(url)
+        val conn = connect(url)
         logger.debug("connect $searchResultUrl")
         val root = conn.get()
         logger.debug("title: ${root.title()}")
