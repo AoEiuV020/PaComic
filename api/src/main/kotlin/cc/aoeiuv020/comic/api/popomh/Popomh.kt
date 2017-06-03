@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document
  */
 class Popomh : SiteSpider() {
     override val name = "泡泡漫画"
-    override val home: String = "http://www.popomh.com"
+    override val home = "http://www.popomh.com"
     override val logoUrl = "http://www.popomh.com/images/logo.png"
     override val classificationSpiders by lazy {
         logger.debug("get classificationSpiders")
