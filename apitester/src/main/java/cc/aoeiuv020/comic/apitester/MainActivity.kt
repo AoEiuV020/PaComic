@@ -54,7 +54,7 @@ class MainActivity : Activity() {
             bComicDetail = button {
                 onClick {
                     doAsync {
-                        val model = ComicManager.comicListManager.comicListItemModel
+                        val model = ComicManager.comicDetailManager.comicDetailModel
                         model?.let { startActivity<ComicDetailActivity>() }
                                 ?: bComicItem.callOnClick()
                     }
