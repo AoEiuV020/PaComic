@@ -13,6 +13,10 @@
 然后爬出漫画，  
 计划未来要支持大多数漫画网站，  
 
-【涉及技术】  
-*什么都没有*  
+【库】  
+[jsoup](https://github.com/jhy/jsoup)
+
+## apitester
+测试爬虫用的app,  
+[README.md](apitester/)
 
