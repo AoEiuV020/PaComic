@@ -30,7 +30,7 @@ class Dm5ComicDetailSpider(dm5: Dm5, comicDetailUrl: String,
     }
     override val contents: List<Dm5ComicContentsSpider> by lazy {
         logger.debug("get comic image $name")
-        val elements = comicDetail.select("#tempc > div > ul.nr7 > li > a, #cbc_1 > li > a")
+        val elements = comicDetail.select("ul.nr6.lan2 > li:has(a.tg)")
         elements.map { Dm5ComicContentsSpider(dm5, it) }
     }
 }

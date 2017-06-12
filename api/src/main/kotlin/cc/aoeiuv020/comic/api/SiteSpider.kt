@@ -7,6 +7,6 @@ abstract class SiteSpider : Spider() {
     abstract val name: String
     abstract val home: String
     abstract val logoUrl: String
-    abstract val classificationSpiders: List<ClassificationSpider>
+    abstract val classificationSpiders: List<out ClassificationSpider>
     abstract fun search(name: String): SearchResultSpider
 }

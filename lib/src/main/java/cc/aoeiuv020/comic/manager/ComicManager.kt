@@ -1,6 +1,7 @@
 package cc.aoeiuv020.comic.manager
 
 /**
+ * 所有行为都不要在ui线程调用，是否耗时不一定，有点混乱，
  * Created by AoEiuV020 on 17-5-30.
  */
 
