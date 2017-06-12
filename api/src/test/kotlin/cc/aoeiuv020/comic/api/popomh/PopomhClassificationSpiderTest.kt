@@ -1,5 +1,6 @@
 package cc.aoeiuv020.comic.api.popomh
 
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -7,7 +8,7 @@ import org.junit.Test
  */
 class PopomhClassificationSpiderTest {
     lateinit var c: PopomhClassificationSpider
-    @org.junit.Before
+    @Before
     fun setUp() {
         val site = Popomh()
         val cs = site.classificationSpiders

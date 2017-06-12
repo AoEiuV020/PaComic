@@ -1,7 +1,7 @@
 package cc.aoeiuv020.comic.api.popomh
 
 import cc.aoeiuv020.comic.api.SiteSpider
-import org.jsoup.Jsoup
+import org.jsoup.Jsoup.connect
 import org.jsoup.nodes.Document
 
 /**
@@ -21,7 +21,7 @@ class Popomh : SiteSpider() {
     override fun search(name: String) = PopomhSearchResultSpider(this, name)
     val homePage: Document by lazy {
         logger.debug("get home page")
-        val conn = Jsoup.connect(home)
+        val conn = connect(home)
         logger.debug("connect $home")
         val root = conn.get()
         logger.debug("title: ${root.title()}")
