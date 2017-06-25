@@ -68,6 +68,11 @@ class ComicPageActivity : AppCompatActivity() {
 
         val dialog = loading()
         doAsync {
+            ComicManager.comicDetailManager.comicDetailModel?.apply {
+                uiThread {
+                    title = this@apply.name
+                }
+            }
             ComicManager.comicPageManager.comicPagesCountModel?.apply {
                 dialog.cancel()
                 uiThread {
