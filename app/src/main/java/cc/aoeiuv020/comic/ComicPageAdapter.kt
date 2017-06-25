@@ -23,7 +23,7 @@ class ComicPageAdapter(val context: Context, val countModel: ComicPagesCountMode
             views.pop()
         else
             View.inflate(context, R.layout.comic_page_item, null).apply {
-                setOnClickListener {
+                image.setOnClickListener {
                     (context as ComicPageActivity).toggle()
                 }
             }

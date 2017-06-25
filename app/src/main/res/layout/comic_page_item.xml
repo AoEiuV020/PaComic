@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <cc.aoeiuv020.comic.widget.PinchImageView
         android:id="@+id/image"
         android:layout_width="0dp"
         android:layout_height="match_parent"
