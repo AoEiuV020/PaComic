@@ -16,7 +16,8 @@ class ComicDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_comic_detail)
         setSupportActionBar(toolbar)
-
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar.setNavigationOnClickListener { onBackPressed() }
         val dialog = loading()
         doAsync {
             ComicManager.comicDetailManager.comicDetailModel?.apply {

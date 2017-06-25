@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import android.view.View
 import android.widget.SeekBar
 import cc.aoeiuv020.comic.manager.ComicManager
@@ -51,6 +52,14 @@ class ComicPageActivity : AppCompatActivity() {
         false
     }
 
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        item?.itemId.let {
+            when (it) {
+                android.R.id.home -> onBackPressed()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
