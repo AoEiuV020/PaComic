@@ -77,8 +77,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         uiThread {
                             nav_view.menu.run {
                                 removeGroup(GROUP_ID)
-                                this@apply.forEachIndexed { index, it ->
-                                    add(GROUP_ID, index, index, it.name)
+                                this@apply.forEachIndexed { index, classificationModel ->
+                                    add(GROUP_ID, index, index, classificationModel.name)
                                 }
                             }
                         }
