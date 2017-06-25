@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.SeekBar
 import cc.aoeiuv020.comic.manager.ComicManager
 import kotlinx.android.synthetic.main.activity_comic_page.*
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
@@ -68,7 +69,12 @@ class ComicPageActivity : AppCompatActivity() {
         val dialog = loading()
         doAsync {
             ComicManager.comicPageManager.comicPagesCountModel?.apply {
+                dialog.cancel()
                 uiThread {
+                    if (pagesCount == 0) {
+                        alert("浏览失败或者不支持该漫画").show()
+                        return@uiThread
+                    }
                     fullscreen_content.adapter = ComicPageAdapter(this@ComicPageActivity, this@apply)
                     seekBar.max = this@apply.pagesCount
                     fullscreen_content.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -99,7 +105,6 @@ class ComicPageActivity : AppCompatActivity() {
                     })
                 }
             }
-            dialog.cancel()
         }
     }
 
