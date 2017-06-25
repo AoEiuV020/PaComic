@@ -6,20 +6,44 @@ import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import android.view.ViewGroup
+import android.widget.EditText
 import cc.aoeiuv020.comic.manager.ComicManager
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.uiThread
+import org.jetbrains.anko.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AnkoLogger {
     val GROUP_ID = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        search.setOnClickListener {
+            alert("搜索") {
+                val text = EditText(this@MainActivity)
+                customView {
+                    addView(text, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+                }
+                okButton {
+                    val dialog = loading()
+                    doAsync {
+                        ComicManager.comicSearchManager.search(text.text.toString())?.let { comicList ->
+                            uiThread {
+                                dialog.cancel()
+                                listView.run {
+                                    adapter = ComicListAdapter(this@MainActivity, comicList)
+                                    setOnItemClickListener { _, _, position, _ ->
+                                        ComicManager.comicSearchManager.comicIndex = position
+                                        startActivity<ComicDetailActivity>()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }.show()
+        }
         nav_view.setNavigationItemSelectedListener(this)
         ComicManager.siteManager.siteIndex ?: showSites()
     }
@@ -38,10 +62,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 ComicManager.classificationManager.classificationIndex = item.order
                 val dialog = loading()
                 doAsync {
-                    ComicManager.comicListManager.comicListItemModels?.apply {
+                    ComicManager.comicListManager.comicListItemModels?.let { comicList ->
                         uiThread {
                             listView.run {
-                                adapter = ComicListAdapter(this@MainActivity, this@apply)
+                                adapter = ComicListAdapter(this@MainActivity, comicList)
                                 setOnItemClickListener { _, _, position, _ ->
                                     ComicManager.comicListManager.comicIndex = position
                                     startActivity<ComicDetailActivity>()
