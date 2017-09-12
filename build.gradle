@@ -13,6 +13,7 @@ buildscript {
         slf4j_version = '1.7.25'
         jsoup_version = '1.10.3'
         constraint_layout_version = '1.0.2'
+        glide_version = '4.1.1'
     }
     repositories {
         google()

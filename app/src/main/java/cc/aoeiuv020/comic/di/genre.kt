@@ -21,6 +21,10 @@ interface GenreComponent {
 @Module
 class GenreModule(val site: ComicSite) {
     @Provides
-    fun getGenre(): Observable<ComicGenre>
-            = Observable.fromIterable(ctx(site.baseUrl).getGenres())
+    fun getGenre(): Observable<ComicGenre> = Observable.create { em ->
+        ctx(site.baseUrl).getGenres().forEach {
+            em.onNext(it)
+        }
+        em.onComplete()
+    }
 }

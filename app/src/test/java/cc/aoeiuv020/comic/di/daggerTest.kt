@@ -11,9 +11,7 @@ import org.junit.Test
 class DaggerTest {
     @Test
     fun getSites() {
-        val siteComponent: SiteComponent = DaggerSiteComponent.builder()
-                .siteModule(SiteModule())
-                .build()
+        val siteComponent: SiteComponent = DaggerSiteComponent.create()
         siteComponent.getSites()
                 .forEach {
                     println(it.name)
