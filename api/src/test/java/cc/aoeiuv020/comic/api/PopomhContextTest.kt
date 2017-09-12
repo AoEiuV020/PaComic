@@ -1,9 +1,5 @@
-package cc.aoeiuv020.comic.api.popomh
+package cc.aoeiuv020.comic.api
 
-import cc.aoeiuv020.comic.api.ComicIssue
-import cc.aoeiuv020.comic.api.ComicListItem
-import cc.aoeiuv020.comic.api.ComicListPage
-import cc.aoeiuv020.comic.api.ComicPage
 import org.junit.Before
 import org.junit.Test
 
@@ -12,7 +8,7 @@ import org.junit.Test
  * Created by AoEiuV020 on 2017.09.09-22:17:08.
  */
 class PopomhContextTest {
-    lateinit var context: PopomhContext
+    internal lateinit var context: PopomhContext
     @Before
     fun setUp() {
         context = PopomhContext()
@@ -31,7 +27,7 @@ class PopomhContextTest {
 
     @Test
     fun getComicList() {
-        context.getComicList(ComicListPage("http://www.popomh.com/comic/class_8.html")).forEach {
+        context.getComicList(ComicGenre("", "http://www.popomh.com/comic/class_8.html")).forEach {
             println(it.name)
             println(it.url)
             println(it.img)

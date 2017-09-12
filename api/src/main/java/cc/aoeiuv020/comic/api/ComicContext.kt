@@ -3,19 +3,24 @@ package cc.aoeiuv020.comic.api
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
+import java.net.URL
 
 /**
  * 漫画网站上下文，
  * 一个Context对象贯穿始终，
  * Created by AoEiuV020 on 2017.09.09-20:50:30.
  */
-abstract class ComicContext {
+internal abstract class ComicContext {
+    companion object {
+        private val contexts = listOf<ComicContext>(PopomhContext())
+        private val contextsMap = contexts.associateBy { URL(it.getComicSite().baseUrl).host }
+        fun getComicContexts(): List<ComicContext> = contexts
+        fun getComicContext(url: String): ComicContext = contextsMap[URL(url).host] ?: contexts.first { it.check(url) }
+    }
+
     protected val logger = LoggerFactory.getLogger(this.javaClass.simpleName)
 
-    abstract val name: String
-    abstract val baseUrl: String
-    abstract val logoUrl: String
-
+    abstract fun getComicSite(): ComicSite
     /**
      * 获取网站分类信息，
      */
@@ -24,12 +29,12 @@ abstract class ComicContext {
     /**
      * 获取分类页面的下一页，
      */
-    abstract fun getNextPage(listPage: ComicListPage): ComicListPage?
+    abstract fun getNextPage(genre: ComicGenre): ComicGenre?
 
     /**
      * 获取分类页面里的漫画列表信息，
      */
-    abstract fun getComicList(listPage: ComicListPage): List<ComicListItem>
+    abstract fun getComicList(genre: ComicGenre): List<ComicListItem>
 
     /**
      * 获取漫画详情页信息，
@@ -46,6 +51,8 @@ abstract class ComicContext {
      */
     abstract fun getComicImage(comicPage: ComicPage): ComicImage
 
+    internal fun check(url: String): Boolean = URL(getComicSite().baseUrl).host == URL(url).host
+
     protected fun getHtml(url: String): Document {
         logger.debug("get $url")
         val conn = Jsoup.connect(url)
@@ -56,64 +63,3 @@ abstract class ComicContext {
         return root
     }
 }
-
-/**
- * 包含漫画列表的页面，
- * 比如，分类，搜索结果，
- */
-open class ComicListPage(
-        val url: String
-)
-
-/**
- * 漫画分类页面，
- * 该分类第一页地址，
- */
-open class ComicGenre(
-        val name: String,
-        url: String
-) : ComicListPage(url)
-
-/**
- * 漫画列表中的一个漫画，
- * @param url 该漫画详情页地址，
- */
-open class ComicListItem(
-        val name: String,
-        val img: String,
-        val url: String
-)
-
-/**
- * 漫画详情页，
- */
-open class ComicDetail(
-        val name: String,
-        val bigImg: String,
-        val info: String,
-        val issues: List<ComicIssue>
-)
-
-/**
- * 漫画目录，
- * @param url 本章节第一页地址，
- */
-open class ComicIssue(
-        val name: String,
-        val url: String
-)
-
-/**
- * 漫画页面，
- */
-open class ComicPage(
-        val url: String
-)
-
-/**
- * 漫画图片，
- * @param img 漫画图片地址，
- */
-open class ComicImage(
-        val img: String
-)
