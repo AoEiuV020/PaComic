@@ -14,12 +14,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import cc.aoeiuv020.comic.R
+import cc.aoeiuv020.comic.api.ComicGenre
+import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.api.ComicSite
-import cc.aoeiuv020.comic.di.DaggerGenreComponent
-import cc.aoeiuv020.comic.di.DaggerSiteComponent
-import cc.aoeiuv020.comic.di.GenreModule
+import cc.aoeiuv020.comic.di.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.comic_list_item.view.*
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.error
@@ -74,7 +76,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.groupId) {
             GROUP_ID -> {
-
+                val loadingDialog = loading()
+                DaggerListComponent.builder()
+                        .listModule(ListModule(genres[item.order]))
+                        .build()
+                        .getComicList()
+                        .async()
+                        .toList()
+                        .subscribe({ comicList ->
+                            setComicList(comicList)
+                            loadingDialog.dismiss()
+                        }, { e ->
+                            error("加载漫画列表失败", e)
+                            loadingDialog.dismiss()
+                        })
             }
             else -> when (item.itemId) {
                 R.id.select_sites -> showSites()
@@ -85,6 +100,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun setComicList(comicList: List<ComicListItem>) {
+        listView.run {
+            adapter = ComicListAdapter(this@MainActivity, comicList)
+            setOnItemClickListener { _, _, position, _ ->
+            }
+        }
     }
 
     private fun showSites() {
@@ -104,20 +127,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 .async()
                                 .toList()
                                 .subscribe({ genres ->
-                                    nav_view.menu.run {
-                                        removeGroup(GROUP_ID)
-                                        genres.forEachIndexed { index, comicGenre ->
-                                            add(GROUP_ID, index, index, comicGenre.name)
-                                        }
-                                    }
+                                    setGenres(genres)
                                     loadingDialog.dismiss()
                                 }, { e ->
-                                    error("error", e)
+                                    error("加载网站列表失败", e)
                                     loadingDialog.dismiss()
                                     alertDialog.dismiss()
                                 })
                     }.show()
                 }
+    }
+
+    private lateinit var genres: List<ComicGenre>
+
+    private fun setGenres(genres: List<ComicGenre>) {
+        this.genres = genres
+        nav_view.menu.run {
+            removeGroup(GROUP_ID)
+            genres.forEachIndexed { index, comicGenre ->
+                add(GROUP_ID, index, index, comicGenre.name)
+            }
+        }
     }
 }
 
@@ -137,4 +167,19 @@ class SiteListAdapter(val ctx: Context, val sites: List<ComicSite>) : BaseAdapte
     override fun getItemId(position: Int) = 0L
 
     override fun getCount() = sites.size
+}
+
+class ComicListAdapter(val ctx: Context, val items: List<ComicListItem>) : BaseAdapter() {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View
+            = convertView ?: View.inflate(ctx, R.layout.comic_list_item, null).apply {
+        val comic = getItem(position)
+        comic_name.text = comic.name
+        asyncLoadImage(comic_icon, comic.img)
+    }
+
+    override fun getItem(position: Int) = items[position]
+
+    override fun getItemId(position: Int) = 0L
+
+    override fun getCount() = items.size
 }

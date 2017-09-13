@@ -21,6 +21,10 @@ interface ListComponent {
 @Module
 class ListModule(val comicGenre: ComicGenre) {
     @Provides
-    fun getComicList(): Observable<ComicListItem>
-            = Observable.fromIterable(ctx(comicGenre.url).getComicList(comicGenre))
+    fun getComicList(): Observable<ComicListItem> = Observable.create { em ->
+        ctx(comicGenre.url).getComicList(comicGenre).forEach {
+            em.onNext(it)
+        }
+        em.onComplete()
+    }
 }
