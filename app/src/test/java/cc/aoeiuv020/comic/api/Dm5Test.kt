@@ -52,14 +52,14 @@ class Dm5Test {
 
     @Test
     fun getComicPages() {
-        context.getComicPages(Dm5Context.Dm5ComicIssue("", "http://www.dm5.com/m523824/", 8)).forEach {
+        context.getComicPages(ComicIssue("", "http://www.dm5.com/m523824/")).forEach {
             println(it.url)
         }
     }
 
     @Test
     fun getComicImage() {
-        context.getComicImage(Dm5Context.Dm5ComicPage("http://www.dm5.com/m523824/", "523824", 4)).let {
+        context.getComicImage(ComicPage("http://www.dm5.com/m523824-p4/")).let {
             println(it.img)
         }
     }

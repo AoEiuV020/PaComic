@@ -42,39 +42,31 @@ class Dm5Context : ComicContext() {
                 .joinToString("\n") { it.text() }
         val issues = root.select("ul.nr6.lan2 > li:has(a.tg)")
                 .map {
-                    // dm5有的漫画不是本地阅读，而是跳到腾讯贴吧漫本等其他网站，
-                    // 这种情况这里没有页数，暂时不处理，直接不让看了，
-                    val reg = Regex(".*（(\\d+)页）.*")
-                    val count = it.text().let { if (it.matches(reg)) it.replace(reg, "$1").toInt() else 0 }
-                    Dm5ComicIssue(it.select("a").attr("title"), url(it.select("a").attr("href")), count)
+                    ComicIssue(it.select("a").attr("title"), url(it.select("a").attr("href")))
                 }
         return ComicDetail(name, bigImg, info, issues)
     }
 
-    internal class Dm5ComicIssue(name: String, url: String, val count: Int) : ComicIssue(name, url)
-
     override fun getComicPages(comicIssue: ComicIssue): List<ComicPage> {
         val cid = comicIssue.url.replace(Regex(".*/m(\\d*)/"), "$1")
-        val pagesCount = (comicIssue as Dm5ComicIssue).count
+        val first = getHtml(comicIssue.url)
+        val pagesCount = first.select("body > div.viewBar > div:nth-child(9) > div#chapterpager > a:nth-last-child(1)").text().toInt()
         return List(pagesCount) {
-            Dm5ComicPage(url("/m$cid-p${it + 1}/"), cid, it)
+            ComicPage(url("/m$cid-p${it + 1}/"))
         }
     }
-
-    internal class Dm5ComicPage(url: String, val cid: String, val index: Int) : ComicPage(url)
 
     private val chapterfunUrl = url("/chapterfun.ashx")
     /**
      * http://css99tel.cdndm5.com/v201709121708/default/js/chapternew_v22.js
      */
     override fun getComicImage(comicPage: ComicPage): ComicImage {
-        val dm5ComicPage = comicPage as Dm5ComicPage
-        val cid = dm5ComicPage.cid
-        val i = dm5ComicPage.index
+        val cid = comicPage.url.replace(Regex(".*/m(\\d*)-p\\d*/"), "$1")
+        val index = comicPage.url.replace(Regex(".*/m\\d*-p(\\d*)/"), "$1")
         val pageUrl = chapterfunUrl
         val conn = Jsoup.connect(pageUrl)
                 .data("cid", cid)
-                .data("page", "$i")
+                .data("page", index)
                 .data("key", "")
                 .data("language", "1")
                 .data("gtk", "6")
