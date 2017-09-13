@@ -2,6 +2,7 @@ package cc.aoeiuv020.comic.api
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
 
@@ -10,15 +11,17 @@ import java.net.URL
  * 一个Context对象贯穿始终，
  * Created by AoEiuV020 on 2017.09.09-20:50:30.
  */
-internal abstract class ComicContext {
+abstract class ComicContext {
     companion object {
-        private val contexts = listOf<ComicContext>(PopomhContext())
+        @Suppress("RemoveExplicitTypeArguments")
+        private val contexts = listOf<ComicContext>(PopomhContext(), Dm5Context())
         private val contextsMap = contexts.associateBy { URL(it.getComicSite().baseUrl).host }
         fun getComicContexts(): List<ComicContext> = contexts
         fun getComicContext(url: String): ComicContext = contextsMap[URL(url).host] ?: contexts.first { it.check(url) }
     }
 
-    protected val logger = LoggerFactory.getLogger(this.javaClass.simpleName)
+    @Suppress("MemberVisibilityCanPrivate")
+    protected val logger: Logger = LoggerFactory.getLogger(this.javaClass.simpleName)
 
     abstract fun getComicSite(): ComicSite
     /**
@@ -62,4 +65,6 @@ internal abstract class ComicContext {
         logger.trace("charset: ${root.charset()}")
         return root
     }
+
+    protected fun url(url: String) = getComicSite().baseUrl + url
 }

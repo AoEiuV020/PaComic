@@ -64,7 +64,7 @@ data class ComicDetail(
  * 漫画目录，
  * @param url 本章节第一页地址，
  */
-data class ComicIssue(
+open class ComicIssue(
         val name: String,
         val url: String
 ) : Data()
@@ -72,7 +72,7 @@ data class ComicIssue(
 /**
  * 漫画页面，
  */
-data class ComicPage(
+open class ComicPage(
         val url: String
 ) : Data()
 

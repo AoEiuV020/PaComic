@@ -4,7 +4,7 @@ package cc.aoeiuv020.comic.api
  * 泡泡漫画，
  * Created by AoEiuV020 on 2017.09.09-21:08:02.
  */
-internal class PopomhContext : ComicContext() {
+class PopomhContext : ComicContext() {
     val site = ComicSite(
             name = "泡泡漫画",
             baseUrl = "http://www.popomh.com",
@@ -15,7 +15,7 @@ internal class PopomhContext : ComicContext() {
     override fun getGenres(): List<ComicGenre> {
         val root = getHtml(site.baseUrl)
         val elements = root.select("#iHBG > div.cHNav > div > span > a, #iHBG > div.cHNav > div a:has(span)")
-        return elements.map { ComicGenre(it.text(), site.baseUrl + it.attr("href")) }
+        return elements.map { ComicGenre(it.text(), url(it.attr("href"))) }
     }
 
     override fun getNextPage(genre: ComicGenre): ComicGenre? {
@@ -26,7 +26,7 @@ internal class PopomhContext : ComicContext() {
         val root = getHtml(genre.url)
         val elements = root.select("#list > div.cComicList > li > a")
         return elements.map {
-            ComicListItem(it.text(), it.select("img").attr("src"), site.baseUrl + it.attr("href"))
+            ComicListItem(it.text(), it.select("img").attr("src"), url(it.attr("href")))
         }
     }
 
@@ -39,7 +39,7 @@ internal class PopomhContext : ComicContext() {
         val info = root.select("#about_kit > ul > li")
                 .joinToString("\n") { it.text() }
         val issues = root.select("#permalink > div.cVolList > ul > li > a")
-                .map { ComicIssue(it.text(), site.baseUrl + it.attr("href")) }
+                .map { ComicIssue(it.text(), url(it.attr("href"))) }
         return ComicDetail(name, bigImg, info, issues)
     }
 
