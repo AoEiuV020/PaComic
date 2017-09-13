@@ -55,7 +55,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         searchView.setHintTextColor(getColor(R.color.abc_hint_foreground_material_light))
 
         App.component.plus(SiteModule()).site?.let { site ->
-            setGenre(site)
+            showGenre(site)
+            App.component.plus(GenreModule(site))
+                    .genre?.let { genre ->
+                showComicList(genre)
+            }
         } ?: showSites()
     }
 
@@ -86,18 +90,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.groupId) {
             GROUP_ID -> {
-                val loadingDialog = loading()
-                App.component.plus(ListModule(genres[item.order]))
-                        .getComicList()
-                        .async()
-                        .toList()
-                        .subscribe({ comicList ->
-                            setComicList(comicList)
-                            loadingDialog.dismiss()
-                        }, { e ->
-                            error("加载漫画列表失败", e)
-                            loadingDialog.dismiss()
-                        })
+                val genre = genres[item.order]
+                showComicList(genre)
             }
             else -> when (item.itemId) {
                 R.id.select_sites -> showSites()
@@ -108,6 +102,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun showComicList(genre: ComicGenre) {
+        val loadingDialog = loading()
+        App.component.plus(ListModule(genre))
+                .getComicList()
+                .async()
+                .toList()
+                .subscribe({ comicList ->
+                    setComicList(comicList)
+                    loadingDialog.dismiss()
+                }, { e ->
+                    error("加载漫画列表失败", e)
+                    loadingDialog.dismiss()
+                })
     }
 
     private fun setComicList(comicList: List<ComicListItem>) {
@@ -127,16 +136,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .subscribe { sites ->
                     AlertDialog.Builder(this@MainActivity).setAdapter(SiteListAdapter(this@MainActivity, sites)) { alertDialog, index ->
                         val site = sites[index]
-                        setGenre(site)
+                        drawer_layout.openDrawer(GravityCompat.START)
+                        showGenre(site)
                     }.show()
                 }
     }
 
-    private fun setGenre(site: ComicSite) {
-        drawer_layout.openDrawer(GravityCompat.START)
+    private fun showGenre(site: ComicSite) {
         val loadingDialog = loading()
         App.component.plus(GenreModule(site))
-                .getGenre()
+                .getGenres()
                 .async()
                 .toList()
                 .subscribe({ genres ->

@@ -16,6 +16,9 @@ import io.reactivex.Observable
 @Subcomponent(modules = arrayOf(SiteModule::class))
 interface SiteComponent {
     fun getSites(): Observable<ComicSite>
+    /**
+     * 提供记住了的选择，
+     */
     val site: ComicSite?
 }
 

@@ -34,7 +34,7 @@ class DaggerTest {
     @Test
     fun getGenres() {
         val genreComponent: GenreComponent = component.plus(GenreModule(ComicSite("", "http://www.popomh.com", "")))
-        genreComponent.getGenre()
+        genreComponent.getGenres()
                 .forEach {
                     println(it.name)
                     println(it.url)
