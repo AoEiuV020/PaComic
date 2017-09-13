@@ -18,6 +18,7 @@ import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.api.ComicSite
 import cc.aoeiuv020.comic.di.*
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.comic_list_item.view.*
@@ -25,6 +26,7 @@ import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.error
+import org.jetbrains.anko.startActivity
 
 /**
  * 主页，展示网站，分类，漫画列表，
@@ -106,6 +108,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         listView.run {
             adapter = ComicListAdapter(this@MainActivity, comicList)
             setOnItemClickListener { _, _, position, _ ->
+                startActivity<ComicDetailActivity>("item" to comicList[position])
             }
         }
     }
@@ -157,7 +160,7 @@ class SiteListAdapter(val ctx: Context, val sites: List<ComicSite>) : BaseAdapte
         val site = getItem(position)
         view.apply {
             site_name.text = site.name
-            asyncLoadImage(site_logo, site.logo)
+            Glide.with(ctx).load(site.logo).into(site_logo)
         }
         return view
     }
@@ -174,7 +177,7 @@ class ComicListAdapter(val ctx: Context, val items: List<ComicListItem>) : BaseA
             = convertView ?: View.inflate(ctx, R.layout.comic_list_item, null).apply {
         val comic = getItem(position)
         comic_name.text = comic.name
-        asyncLoadImage(comic_icon, comic.img)
+        Glide.with(ctx).load(comic.img).into(comic_icon)
     }
 
     override fun getItem(position: Int) = items[position]

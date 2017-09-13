@@ -21,6 +21,8 @@ interface DetailComponent {
 @Module
 class DetailModule(val comicListItem: ComicListItem) {
     @Provides
-    fun getComicDetail(): Observable<ComicDetail>
-            = Observable.just(ctx(comicListItem.url).getComicDetail(comicListItem))
+    fun getComicDetail(): Observable<ComicDetail> = Observable.create { em ->
+        em.onNext(ctx(comicListItem.url).getComicDetail(comicListItem))
+        em.onComplete()
+    }
 }
