@@ -17,7 +17,15 @@ abstract class ComicContext {
         private val contexts = listOf<ComicContext>(PopomhContext(), Dm5Context())
         private val contextsMap = contexts.associateBy { URL(it.getComicSite().baseUrl).host }
         fun getComicContexts(): List<ComicContext> = contexts
-        fun getComicContext(url: String): ComicContext = contextsMap[URL(url).host] ?: contexts.first { it.check(url) }
+        fun getComicContext(url: String): ComicContext? {
+            val host: String
+            try {
+                host = URL(url).host
+            } catch (_: Exception) {
+                return null
+            }
+            return contextsMap[host] ?: contexts.firstOrNull { it.check(url) }
+        }
     }
 
     @Suppress("MemberVisibilityCanPrivate")

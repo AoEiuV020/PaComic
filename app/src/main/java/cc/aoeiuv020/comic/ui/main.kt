@@ -53,6 +53,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
 
         searchView.setHintTextColor(getColor(R.color.abc_hint_foreground_material_light))
+
+        App.component.plus(SiteModule()).site?.let { site ->
+            setGenre(site)
+        } ?: showSites()
     }
 
     override fun onBackPressed() {
@@ -122,23 +126,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .toList()
                 .subscribe { sites ->
                     AlertDialog.Builder(this@MainActivity).setAdapter(SiteListAdapter(this@MainActivity, sites)) { alertDialog, index ->
-                        drawer_layout.openDrawer(GravityCompat.START)
                         val site = sites[index]
-                        val loadingDialog = loading()
-                        App.component.plus(GenreModule(site))
-                                .getGenre()
-                                .async()
-                                .toList()
-                                .subscribe({ genres ->
-                                    setGenres(genres)
-                                    loadingDialog.dismiss()
-                                }, { e ->
-                                    error("加载网站列表失败", e)
-                                    loadingDialog.dismiss()
-                                    alertDialog.dismiss()
-                                })
+                        setGenre(site)
                     }.show()
                 }
+    }
+
+    private fun setGenre(site: ComicSite) {
+        drawer_layout.openDrawer(GravityCompat.START)
+        val loadingDialog = loading()
+        App.component.plus(GenreModule(site))
+                .getGenre()
+                .async()
+                .toList()
+                .subscribe({ genres ->
+                    setGenres(genres)
+                    loadingDialog.dismiss()
+                }, { e ->
+                    error("加载网站列表失败", e)
+                    loadingDialog.dismiss()
+                })
     }
 
     private lateinit var genres: List<ComicGenre>

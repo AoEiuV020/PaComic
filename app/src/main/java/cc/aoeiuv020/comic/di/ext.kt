@@ -7,4 +7,4 @@ import cc.aoeiuv020.comic.api.ComicContext
  * Created by AoEiuV020 on 2017.09.12-17:53:32.
  */
 
-internal fun ctx(url: String): ComicContext = ComicContext.getComicContext(url)
+internal fun ctx(url: String): ComicContext = ComicContext.getComicContext(url)!!
