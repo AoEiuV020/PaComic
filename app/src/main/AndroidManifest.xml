@@ -23,6 +23,11 @@
         <activity
             android:name=".ui.ComicDetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.ComicPageActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_comic_page"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>
