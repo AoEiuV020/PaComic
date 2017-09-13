@@ -14,8 +14,6 @@ import android.widget.SeekBar
 import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicDetail
 import cc.aoeiuv020.comic.api.ComicPage
-import cc.aoeiuv020.comic.di.DaggerImageComponent
-import cc.aoeiuv020.comic.di.DaggerPageComponent
 import cc.aoeiuv020.comic.di.ImageModule
 import cc.aoeiuv020.comic.di.PageModule
 import com.bumptech.glide.Glide
@@ -100,9 +98,7 @@ class ComicPageActivity : AppCompatActivity() {
         val issue = detail.issues[issueIndex]
         val loadingDialog = loading()
         title = detail.name
-        DaggerPageComponent.builder()
-                .pageModule(PageModule(issue))
-                .build()
+        App.component.plus(PageModule(issue))
                 .getComicPages()
                 .async()
                 .toList()
@@ -229,9 +225,7 @@ class ComicPageAdapter(val ctx: Context, val pages: List<ComicPage>) : PagerAdap
                     (context as ComicPageActivity).toggle()
                 }
             }
-        DaggerImageComponent.builder()
-                .imageModule(ImageModule(pages[position]))
-                .build()
+        App.component.plus(ImageModule(pages[position]))
                 .getComicImage()
                 .async()
                 .subscribe { image ->

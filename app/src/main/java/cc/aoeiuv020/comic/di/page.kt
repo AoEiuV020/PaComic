@@ -2,18 +2,16 @@ package cc.aoeiuv020.comic.di
 
 import cc.aoeiuv020.comic.api.ComicIssue
 import cc.aoeiuv020.comic.api.ComicPage
-import dagger.Component
 import dagger.Module
 import dagger.Provides
+import dagger.Subcomponent
 import io.reactivex.Observable
-import javax.inject.Singleton
 
 /**
  * 提供漫画图片页面，
  * Created by AoEiuV020 on 2017.09.12-18:09:59.
  */
-@Singleton
-@Component(modules = arrayOf(PageModule::class))
+@Subcomponent(modules = arrayOf(PageModule::class))
 interface PageComponent {
     fun getComicPages(): Observable<ComicPage>
 }

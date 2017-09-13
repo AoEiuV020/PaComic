@@ -2,18 +2,16 @@ package cc.aoeiuv020.comic.di
 
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicSite
-import dagger.Component
 import dagger.Module
 import dagger.Provides
+import dagger.Subcomponent
 import io.reactivex.Observable
-import javax.inject.Singleton
 
 /**
  * 提供漫画分类信息，
  * Created by AoEiuV020 on 2017.09.12-15:21:09.
  */
-@Singleton
-@Component(modules = arrayOf(GenreModule::class))
+@Subcomponent(modules = arrayOf(GenreModule::class))
 interface GenreComponent {
     fun getGenre(): Observable<ComicGenre>
 }

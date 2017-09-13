@@ -18,7 +18,9 @@ import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.api.ComicSite
-import cc.aoeiuv020.comic.di.*
+import cc.aoeiuv020.comic.di.GenreModule
+import cc.aoeiuv020.comic.di.ListModule
+import cc.aoeiuv020.comic.di.SiteModule
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -81,9 +83,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.groupId) {
             GROUP_ID -> {
                 val loadingDialog = loading()
-                DaggerListComponent.builder()
-                        .listModule(ListModule(genres[item.order]))
-                        .build()
+                App.component.plus(ListModule(genres[item.order]))
                         .getComicList()
                         .async()
                         .toList()
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showSites() {
-        DaggerSiteComponent.create()
+        App.component.plus(SiteModule())
                 .getSites()
                 .async()
                 .toList()
@@ -125,9 +125,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         drawer_layout.openDrawer(GravityCompat.START)
                         val site = sites[index]
                         val loadingDialog = loading()
-                        DaggerGenreComponent.builder()
-                                .genreModule(GenreModule(site))
-                                .build()
+                        App.component.plus(GenreModule(site))
                                 .getGenre()
                                 .async()
                                 .toList()

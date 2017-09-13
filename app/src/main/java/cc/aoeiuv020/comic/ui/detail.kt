@@ -11,7 +11,6 @@ import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicDetail
 import cc.aoeiuv020.comic.api.ComicIssue
 import cc.aoeiuv020.comic.api.ComicListItem
-import cc.aoeiuv020.comic.di.DaggerDetailComponent
 import cc.aoeiuv020.comic.di.DetailModule
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_comic_detail.*
@@ -40,9 +39,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
 
         val loadingDialog = loading()
-        DaggerDetailComponent.builder()
-                .detailModule(DetailModule(comicListItem))
-                .build()
+        App.component.plus(DetailModule(comicListItem))
                 .getComicDetail()
                 .async()
                 .subscribe { comicDetail ->
