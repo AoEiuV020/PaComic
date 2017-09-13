@@ -172,9 +172,9 @@ class SiteListAdapter(val ctx: Context, val sites: List<ComicSite>) : BaseAdapte
     override fun getCount() = sites.size
 }
 
-class ComicListAdapter(val ctx: Context, val items: List<ComicListItem>) : BaseAdapter() {
+class ComicListAdapter(val ctx: Context, val items: List<ComicListItem>) : BaseAdapter(), AnkoLogger {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View
-            = convertView ?: View.inflate(ctx, R.layout.comic_list_item, null).apply {
+            = (convertView ?: View.inflate(ctx, R.layout.comic_list_item, null)).apply {
         val comic = getItem(position)
         comic_name.text = comic.name
         Glide.with(ctx).load(comic.img).into(comic_icon)
