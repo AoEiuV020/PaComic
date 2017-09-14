@@ -54,18 +54,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         searchView.setHintTextColor(getColor(R.color.abc_hint_foreground_material_light))
 
-        App.component.plus(SiteModule()).site?.let { site ->
+        App.component.plus(SiteModule()).site?.also { site ->
             showGenre(site)
-            App.component.plus(GenreModule(site))
-                    .genre?.let { genre ->
+            App.component.plus(GenreModule(site)).genre?.let { genre ->
                 showComicList(genre)
-            }
+            } ?: openDrawer()
         } ?: showSites()
     }
 
+    private fun isDrawerOpen() = drawer_layout.isDrawerOpen(GravityCompat.START)
+
+    private fun closeDrawer() {
+        drawer_layout.closeDrawer(GravityCompat.START)
+    }
+
+    private fun openDrawer() {
+        drawer_layout.openDrawer(GravityCompat.START)
+    }
+
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
+        if (isDrawerOpen()) {
+            closeDrawer()
         } else {
             if (searchView.isSearchOpen) {
                 searchView.closeSearch()
@@ -100,7 +109,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         }
-        drawer_layout.closeDrawer(GravityCompat.START)
+        closeDrawer()
         return true
     }
 
@@ -136,7 +145,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .subscribe { sites ->
                     AlertDialog.Builder(this@MainActivity).setAdapter(SiteListAdapter(this@MainActivity, sites)) { alertDialog, index ->
                         val site = sites[index]
-                        drawer_layout.openDrawer(GravityCompat.START)
+                        openDrawer()
                         showGenre(site)
                     }.show()
                 }
