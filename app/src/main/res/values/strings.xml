@@ -2,7 +2,7 @@
     <string name="app_name">爬漫画</string>
 
     <string name="settings">设置</string>
-    <string name="loading">加载中</string>
+    <string name="loading">加载中..%s</string>
     <string name="title_activity_comic_info">漫画详情页</string>
     <string name="site">网站</string>
 
@@ -12,5 +12,9 @@
     <string name="title_activity_comic_page">ComicPageActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="comic_list">漫画列表</string>
+    <string name="genre_list">分类列表</string>
+    <string name="comic_detail">漫画详情</string>
+    <string name="comic_page">漫画页面</string>
 
 </resources>

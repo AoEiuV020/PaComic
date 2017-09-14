@@ -38,7 +38,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity)
         recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
 
-        val loadingDialog = loading()
+        val loadingDialog = loading(R.string.comic_detail)
         App.component.plus(DetailModule(comicListItem))
                 .getComicDetail()
                 .async()

@@ -95,7 +95,7 @@ class ComicPageActivity : AppCompatActivity() {
             return
         }
         val issue = detail.issuesAsc[issueIndex]
-        val loadingDialog = loading()
+        val loadingDialog = loading(R.string.comic_page)
         title = detail.name
         App.component.plus(PageModule(issue))
                 .getComicPages()

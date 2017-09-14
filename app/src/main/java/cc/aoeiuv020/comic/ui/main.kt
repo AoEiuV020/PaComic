@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showComicList(genre: ComicGenre) {
-        val loadingDialog = loading()
+        val loadingDialog = loading(R.string.comic_list)
         App.component.plus(ListModule(genre))
                 .getComicList()
                 .async()
@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showGenre(site: ComicSite) {
-        val loadingDialog = loading()
+        val loadingDialog = loading(R.string.genre_list)
         App.component.plus(GenreModule(site))
                 .getGenres()
                 .async()

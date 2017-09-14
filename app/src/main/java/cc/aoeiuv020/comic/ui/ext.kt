@@ -17,7 +17,10 @@ import org.jetbrains.anko.indeterminateProgressDialog
 /**
  * 展示进度条，
  */
-fun Context.loading() = indeterminateProgressDialog(R.string.loading)
+fun Context.loading(str: String = "") = indeterminateProgressDialog(getString(R.string.loading, str))
+
+fun Context.loading(id: Int) = loading(getString(id))
+
 
 fun <T : Any?> Observable<T>.async() = this
         .subscribeOn(Schedulers.newThread())
