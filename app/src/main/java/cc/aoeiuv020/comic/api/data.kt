@@ -52,12 +52,13 @@ data class ComicListItem(
 
 /**
  * 漫画详情页，
+ * @param issuesAsc 升序章节，
  */
 data class ComicDetail(
         val name: String,
         val bigImg: String,
         val info: String,
-        val issues: List<ComicIssue>
+        val issuesAsc: List<ComicIssue>
 ) : Data()
 
 /**

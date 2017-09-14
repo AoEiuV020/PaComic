@@ -40,7 +40,7 @@ class PopomhTest {
             println(it.name)
             println(it.bigImg)
             println(it.info)
-            it.issues.forEach { issue ->
+            it.issuesAsc.forEach { issue ->
                 println("[${issue.name}](${issue.url})")
             }
         }

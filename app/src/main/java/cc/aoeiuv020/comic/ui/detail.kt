@@ -60,11 +60,11 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
 class ComicDetailAdapter(val ctx: Context)
     : RecyclerView.Adapter<ComicDetailAdapter.Holder>() {
     private lateinit var detail: ComicDetail
-    private var issues = emptyList<ComicIssue>()
-    override fun getItemCount() = issues.size
+    private var issuesDesc = emptyList<ComicIssue>()
+    override fun getItemCount() = issuesDesc.size
 
     override fun onBindViewHolder(holder: Holder?, position: Int) {
-        val issue = issues[position]
+        val issue = issuesDesc[position]
         holder?.root?.apply {
             name.text = issue.name
         }
@@ -76,7 +76,7 @@ class ComicDetailAdapter(val ctx: Context)
 
     fun setDetail(detail: ComicDetail) {
         this.detail = detail
-        issues = detail.issues
+        issuesDesc = detail.issuesAsc.asReversed()
         notifyDataSetChanged()
     }
 

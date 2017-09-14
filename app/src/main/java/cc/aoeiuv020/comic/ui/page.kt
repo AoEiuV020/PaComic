@@ -91,10 +91,10 @@ class ComicPageActivity : AppCompatActivity() {
 
         val detail = intent.getSerializableExtra("detail") as? ComicDetail ?: return
         val issueIndex = intent.getIntExtra("issueIndex", -1)
-        if (issueIndex !in 0..detail.issues.size) {
+        if (issueIndex !in 0..detail.issuesAsc.size) {
             return
         }
-        val issue = detail.issues[issueIndex]
+        val issue = detail.issuesAsc[issueIndex]
         val loadingDialog = loading()
         title = detail.name
         App.component.plus(PageModule(issue))
