@@ -1,9 +1,12 @@
 package cc.aoeiuv020.comic.di
 
-import android.test.mock.MockContext
+import android.content.Context
+import android.content.SharedPreferences
 import cc.aoeiuv020.comic.api.*
+import cc.aoeiuv020.comic.ui.App
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 
 /**
  * 测试dagger,
@@ -11,18 +14,20 @@ import org.junit.Test
  */
 
 class DaggerTest {
-    lateinit var component: AppComponent
-
     @Before
     fun setUp() {
-        component = DaggerAppComponent.builder()
-                .appModule(AppModule(MockContext()))
-                .build()
+        val sp = Mockito.mock(SharedPreferences::class.java)
+        val spe = Mockito.mock(SharedPreferences.Editor::class.java)
+        val ctx = Mockito.mock(Context::class.java)
+        Mockito.`when`(ctx.getSharedPreferences(Mockito.anyString(), Mockito.anyInt())).thenReturn(sp)
+        Mockito.`when`(sp.edit()).thenReturn(spe)
+        Mockito.`when`(spe.putString(Mockito.anyString(), Mockito.anyString())).thenReturn(spe)
+        App.setComponent(ctx)
     }
 
     @Test
     fun getSites() {
-        val siteComponent: SiteComponent = component.plus(SiteModule())
+        val siteComponent: SiteComponent = App.component.plus(SiteModule())
         siteComponent.getSites()
                 .forEach {
                     println(it.name)
@@ -33,7 +38,7 @@ class DaggerTest {
 
     @Test
     fun getGenres() {
-        val genreComponent: GenreComponent = component.plus(GenreModule(ComicSite("", "http://www.popomh.com", "")))
+        val genreComponent: GenreComponent = App.component.plus(GenreModule(ComicSite("", "http://www.popomh.com", "")))
         genreComponent.getGenres()
                 .forEach {
                     println(it.name)
@@ -43,7 +48,7 @@ class DaggerTest {
 
     @Test
     fun getComicList() {
-        val listComponent: ListComponent = component.plus(ListModule(ComicGenre("", "http://www.popomh.com/comic/class_8.html")))
+        val listComponent: ListComponent = App.component.plus(ListModule(ComicGenre("", "http://www.popomh.com/comic/class_8.html")))
         listComponent.getComicList()
                 .forEach {
                     println(it.name)
@@ -54,7 +59,7 @@ class DaggerTest {
 
     @Test
     fun getComicDetail() {
-        val detailComponent: DetailComponent = component.plus(DetailModule(ComicListItem("狩猎史莱姆300年", "", "http://www.popomh.com/manhua/32551.html")))
+        val detailComponent: DetailComponent = App.component.plus(DetailModule(ComicListItem("狩猎史莱姆300年", "", "http://www.popomh.com/manhua/32551.html")))
         detailComponent.getComicDetail()
                 .forEach {
                     println(it.name)
@@ -68,7 +73,7 @@ class DaggerTest {
 
     @Test
     fun getComicPages() {
-        val pageComponent: PageComponent = component.plus(PageModule(ComicIssue("", "http://www.popomh.com/popo290025/1.html?s=3")))
+        val pageComponent: PageComponent = App.component.plus(PageModule(ComicIssue("", "http://www.popomh.com/popo290025/1.html?s=3")))
         pageComponent.getComicPages()
                 .forEach {
                     println(it.url)
@@ -77,7 +82,7 @@ class DaggerTest {
 
     @Test
     fun getComicImage() {
-        val imageComponent: ImageComponent = component.plus(ImageModule(ComicPage("http://www.popomh.com/popo290025/24.html?s=3")))
+        val imageComponent: ImageComponent = App.component.plus(ImageModule(ComicPage("http://www.popomh.com/popo290025/24.html?s=3")))
         imageComponent.getComicImage()
                 .forEach {
                     println(it.img)
