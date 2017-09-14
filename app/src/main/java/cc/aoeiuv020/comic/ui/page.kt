@@ -110,6 +110,8 @@ class ComicPageActivity : AppCompatActivity() {
     private fun display(pages: List<ComicPage>) {
         if (pages.isEmpty()) {
             alert("浏览失败或者不支持该漫画").show()
+            // 无法浏览的情况显示状态栏标题栏导航栏，方便离开，
+            show()
             return
         }
         viewPager.adapter = ComicPageAdapter(this, pages)
