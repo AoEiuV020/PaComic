@@ -44,7 +44,7 @@ class Dm5Context : ComicContext() {
                 .map {
                     ComicIssue(it.select("a").attr("title"), url(it.select("a").attr("href")))
                 }.asReversed()
-        return ComicDetail(name, bigImg, info, issues)
+        return ComicDetail(name, bigImg, info, ArrayList(issues))
     }
 
     override fun getComicPages(comicIssue: ComicIssue): List<ComicPage> {

@@ -40,7 +40,7 @@ class PopomhContext : ComicContext() {
                 .joinToString("\n") { it.text() }
         val issues = root.select("#permalink > div.cVolList > ul > li > a")
                 .map { ComicIssue(it.text(), url(it.attr("href"))) }
-        return ComicDetail(name, bigImg, info, issues)
+        return ComicDetail(name, bigImg, info, ArrayList(issues))
     }
 
     override fun getComicPages(comicIssue: ComicIssue): List<ComicPage> {
