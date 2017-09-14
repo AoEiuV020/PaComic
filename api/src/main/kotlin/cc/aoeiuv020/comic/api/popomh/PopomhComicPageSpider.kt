@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document
  * Created by AoEiuV020 on 17-5-31.
  */
 class PopomhComicPageSpider(popomh: Popomh, val firstPageUrl: String) : ComicPageSpider() {
-    override val pagesCount: Int by lazy {
+    override val pageCount: Int by lazy {
         logger.debug("get comic page count")
         val elements = firstPage.select("body > div.cHeader > div.cH1 > b")
         elements.first().text().split('/')[1].trim().toInt()

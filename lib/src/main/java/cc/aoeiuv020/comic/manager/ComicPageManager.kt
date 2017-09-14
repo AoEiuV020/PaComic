@@ -11,7 +11,7 @@ class ComicPageManager {
     internal val comicPageSpider: ComicPageSpider?
         get() = ComicManager.comicContentsManager.comicContentsSpider?.comicPage
     val comicPagesCountModel: ComicPagesCountModel?
-        get() = comicPageSpider?.let { ComicPagesCountModel(it.pagesCount) }
+        get() = comicPageSpider?.let { ComicPagesCountModel(it.pageCount) }
 
     fun comicPageModelAt(index: Int) = comicPageSpider?.let { ComicPageModel(it.imgUrl(index)) }
     fun reset() {

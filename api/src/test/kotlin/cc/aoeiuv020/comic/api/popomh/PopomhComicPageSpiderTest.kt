@@ -16,7 +16,7 @@ class PopomhComicPageSpiderTest {
 
     @Test
     fun getPagesCount() {
-        println(page.pagesCount)
+        println(page.pageCount)
     }
 
     @Test

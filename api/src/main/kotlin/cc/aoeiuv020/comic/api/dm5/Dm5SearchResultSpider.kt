@@ -20,7 +20,7 @@ class Dm5SearchResultSpider(val dm5: Dm5, override val name: String) : SearchRes
     override fun comicList(i: Int): List<Dm5ComicItemSpider> {
         logger.debug("get comic list on page ${i + 1}")
         val root = page(i + 1)
-        val elements = root.select("body > div.container > div.midBar > div")
+        val elements = root.select("body > div.container > div.midBar > div:has(dl)")
         logger.debug("comic count ${elements.size}")
         return elements.map {
             Dm5ComicItemSpider(dm5,

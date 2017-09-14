@@ -6,7 +6,7 @@ import org.jsoup.Jsoup.connect
 /**
  * Created by AoEiuV020 on 17-6-11.
  */
-class Dm5ComicPageSpider(val dm5: Dm5, firstPageUrl: String, override val pagesCount: Int) : ComicPageSpider() {
+class Dm5ComicPageSpider(val dm5: Dm5, firstPageUrl: String, override val pageCount: Int) : ComicPageSpider() {
     val cid = firstPageUrl.replace(Regex(".*/m(\\d*)/"), "$1")
     val chapterfunUrl = dm5.home + "/chapterfun.ashx"
     internal fun pageUrl(i: Int): String {
