@@ -5,7 +5,7 @@ package cc.aoeiuv020.comic.api
  * Created by AoEiuV020 on 2017.09.09-21:08:02.
  */
 class PopomhContext : ComicContext() {
-    val site = ComicSite(
+    private val site = ComicSite(
             name = "泡泡漫画",
             baseUrl = "http://www.popomh.com",
             logo = "http://www.popomh.com/images/logo.png"
@@ -56,7 +56,7 @@ class PopomhContext : ComicContext() {
     /**
      * 网站有两个图片服务器，默认第一个，
      */
-    var domainIndex: Int = 0
+    private var domainIndex: Int = 0
 
     override fun getComicImage(comicPage: ComicPage): ComicImage {
         val root = getHtml(comicPage.url)
@@ -73,7 +73,7 @@ class PopomhContext : ComicContext() {
      * 方法名意义未知，
      * http://www.popomh.com/script/view.js
      */
-    fun unsuan(cipher: String): String {
+    private fun unsuan(cipher: String): String {
         var s = cipher
         val x = s.substring(s.length - 1)
         val w = "abcdefghijklmnopqrstuvwxyz"

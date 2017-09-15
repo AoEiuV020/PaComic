@@ -17,7 +17,7 @@ interface ImageComponent {
 }
 
 @Module
-class ImageModule(val comicPage: ComicPage) {
+class ImageModule(private val comicPage: ComicPage) {
     @Provides
     fun getComicImage(): Observable<ComicImage> = Observable.create { em ->
         em.onNext(ctx(comicPage.url).getComicImage(comicPage))

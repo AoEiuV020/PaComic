@@ -19,7 +19,7 @@ interface ListComponent {
 }
 
 @Module
-class ListModule(val comicGenre: ComicGenre) {
+class ListModule(private val comicGenre: ComicGenre) {
     init {
         App.component.ctx.getSharedPreferences("genre", Context.MODE_PRIVATE)
                 .edit()

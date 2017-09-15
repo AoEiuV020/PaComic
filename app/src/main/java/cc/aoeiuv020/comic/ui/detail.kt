@@ -48,7 +48,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
                 }
     }
 
-    fun setDetail(detail: ComicDetail) {
+    private fun setDetail(detail: ComicDetail) {
         toolbar_layout.title = detail.name
         Glide.with(this@ComicDetailActivity)
                 .load(detail.bigImg)

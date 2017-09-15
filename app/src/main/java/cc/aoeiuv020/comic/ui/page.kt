@@ -28,7 +28,7 @@ import org.jetbrains.anko.alert
 import java.util.*
 
 
-@Suppress("unused")
+@Suppress("unused", "ConstantConditionIf")
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
@@ -215,8 +215,8 @@ class ComicPageActivity : AppCompatActivity() {
     }
 }
 
-class ComicPageAdapter(val ctx: Context, val pages: List<ComicPage>) : PagerAdapter() {
-    val views: LinkedList<View> = LinkedList()
+class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : PagerAdapter() {
+    private val views: LinkedList<View> = LinkedList()
     override fun isViewFromObject(view: View, obj: Any) = view === obj
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val root = if (views.isNotEmpty())

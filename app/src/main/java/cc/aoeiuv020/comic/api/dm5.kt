@@ -7,7 +7,7 @@ import org.jsoup.Jsoup
  * Created by AoEiuV020 on 2017.09.13-15:15:49.
  */
 class Dm5Context : ComicContext() {
-    val site = ComicSite(
+    private val site = ComicSite(
             name = "动漫屋",
             baseUrl = "http://www.dm5.com",
             logo = "http://js16.tel.cdndm.com/v201704261735/default/images/newImages/index_main_logo.png"
@@ -76,7 +76,7 @@ class Dm5Context : ComicContext() {
         logger.debug("connect $pageUrl")
         conn.execute()
         val str = conn.response().body()
-        logger.debug("chapterfun: ${str}")
+        logger.debug("chapterfun: $str")
         val chapter = str.removeSuffix("\n")
         return ComicImage(decode(chapter))
     }
@@ -85,6 +85,7 @@ class Dm5Context : ComicContext() {
      * 根据这网站反混淆这个js解读的，
      * http://jsbeautifier.org/
      */
+    @SuppressWarnings("")
     private fun decode(chapter: String): String {
         val keys = chapter.replace(Regex(".*\\('.*',\\d*,\\d*,'(.*)'\\.split.*"), "$1").split('|')
         fun antialiasing(r: String, ch: Char): String = r + when (ch.toInt()) {
@@ -105,11 +106,11 @@ class Dm5Context : ComicContext() {
          * 然而android studio 甚至警告不要转义，
          * android api 25,
          * java oracle 1.8.0_131
+         * 反馈bug ?
         */
         val param = chapter.replace(Regex(".*\\+\\\\\'(\\?[^\\\\]*)\\\\\'\\}.*"), "$1")
                 .fold("", ::antialiasing)
         logger.debug("param = $param")
-        val url = "$pix$pvalue$param"
-        return url
+        return "$pix$pvalue$param"
     }
 }

@@ -24,9 +24,8 @@ data class ComicSite(
 /**
  * 包含漫画列表的页面，
  * 比如，分类，搜索结果，
- *
- * @Deprecated
  */
+@Deprecated("没设计好")
 data class ComicListPage(
         val url: String
 ) : Data()

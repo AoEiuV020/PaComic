@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .async()
                 .toList()
                 .subscribe { sites ->
-                    AlertDialog.Builder(this@MainActivity).setAdapter(SiteListAdapter(this@MainActivity, sites)) { alertDialog, index ->
+                    AlertDialog.Builder(this@MainActivity).setAdapter(SiteListAdapter(this@MainActivity, sites)) { _, index ->
                         val site = sites[index]
                         openDrawer()
                         showGenre(site)
@@ -172,14 +172,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         this.genres = genres
         nav_view.menu.run {
             removeGroup(GROUP_ID)
-            genres.forEachIndexed { index, comicGenre ->
-                add(GROUP_ID, index, index, comicGenre.name)
+            genres.forEachIndexed { index, (name) ->
+                add(GROUP_ID, index, index, name)
             }
         }
     }
 }
 
-class SiteListAdapter(val ctx: Context, val sites: List<ComicSite>) : BaseAdapter() {
+class SiteListAdapter(val ctx: Context, private val sites: List<ComicSite>) : BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view = convertView ?: View.inflate(ctx, R.layout.site_list_item, null)
         val site = getItem(position)
@@ -197,7 +197,7 @@ class SiteListAdapter(val ctx: Context, val sites: List<ComicSite>) : BaseAdapte
     override fun getCount() = sites.size
 }
 
-class ComicListAdapter(val ctx: Context, val items: List<ComicListItem>) : BaseAdapter(), AnkoLogger {
+class ComicListAdapter(val ctx: Context, private val items: List<ComicListItem>) : BaseAdapter(), AnkoLogger {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View
             = (convertView ?: View.inflate(ctx, R.layout.comic_list_item, null)).apply {
         val comic = getItem(position)

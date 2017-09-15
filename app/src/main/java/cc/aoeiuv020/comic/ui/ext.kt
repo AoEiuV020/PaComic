@@ -22,10 +22,11 @@ fun Context.loading(str: String = "") = indeterminateProgressDialog(getString(R.
 fun Context.loading(id: Int) = loading(getString(id))
 
 
-fun <T : Any?> Observable<T>.async() = this
+fun <T : Any?> Observable<T>.async(): Observable<T> = this
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
 
+@Suppress("unused")
 fun asyncLoadImage(image: ImageView, url: String) {
     Glide.with(image).load(url).into(image)
 }

@@ -65,8 +65,8 @@ class DaggerTest {
                     println(it.name)
                     println(it.bigImg)
                     println(it.info)
-                    it.issuesAsc.forEach { issue ->
-                        println("[${issue.name}](${issue.url})")
+                    it.issuesAsc.forEach {
+                        println("[${it.name}](${it.url})")
                     }
                 }
     }

@@ -24,7 +24,7 @@ interface GenreComponent {
 }
 
 @Module
-class GenreModule(val site: ComicSite) {
+class GenreModule(private val site: ComicSite) {
     init {
         App.component.ctx.getSharedPreferences("site", Context.MODE_PRIVATE)
                 .edit()

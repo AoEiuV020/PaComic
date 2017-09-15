@@ -17,7 +17,7 @@ interface PageComponent {
 }
 
 @Module
-class PageModule(val comicIssue: ComicIssue) {
+class PageModule(private val comicIssue: ComicIssue) {
     @Provides
     fun getComicPages(): Observable<ComicPage> = Observable.create { em ->
         ctx(comicIssue.url).getComicPages(comicIssue).forEach {
