@@ -13,12 +13,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.BaseAdapter
 import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.api.ComicSite
 import cc.aoeiuv020.comic.di.GenreModule
+import cc.aoeiuv020.comic.di.ListComponent
 import cc.aoeiuv020.comic.di.ListModule
 import cc.aoeiuv020.comic.di.SiteModule
 import com.bumptech.glide.Glide
@@ -28,6 +30,7 @@ import kotlinx.android.synthetic.main.comic_list_item.view.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.debug
 import org.jetbrains.anko.error
 import org.jetbrains.anko.startActivity
 
@@ -99,8 +102,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.groupId) {
             GROUP_ID -> {
-                val genre = genres[item.order]
-                showComicList(genre)
+                showComicList(genres[item.order])
             }
             else -> when (item.itemId) {
                 R.id.select_sites -> showSites()
@@ -113,9 +115,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    private var listComponent: ListComponent? = null
+
     private fun showComicList(genre: ComicGenre) {
         val loadingDialog = loading(R.string.comic_list)
-        App.component.plus(ListModule(genre))
+        App.component.plus(ListModule(genre)).also { listComponent = it }
                 .getComicList()
                 .async()
                 .toList()
@@ -128,12 +132,53 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 })
     }
 
+    private fun addComicList(comicList: List<ComicListItem>) {
+        (listView.adapter as ComicListAdapter).addAll(comicList)
+    }
+
     private fun setComicList(comicList: List<ComicListItem>) {
         listView.run {
             adapter = ComicListAdapter(this@MainActivity, comicList)
             setOnItemClickListener { _, _, position, _ ->
                 startActivity<ComicDetailActivity>("item" to comicList[position])
             }
+            setOnScrollListener(object : AbsListView.OnScrollListener {
+                private var lastItem = 0
+                private var loadingNextPage = false
+                override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+                    // 求画面上最后一个的索引，并不准，可能是最后一个+1,
+                    lastItem = firstVisibleItem + visibleItemCount
+                }
+
+                override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {
+                    debug { "<$lastItem, $loadingNextPage, $scrollState>" }
+                    // 差不多就好，反正没到底也快了，
+                    if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
+                            && lastItem >= adapter.count - 2 && !loadingNextPage) {
+                        loadingNextPage = true
+                        val loadingDialog = loading(getString(R.string.next_page))
+                        listComponent?.run {
+                            getNextPage().async().subscribe { nullableGenre ->
+                                nullableGenre?.also { genre ->
+                                    App.component.plus(ListModule(genre)).also { listComponent = it }
+                                            .getComicList()
+                                            .async()
+                                            .toList()
+                                            .subscribe({ comicList ->
+                                                addComicList(comicList)
+                                                loadingDialog.dismiss()
+                                                loadingNextPage = false
+                                            }, { e ->
+                                                error("加载漫画列表失败", e)
+                                                loadingDialog.dismiss()
+                                                loadingNextPage = false
+                                            })
+                                } ?: loading(R.string.yet_last_page)
+                            }
+                        }
+                    }
+                }
+            })
         }
     }
 
@@ -197,7 +242,8 @@ class SiteListAdapter(val ctx: Context, private val sites: List<ComicSite>) : Ba
     override fun getCount() = sites.size
 }
 
-class ComicListAdapter(val ctx: Context, private val items: List<ComicListItem>) : BaseAdapter(), AnkoLogger {
+class ComicListAdapter(val ctx: Context, data: List<ComicListItem>) : BaseAdapter(), AnkoLogger {
+    private val items = data.toMutableList()
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View
             = (convertView ?: View.inflate(ctx, R.layout.comic_list_item, null)).apply {
         val comic = getItem(position)
@@ -210,4 +256,8 @@ class ComicListAdapter(val ctx: Context, private val items: List<ComicListItem>)
     override fun getItemId(position: Int) = 0L
 
     override fun getCount() = items.size
+    fun addAll(comicList: List<ComicListItem>) {
+        items.addAll(comicList)
+        notifyDataSetChanged()
+    }
 }
