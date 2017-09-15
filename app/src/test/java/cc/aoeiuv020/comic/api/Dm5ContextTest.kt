@@ -7,7 +7,7 @@ import org.junit.Test
  * 动漫屋的测试类，
  * Created by AoEiuV020 on 2017.09.13-16:29:56.
  */
-class Dm5Test {
+class Dm5ContextTest {
     init {
         System.setProperty("org.slf4j.simpleLogger.log.Dm5Context", "trace")
     }

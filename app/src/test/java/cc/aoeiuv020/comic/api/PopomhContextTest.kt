@@ -7,7 +7,7 @@ import org.junit.Test
  * 泡泡漫画网的测试类，
  * Created by AoEiuV020 on 2017.09.09-22:17:08.
  */
-class PopomhTest {
+class PopomhContextTest {
     private lateinit var context: PopomhContext
     @Before
     fun setUp() {
