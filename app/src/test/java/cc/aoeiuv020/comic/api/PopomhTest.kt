@@ -23,6 +23,18 @@ class PopomhTest {
 
     @Test
     fun getNextPage() {
+        val genreList = listOf("http://www.popomh.com/comic/",
+                "http://www.popomh.com/comic/10.html",
+                "http://www.popomh.com/comic/1091.html",
+                "http://www.popomh.com/comic/class_4.html",
+                "http://www.popomh.com/comic/class_4/22.html",
+                "http://www.popomh.com/comic/class_4/29.html")
+                .map { ComicGenre("", it) }
+        genreList.forEach {
+            context.getNextPage(it).let {
+                println(it?.url)
+            }
+        }
     }
 
     @Test

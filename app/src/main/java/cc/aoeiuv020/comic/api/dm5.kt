@@ -21,7 +21,13 @@ class Dm5Context : ComicContext() {
     }
 
     override fun getNextPage(genre: ComicGenre): ComicGenre? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val root = getHtml(genre.url)
+        val url = root.select("#search_fy > a:contains(下一页)").attr("abs:href")
+        return if (url.isEmpty()) {
+            return null
+        } else {
+            ComicGenre(genre.name, url)
+        }
     }
 
     override fun getComicList(genre: ComicGenre): List<ComicListItem> {

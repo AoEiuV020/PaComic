@@ -27,6 +27,15 @@ class Dm5Test {
 
     @Test
     fun getNextPage() {
+        val genreList = listOf("http://www.dm5.com/manhua-shaonianrexue/",
+                "http://www.dm5.com/manhua-shaonianrexue-p2/",
+                "http://www.dm5.com/manhua-shaonianrexue-p149/")
+                .map { ComicGenre("", it) }
+        genreList.forEach {
+            context.getNextPage(it).let {
+                println(it?.url)
+            }
+        }
     }
 
     @Test
