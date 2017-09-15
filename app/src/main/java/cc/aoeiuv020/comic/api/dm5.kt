@@ -83,14 +83,15 @@ class Dm5Context : ComicContext() {
 
     /**
      * 根据这网站反混淆这个js解读的，
+     * 真难伺候，只能发现点问题再改改，
      * http://jsbeautifier.org/
      */
     @SuppressWarnings("")
     private fun decode(chapter: String): String {
         val keys = chapter.replace(Regex(".*\\('.*',\\d*,\\d*,'(.*)'\\.split.*"), "$1").split('|')
         fun antialiasing(r: String, ch: Char): String = r + when (ch.toInt()) {
-            in 'a'.toInt()..'z'.toInt() -> keys[ch.toInt() - 'a'.toInt() + 10]
-            in '0'.toInt()..'9'.toInt() -> keys[ch.toInt() - '0'.toInt()]
+            in 'a'.toInt()..'z'.toInt() -> keys[ch.toInt() - 'a'.toInt() + 10].takeIf { it.isNotEmpty() } ?: ch
+            in '0'.toInt()..'9'.toInt() -> keys[ch.toInt() - '0'.toInt()].takeIf { it.isNotEmpty() } ?: ch
             else -> ch
         }
         // g://f-k-j-a-b.e.c/l/q/3

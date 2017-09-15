@@ -59,7 +59,7 @@ class Dm5Test {
 
     @Test
     fun getComicImage() {
-        context.getComicImage(ComicPage("http://www.dm5.com/m523824-p4/")).let {
+        context.getComicImage(ComicPage("http://www.dm5.com/m529922-p1/")).let {
             println(it.img)
         }
     }
