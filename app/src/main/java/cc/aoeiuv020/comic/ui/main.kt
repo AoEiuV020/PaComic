@@ -28,6 +28,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.comic_list_item.view.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.nav_header_main.view.*
 import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
@@ -119,6 +120,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun showComicList(genre: ComicGenre) {
         val loadingDialog = loading(R.string.comic_list)
+        title = genre.name
         App.component.plus(ListModule(genre)).also { listComponent = it }
                 .getComicList()
                 .async()
@@ -197,6 +199,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showGenre(site: ComicSite) {
+        nav_view.getHeaderView(0).apply {
+            selectedSiteName.text = site.name
+            Glide.with(this@MainActivity).load(site.logo).holdInto(selectedSiteLogo)
+        }
         val loadingDialog = loading(R.string.genre_list)
         App.component.plus(GenreModule(site))
                 .getGenres()
@@ -229,8 +235,8 @@ class SiteListAdapter(val ctx: Context, private val sites: List<ComicSite>) : Ba
         val view = convertView ?: View.inflate(ctx, R.layout.site_list_item, null)
         val site = getItem(position)
         view.apply {
-            site_name.text = site.name
-            Glide.with(ctx).load(site.logo).into(site_logo)
+            siteName.text = site.name
+            Glide.with(ctx).load(site.logo).into(siteLogo)
         }
         return view
     }

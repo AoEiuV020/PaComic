@@ -4,6 +4,8 @@ import android.content.Context
 import android.widget.ImageView
 import cc.aoeiuv020.comic.R
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.request.RequestOptions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -30,3 +32,10 @@ fun <T : Any?> Observable<T>.async(): Observable<T> = this
 fun asyncLoadImage(image: ImageView, url: String) {
     Glide.with(image).load(url).into(image)
 }
+
+/**
+ * 下载过程保持原来的图片，
+ */
+fun <TranscodeType> RequestBuilder<TranscodeType>.holdInto(image: ImageView)
+        = apply(RequestOptions().placeholder(image.drawable)).into(image)
+
