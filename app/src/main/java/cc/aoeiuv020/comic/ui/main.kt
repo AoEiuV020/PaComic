@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         listView.run {
             adapter = ComicListAdapter(this@MainActivity, comicList)
             setOnItemClickListener { _, _, position, _ ->
-                startActivity<ComicDetailActivity>("item" to comicList[position])
+                startActivity<ComicDetailActivity>("item" to adapter.getItem(position))
             }
             setOnScrollListener(object : AbsListView.OnScrollListener {
                 private var lastItem = 0
