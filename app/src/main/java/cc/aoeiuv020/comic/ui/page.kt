@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.SeekBar
 import cc.aoeiuv020.comic.R
-import cc.aoeiuv020.comic.api.ComicDetail
+import cc.aoeiuv020.comic.api.ComicIssue
 import cc.aoeiuv020.comic.api.ComicPage
 import cc.aoeiuv020.comic.di.ImageModule
 import cc.aoeiuv020.comic.di.PageModule
@@ -94,14 +94,10 @@ class ComicPageActivity : AppCompatActivity() {
         // while interacting with the UI.
 //        dummy_button.setOnTouchListener(mDelayHideTouchListener)
 
-        val detail = intent.getSerializableExtra("detail") as? ComicDetail ?: return
-        val issueIndex = intent.getIntExtra("issueIndex", -1)
-        if (issueIndex !in 0..detail.issuesAsc.size) {
-            return
-        }
-        val issue = detail.issuesAsc[issueIndex]
+        val name = intent.getStringExtra("name") ?: return
+        val issue = intent.getSerializableExtra("issue") as? ComicIssue ?: return
         val loadingDialog = loading(R.string.comic_page)
-        title = detail.name
+        title = name
         App.component.plus(PageModule(issue))
                 .getComicPages()
                 .async()

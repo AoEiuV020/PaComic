@@ -83,7 +83,7 @@ class ComicDetailAdapter(val ctx: Context)
     inner class Holder(val root: View) : RecyclerView.ViewHolder(root), AnkoLogger {
         init {
             root.setOnClickListener {
-                ctx.startActivity<ComicPageActivity>("detail" to detail, "issueIndex" to layoutPosition)
+                ctx.startActivity<ComicPageActivity>("name" to detail.name, "issue" to issuesDesc[layoutPosition])
             }
         }
     }
