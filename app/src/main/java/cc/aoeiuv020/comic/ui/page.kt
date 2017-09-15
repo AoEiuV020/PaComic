@@ -97,7 +97,7 @@ class ComicPageActivity : AppCompatActivity() {
         val name = intent.getStringExtra("name") ?: return
         val issue = intent.getSerializableExtra("issue") as? ComicIssue ?: return
         val loadingDialog = loading(R.string.comic_page)
-        title = name
+        title = "$name - ${issue.name}"
         App.component.plus(PageModule(issue))
                 .getComicPages()
                 .async()

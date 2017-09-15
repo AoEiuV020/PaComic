@@ -42,7 +42,7 @@ class Dm5Context : ComicContext() {
                 .joinToString("\n") { it.text() }
         val issues = root.select("ul.nr6.lan2 > li:has(a.tg)")
                 .map {
-                    ComicIssue(it.select("a").attr("title"), url(it.select("a").attr("href")))
+                    ComicIssue(it.select("a").attr("title").removePrefix(name), url(it.select("a").attr("href")))
                 }.asReversed()
         return ComicDetail(name, bigImg, info, issues)
     }

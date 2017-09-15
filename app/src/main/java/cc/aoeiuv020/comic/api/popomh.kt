@@ -39,7 +39,7 @@ class PopomhContext : ComicContext() {
         val info = root.select("#about_kit > ul > li")
                 .joinToString("\n") { it.text() }
         val issues = root.select("#permalink > div.cVolList > ul > li > a")
-                .map { ComicIssue(it.text(), url(it.attr("href"))) }
+                .map { ComicIssue(it.text().removePrefix(name), url(it.attr("href"))) }
                 .asReversed()
         return ComicDetail(name, bigImg, info, issues)
     }

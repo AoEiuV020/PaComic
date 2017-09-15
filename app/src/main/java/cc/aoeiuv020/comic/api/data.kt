@@ -65,6 +65,9 @@ data class ComicDetail(
  * @param url 本章节第一页地址，
  */
 data class ComicIssue(
+        /**
+         * 章节名不包括漫画名，
+         */
         val name: String,
         val url: String
 ) : Data()
