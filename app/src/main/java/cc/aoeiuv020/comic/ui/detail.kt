@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import cc.aoeiuv020.comic.R
@@ -57,21 +58,20 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
     }
 }
 
-class ComicDetailAdapter(val ctx: Context)
-    : RecyclerView.Adapter<ComicDetailAdapter.Holder>() {
+class ComicDetailAdapter(val ctx: Context) : RecyclerView.Adapter<ComicDetailAdapter.Holder>() {
     private lateinit var detail: ComicDetail
     private var issuesDesc = emptyList<ComicIssue>()
     override fun getItemCount() = issuesDesc.size
 
-    override fun onBindViewHolder(holder: Holder?, position: Int) {
+    override fun onBindViewHolder(holder: Holder, position: Int) {
         val issue = issuesDesc[position]
-        holder?.root?.apply {
+        holder.root.apply {
             name.text = issue.name
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int)
-            = Holder(View.inflate(ctx, R.layout.comic_issue_item, null))
+            = Holder(LayoutInflater.from(ctx).inflate(R.layout.comic_issue_item, parent, false))
 
 
     fun setDetail(detail: ComicDetail) {
