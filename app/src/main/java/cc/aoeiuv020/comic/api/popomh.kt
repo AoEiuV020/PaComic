@@ -50,7 +50,7 @@ class PopomhContext : ComicContext() {
                 .first().text().split('/')[1].trim().toInt()
         return List(pagesCount) {
             ComicPage(comicIssue.url.replace(Regex("/\\d*.html"), "/${it + 1}.html"))
-        }.asReversed()
+        }
     }
 
     /**
