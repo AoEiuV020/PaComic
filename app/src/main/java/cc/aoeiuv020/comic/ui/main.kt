@@ -30,10 +30,7 @@ import kotlinx.android.synthetic.main.comic_list_item.view.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import kotlinx.android.synthetic.main.site_list_item.view.*
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.debug
-import org.jetbrains.anko.error
-import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.*
 
 
 /**
@@ -42,7 +39,7 @@ import org.jetbrains.anko.startActivity
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AnkoLogger {
-
+    private var url: String? = null
     @SuppressLint("PrivateResource")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +91,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val item = menu.findItem(R.id.action_search)
         searchView.setMenuItem(item)
 
+        menu.findItem(R.id.browse).setOnMenuItemClickListener {
+            url?.let { browse(it) } ?: false
+        }
+
         return true
     }
 
@@ -120,6 +121,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun showComicList(genre: ComicGenre) {
         val loadingDialog = loading(R.string.comic_list)
+        url = genre.url
         title = genre.name
         App.component.plus(ListModule(genre)).also { listComponent = it }
                 .getComicList()
@@ -199,6 +201,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun showGenre(site: ComicSite) {
+        url = site.baseUrl
         nav_view.getHeaderView(0).apply {
             selectedSiteName.text = site.name
             Glide.with(this@MainActivity).load(site.logo).holdInto(selectedSiteLogo)
