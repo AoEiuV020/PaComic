@@ -20,12 +20,14 @@ import kotlinx.android.synthetic.main.activity_comic_detail.view.*
 import kotlinx.android.synthetic.main.comic_issue_item.view.*
 import kotlinx.android.synthetic.main.content_comic_detail.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.browse
 import org.jetbrains.anko.startActivity
 
 class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
+    private lateinit var comicListItem: ComicListItem
+    private var comicDetail: ComicDetail? = null
 
-    private lateinit var url: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +36,10 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        val comicListItem = intent.getSerializableExtra("item") as? ComicListItem ?: run {
+        comicListItem = intent.getSerializableExtra("item") as? ComicListItem ?: run {
             finish()
             return
         }
-        url = comicListItem.url
 
         toolbar_layout.title = comicListItem.name
         Glide.with(this@ComicDetailActivity)
@@ -58,6 +59,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
     }
 
     private fun setDetail(detail: ComicDetail) {
+        this.comicDetail = detail
         toolbar_layout.title = detail.name
         Glide.with(this@ComicDetailActivity)
                 .load(detail.bigImg)
@@ -67,10 +69,15 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_detail, menu)
-
         menu.findItem(R.id.browse).setOnMenuItemClickListener {
-            // 这时候url已经初始化了，
-            browse(url)
+            browse(comicListItem.url)
+        }
+        menu.findItem(R.id.info).setOnMenuItemClickListener {
+            // 这个comicDetail本质上是调用getter，不是直接传对象到内部类，
+            comicDetail?.let {
+                alert(it.info, it.name) { icon = getDrawable(R.drawable.ic_info) }.show()
+            }
+            true
         }
 
         return true

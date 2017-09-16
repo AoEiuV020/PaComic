@@ -20,5 +20,6 @@
     <string name="next_page">下一页</string>
     <string name="page_number">%d/%d</string>
     <string name="browse">浏览</string>
+    <string name="info">简介</string>
 
 </resources>
