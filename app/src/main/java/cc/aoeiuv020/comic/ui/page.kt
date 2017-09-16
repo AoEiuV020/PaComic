@@ -2,6 +2,7 @@ package cc.aoeiuv020.comic.ui
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
@@ -14,14 +15,14 @@ import cc.aoeiuv020.comic.api.ComicPage
 import cc.aoeiuv020.comic.di.ImageModule
 import cc.aoeiuv020.comic.di.PageModule
 import cc.aoeiuv020.comic.ui.base.ComicPageBaseFullScreenActivity
+import com.boycy815.pinchimageview.huge.HugeUtil
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
 import org.jetbrains.anko.alert
+import java.io.File
 import java.util.*
 
 
@@ -101,19 +102,18 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
         App.component.plus(ImageModule(pages[position]))
                 .getComicImage()
                 .async()
-                .subscribe { image ->
-                    Glide.with(ctx).load(image.img).listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                .subscribe { (img) ->
+                    Glide.with(ctx).download(img).into(object : SimpleTarget<File>() {
+                        override fun onResourceReady(resource: File, transition: Transition<in File>?) {
                             root.progressBar.visibility = View.GONE
-                            return false
+                            // TODO: 这段直接对比别人的demo, 少个recycle, 但并没有导致内存泄漏，
+                            HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
                         }
 
-                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                        override fun onLoadFailed(errorDrawable: Drawable?) {
                             root.progressBar.visibility = View.GONE
-                            return false
                         }
-
-                    }).into(root.image)
+                    })
                 }
         container.addView(root)
         return root
