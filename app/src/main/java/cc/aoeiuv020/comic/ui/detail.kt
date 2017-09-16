@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import cc.aoeiuv020.comic.R
@@ -19,9 +20,12 @@ import kotlinx.android.synthetic.main.activity_comic_detail.view.*
 import kotlinx.android.synthetic.main.comic_issue_item.view.*
 import kotlinx.android.synthetic.main.content_comic_detail.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.browse
 import org.jetbrains.anko.startActivity
 
 class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
+
+    private lateinit var url: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +34,11 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        val comicListItem = intent.getSerializableExtra("item") as? ComicListItem ?: return
+        val comicListItem = intent.getSerializableExtra("item") as? ComicListItem ?: run {
+            finish()
+            return
+        }
+        url = comicListItem.url
 
         toolbar_layout.title = comicListItem.name
         Glide.with(this@ComicDetailActivity)
@@ -55,6 +63,17 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
                 .load(detail.bigImg)
                 .holdInto(toolbar_layout.image)
         (recyclerView.adapter as ComicDetailAdapter).setDetail(detail)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_detail, menu)
+
+        menu.findItem(R.id.browse).setOnMenuItemClickListener {
+            // 这时候url已经初始化了，
+            browse(url)
+        }
+
+        return true
     }
 }
 
