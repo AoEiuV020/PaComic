@@ -15,6 +15,7 @@ import cc.aoeiuv020.comic.api.ComicPage
 import cc.aoeiuv020.comic.di.ImageModule
 import cc.aoeiuv020.comic.di.PageModule
 import cc.aoeiuv020.comic.ui.base.ComicPageBaseFullScreenActivity
+import com.boycy815.pinchimageview.PinchImageView
 import com.boycy815.pinchimageview.huge.HugeUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
@@ -99,6 +100,8 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
                 }
             }
         root.progressBar.visibility = View.VISIBLE
+        // 重制放大状态，
+        (root.image as PinchImageView).reset()
         App.component.plus(ImageModule(pages[position]))
                 .getComicImage()
                 .async()
