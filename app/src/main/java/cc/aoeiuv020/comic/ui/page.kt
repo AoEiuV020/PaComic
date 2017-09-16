@@ -102,6 +102,7 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
         root.progressBar.visibility = View.VISIBLE
         // 重制放大状态，
         (root.image as PinchImageView).reset()
+        root.pageNumber.text = ctx.getString(R.string.page_number, position + 1, count)
         App.component.plus(ImageModule(pages[position]))
                 .getComicImage()
                 .async()
