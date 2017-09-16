@@ -70,7 +70,7 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
                 seekBar.progress = position
             }
         })
-        seekBar.max = pages.size
+        seekBar.max = pages.size - 1
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
