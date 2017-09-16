@@ -23,6 +23,8 @@ import com.bumptech.glide.request.transition.Transition
 import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.browse
+import org.jetbrains.anko.info
 import java.io.File
 import java.util.*
 
@@ -40,6 +42,11 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
         val issue = intent.getSerializableExtra("issue") as? ComicIssue ?: return
         val loadingDialog = loading(R.string.comic_page)
         title = "$name - ${issue.name}"
+        urlBar.setOnClickListener {
+            browse(url.text.toString())
+        }
+        // 显示第一页地址，
+        url.text = issue.url
         App.component.plus(PageModule(issue))
                 .getComicPages()
                 .async()
@@ -68,12 +75,14 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
 
             override fun onPageSelected(position: Int) {
                 seekBar.progress = position
+                url.text = (viewPager.adapter as ComicPageAdapter).getItem(viewPager.currentItem).url
             }
         })
         seekBar.max = pages.size - 1
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
+                    // 这里会调用上面的onPageSelected，
                     viewPager.setCurrentItem(progress, false)
                 }
             }
@@ -103,7 +112,8 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
         // 重制放大状态，
         (root.image as PinchImageView).reset()
         root.pageNumber.text = ctx.getString(R.string.page_number, position + 1, count)
-        App.component.plus(ImageModule(pages[position]))
+        val page = pages[position]
+        App.component.plus(ImageModule(page))
                 .getComicImage()
                 .async()
                 .subscribe { (img) ->
@@ -122,6 +132,8 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
         container.addView(root)
         return root
     }
+
+    fun getItem(position: Int): ComicPage = pages[position]
 
     override fun destroyItem(container: ViewGroup, position: Int, obj: Any?) {
         val view = obj as View

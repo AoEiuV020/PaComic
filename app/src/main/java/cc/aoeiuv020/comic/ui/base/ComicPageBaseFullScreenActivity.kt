@@ -7,6 +7,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import cc.aoeiuv020.comic.R
+import cc.aoeiuv020.comic.ui.hide
+import cc.aoeiuv020.comic.ui.show
 import kotlinx.android.synthetic.main.activity_comic_page.*
 import org.jetbrains.anko.AnkoLogger
 
@@ -34,7 +36,7 @@ abstract class ComicPageBaseFullScreenActivity : AppCompatActivity(), AnkoLogger
     }
     private val mShowPart2Runnable = Runnable {
         // Delayed display of UI elements
-        supportActionBar?.show()
+        app_bar.show()
         fullscreen_content_controls.visibility = View.VISIBLE
     }
     private var mVisible: Boolean = false
@@ -92,7 +94,7 @@ abstract class ComicPageBaseFullScreenActivity : AppCompatActivity(), AnkoLogger
 
     protected fun hide() {
         // Hide UI first
-        supportActionBar?.hide()
+        app_bar.hide()
         fullscreen_content_controls.visibility = View.GONE
         mVisible = false
 

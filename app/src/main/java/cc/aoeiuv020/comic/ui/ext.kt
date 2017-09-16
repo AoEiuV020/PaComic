@@ -1,6 +1,7 @@
 package cc.aoeiuv020.comic.ui
 
 import android.content.Context
+import android.view.View
 import android.widget.ImageView
 import cc.aoeiuv020.comic.R
 import com.bumptech.glide.Glide
@@ -39,3 +40,9 @@ fun asyncLoadImage(image: ImageView, url: String) {
 fun <TranscodeType> RequestBuilder<TranscodeType>.holdInto(image: ImageView)
         = apply(RequestOptions().placeholder(image.drawable)).into(image)
 
+fun View.hide() {
+    visibility = View.GONE
+}
+fun View.show() {
+    visibility = View.VISIBLE
+}
