@@ -8,6 +8,7 @@ import android.view.View
 import android.view.WindowManager
 import cc.aoeiuv020.comic.R
 import kotlinx.android.synthetic.main.activity_comic_page.*
+import org.jetbrains.anko.AnkoLogger
 
 /**
  * 全屏Activity，绝大部分代码是自动生成的，
@@ -15,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_comic_page.*
  * Created by AoEiuV020 on 2017.09.15-17:38.
  */
 @Suppress("MemberVisibilityCanPrivate", "unused")
-abstract class ComicPageBaseFullScreenActivity : AppCompatActivity() {
+abstract class ComicPageBaseFullScreenActivity : AppCompatActivity(), AnkoLogger {
     private val mHideHandler = Handler()
     private val mHidePart2Runnable = Runnable {
         // Delayed removal of status and navigation bar
@@ -69,6 +70,11 @@ abstract class ComicPageBaseFullScreenActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
         mVisible = true
 
+        navBarBg.post {
+            navBarBg.rootWindowInsets.systemWindowInsetBottom.let {
+                navBarBg.layoutParams = navBarBg.layoutParams.apply { height = it }
+            }
+        }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
