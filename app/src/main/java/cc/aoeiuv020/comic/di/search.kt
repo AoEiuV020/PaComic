@@ -20,12 +20,8 @@ interface SearchComponent {
 class SearchModule(private val site: ComicSite, private var name: String) {
     @Provides
     fun search(): Observable<ComicGenre> = Observable.create { em ->
-        try {
-            ctx(site.baseUrl).search(name).let {
-                em.onNext(it)
-            }
-        } catch (e: Exception) {
-            em.onError(e)
+        ctx(site.baseUrl).search(name).let {
+            em.onNext(it)
         }
         em.onComplete()
     }
