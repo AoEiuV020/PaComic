@@ -23,7 +23,6 @@ import cc.aoeiuv020.comic.di.GenreModule
 import cc.aoeiuv020.comic.di.ListComponent
 import cc.aoeiuv020.comic.di.ListModule
 import cc.aoeiuv020.comic.di.SiteModule
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.comic_list_item.view.*
@@ -218,7 +217,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         url = site.baseUrl
         nav_view.getHeaderView(0).apply {
             selectedSiteName.text = site.name
-            Glide.with(this@MainActivity).load(site.logo).holdInto(selectedSiteLogo)
+            glide()?.also {
+                it.load(site.logo).holdInto(selectedSiteLogo)
+            }
         }
         val loadingDialog = loading(R.string.genre_list)
         App.component.plus(GenreModule(site))
@@ -256,7 +257,9 @@ class SiteListAdapter(val ctx: Context, private val sites: List<ComicSite>) : Ba
         val site = getItem(position)
         view.apply {
             siteName.text = site.name
-            Glide.with(ctx).load(site.logo).into(siteLogo)
+            ctx.glide()?.also {
+                it.load(site.logo).into(siteLogo)
+            }
         }
         return view
     }
@@ -274,7 +277,9 @@ class ComicListAdapter(val ctx: Context, data: List<ComicListItem>) : BaseAdapte
             = (convertView ?: View.inflate(ctx, R.layout.comic_list_item, null)).apply {
         val comic = getItem(position)
         comic_name.text = comic.name
-        Glide.with(ctx).load(comic.img).into(comic_icon)
+        ctx.glide()?.also {
+            it.load(comic.img).into(comic_icon)
+        }
     }
 
     override fun getItem(position: Int) = items[position]

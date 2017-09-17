@@ -14,7 +14,6 @@ import cc.aoeiuv020.comic.api.ComicDetail
 import cc.aoeiuv020.comic.api.ComicIssue
 import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.di.DetailModule
-import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_comic_detail.*
 import kotlinx.android.synthetic.main.activity_comic_detail.view.*
 import kotlinx.android.synthetic.main.comic_issue_item.view.*
@@ -40,9 +39,9 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         }
 
         toolbar_layout.title = comicListItem.name
-        Glide.with(this@ComicDetailActivity)
-                .load(comicListItem.img)
-                .into(toolbar_layout.image)
+        ctx.glide()?.also {
+            it.load(comicListItem.img).into(toolbar_layout.image)
+        }
         recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity)
         recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
 
@@ -64,9 +63,9 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
     private fun setDetail(detail: ComicDetail) {
         this.comicDetail = detail
         toolbar_layout.title = detail.name
-        Glide.with(this@ComicDetailActivity)
-                .load(detail.bigImg)
-                .holdInto(toolbar_layout.image)
+        ctx.glide()?.also {
+            it.load(detail.bigImg).holdInto(toolbar_layout.image)
+        }
         (recyclerView.adapter as ComicDetailAdapter).setDetail(detail)
     }
 

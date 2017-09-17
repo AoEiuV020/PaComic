@@ -1,11 +1,13 @@
 package cc.aoeiuv020.comic.ui
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import cc.aoeiuv020.comic.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -50,3 +52,9 @@ fun View.show() {
 }
 
 fun Context.alertError(message: String, e: Throwable) = alert(message + "\n" + e.message).show()
+
+/**
+ * 如果context已经销毁了，返回null,
+ * 要是直接调用Glide.with，会报
+ */
+fun Context.glide(): RequestManager? = if (this is Activity && this.isDestroyed) null else Glide.with(this)
