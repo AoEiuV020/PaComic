@@ -75,7 +75,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         menu.findItem(R.id.info).setOnMenuItemClickListener {
             // 这个comicDetail本质上是调用getter，不是直接传对象到内部类，
             comicDetail?.let {
-                alert(it.info, it.name) { icon = getDrawable(R.drawable.ic_info) }.show()
+                alert(it.info, it.name).show()
             }
             true
         }
