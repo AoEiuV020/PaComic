@@ -1,6 +1,7 @@
 package cc.aoeiuv020.comic.api
 
 import org.jsoup.Jsoup
+import java.net.URL
 import java.net.URLEncoder
 
 /**
@@ -28,16 +29,29 @@ class Dm5Context : ComicContext() {
 
     override fun getNextPage(genre: ComicGenre): ComicGenre? {
         val root = getHtml(genre.url)
-        val a = root.select("#search_fy > a:contains(下一页)").first()
-        val url = absHref(a)
-        return if (url.isEmpty()) {
-            return null
+        val query = if (isSearchResult(genre)) {
+            "body > div.container > div.midBar > div.pager > a:contains(下一页)"
         } else {
-            ComicGenre(genre.name, url)
+            "#search_fy > a:contains(下一页)"
+        }
+        val a = root.select(query).first()
+        return if (a == null) {
+            null
+        } else {
+            ComicGenre(genre.name, absHref(a))
         }
     }
 
     override fun getComicList(genre: ComicGenre): List<ComicListItem> {
+        if (isSearchResult(genre)) {
+            val root = getHtml(genre.url)
+            val elements = root.select("body > div.container > div.midBar > div.item")
+            return elements.map {
+                val a = it.select("dt > p > a").first()
+                val img = it.select("dl > a > img").first()
+                ComicListItem(text(a), src(img), absHref(a))
+            }
+        }
         val root = getHtml(genre.url)
         val elements = root.select("#index_left > div.inkk.mato20 > div.innr3 > li")
         return elements.map {
@@ -47,17 +61,17 @@ class Dm5Context : ComicContext() {
         }
     }
 
-    override fun search(name: String): List<ComicListItem> {
-        val urlEncodedName = URLEncoder.encode(name, "UTF-8")
+    override fun search(name: String): ComicGenre {
         val index = 1
-        val root = getHtml(absUrl("/search?page=$index&title=$urlEncodedName&language=1"))
-        val elements = root.select("body > div.container > div.midBar > div.item")
-        return elements.map {
-            val a = it.select("dt > p > a").first()
-            val img = it.select("dl > a > img").first()
-            ComicListItem(text(a), src(img), absHref(a))
-        }
+        return ComicGenre(name, searchUrl(name, index))
     }
+
+    private fun searchUrl(name: String, index: Int): String {
+        val urlEncodedName = URLEncoder.encode(name, "UTF-8")
+        return absUrl("/search?page=$index&title=$urlEncodedName&language=1")
+    }
+
+    override fun isSearchResult(genre: ComicGenre): Boolean = genre.url.matches(Regex(".*/search.*"))
 
     override fun getComicDetail(comicListItem: ComicListItem): ComicDetail {
         val root = getHtml(comicListItem.url)

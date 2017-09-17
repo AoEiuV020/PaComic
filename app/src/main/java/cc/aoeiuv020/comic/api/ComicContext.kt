@@ -53,7 +53,9 @@ abstract class ComicContext {
     /**
      * 搜索漫画得到漫画列表，
      */
-    abstract fun search(name: String): List<ComicListItem>
+    abstract fun search(name: String): ComicGenre
+
+    abstract fun isSearchResult(genre: ComicGenre): Boolean
 
     /**
      * 获取漫画详情页信息，

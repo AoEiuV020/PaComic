@@ -25,6 +25,10 @@ class PopomhContext : ComicContext() {
     }
 
     override fun getNextPage(genre: ComicGenre): ComicGenre? {
+        if (isSearchResult(genre)) {
+            // 这网站搜索结果只有一页，
+            return null
+        }
         val root = getHtml(genre.url)
         val a = root.select("#iComicPC1 > span > a:nth-child(3)").first()
         val url = absHref(a)
@@ -45,7 +49,9 @@ class PopomhContext : ComicContext() {
         }
     }
 
-    override fun search(name: String): List<ComicListItem> {
+    override fun search(name: String): ComicGenre {
+        return ComicGenre(name, searchUrl(name))
+/*
         val urlEncodedName = URLEncoder.encode(name, "UTF-8")
         val root = getHtml(absUrl("/comic/?act=search&st=$urlEncodedName"))
         val elements = root.select("#list > div.cComicList > li > a")
@@ -54,7 +60,15 @@ class PopomhContext : ComicContext() {
             val img = it.select("img").first()
             ComicListItem(text(a), src(img), absHref(a))
         }
+*/
     }
+
+    private fun searchUrl(name: String): String {
+        val urlEncodedName = URLEncoder.encode(name, "UTF-8")
+        return absUrl("/comic/?act=search&st=$urlEncodedName")
+    }
+
+    override fun isSearchResult(genre: ComicGenre): Boolean = genre.url.matches(Regex(".*act=search.*"))
 
     override fun getComicDetail(comicListItem: ComicListItem): ComicDetail {
         val root = getHtml(comicListItem.url)
