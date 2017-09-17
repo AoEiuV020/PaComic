@@ -1,6 +1,7 @@
 package cc.aoeiuv020.comic.api
 
 import org.jsoup.Jsoup
+import java.net.URLEncoder
 
 /**
  * 动漫屋，
@@ -36,6 +37,18 @@ class Dm5Context : ComicContext() {
         val elements = root.select("#index_left > div.inkk.mato20 > div.innr3 > li")
         return elements.map {
             ComicListItem(it.select("strong").text(), it.select("img").attr("src"), url(it.select("a:has(strong)").attr("href")))
+        }
+    }
+
+    override fun search(name: String): List<ComicListItem> {
+        val urlEncodedName = URLEncoder.encode(name, "UTF-8")
+        val index = 1
+        val root = getHtml(url("/search?page=$index&title=$urlEncodedName&language=1"))
+        val elements = root.select("body > div.container > div.midBar > div.item")
+        return elements.map {
+            val a = it.select("dt > p > a").first()
+            val img = it.select("dl > a > img").first()
+            ComicListItem(a.ownText(), img.attr("src"), a.attr("abs:href"))
         }
     }
 

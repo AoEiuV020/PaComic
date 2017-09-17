@@ -49,6 +49,11 @@ abstract class ComicContext {
     abstract fun getComicList(genre: ComicGenre): List<ComicListItem>
 
     /**
+     * 搜索漫画得到漫画列表，
+     */
+    abstract fun search(name: String): List<ComicListItem>
+
+    /**
      * 获取漫画详情页信息，
      */
     abstract fun getComicDetail(comicListItem: ComicListItem): ComicDetail

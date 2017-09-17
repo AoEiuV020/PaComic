@@ -53,6 +53,15 @@ class Dm5ContextTest {
     }
 
     @Test
+    fun search() {
+        context.search("柯南").forEach {
+            println(it.name)
+            println(it.url)
+            println(it.img)
+        }
+    }
+
+    @Test
     fun getComicDetail() {
         context.getComicDetail(ComicListItem("妖精的尾巴", "", "http://www.dm5.com/manhua-yaojingdeweiba/")).let {
             println(it.name)

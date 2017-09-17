@@ -1,5 +1,7 @@
 package cc.aoeiuv020.comic.api
 
+import java.net.URLEncoder
+
 /**
  * 泡泡漫画，
  * Created by AoEiuV020 on 2017.09.09-21:08:02.
@@ -33,6 +35,17 @@ class PopomhContext : ComicContext() {
         val elements = root.select("#list > div.cComicList > li > a")
         return elements.map {
             ComicListItem(it.text(), it.select("img").attr("src"), url(it.attr("href")))
+        }
+    }
+
+    override fun search(name: String): List<ComicListItem> {
+        val urlEncodedName = URLEncoder.encode(name, "UTF-8")
+        val root = getHtml(url("/comic/?act=search&st=$urlEncodedName"))
+        val elements = root.select("#list > div.cComicList > li > a")
+        return elements.map {
+            val a = it
+            val img = it.select("img").first()
+            ComicListItem(a.ownText(), img.attr("src"), a.attr("abs:href"))
         }
     }
 

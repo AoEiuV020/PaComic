@@ -47,6 +47,15 @@ class PopomhContextTest {
     }
 
     @Test
+    fun search() {
+        context.search("柯南").forEach {
+            println(it.name)
+            println(it.url)
+            println(it.img)
+        }
+    }
+
+    @Test
     fun getComicDetail() {
         context.getComicDetail(ComicListItem("狩猎史莱姆300年", "", "http://www.popomh.com/manhua/32551.html")).let {
             println(it.name)
