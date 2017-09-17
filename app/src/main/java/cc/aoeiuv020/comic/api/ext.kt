@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package cc.aoeiuv020.comic.api
 
 import org.slf4j.Logger
@@ -35,5 +37,11 @@ inline fun Logger.warn(message: () -> Any?) {
 inline fun Logger.error(message: () -> Any?) {
     if (isErrorEnabled) {
         error("{}", message().toString())
+    }
+}
+
+inline fun Logger.error(e: Throwable, message: () -> Any?) {
+    if (isErrorEnabled) {
+        error(message().toString(), e)
     }
 }

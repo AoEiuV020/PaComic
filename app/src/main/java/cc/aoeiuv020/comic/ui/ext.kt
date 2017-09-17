@@ -10,6 +10,7 @@ import com.bumptech.glide.request.RequestOptions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.indeterminateProgressDialog
 
 /**
@@ -43,6 +44,9 @@ fun <TranscodeType> RequestBuilder<TranscodeType>.holdInto(image: ImageView)
 fun View.hide() {
     visibility = View.GONE
 }
+
 fun View.show() {
     visibility = View.VISIBLE
 }
+
+fun Context.alertError(message: String, e: Throwable) = alert(message + "\n" + e.message).show()

@@ -19,10 +19,7 @@ import kotlinx.android.synthetic.main.activity_comic_detail.*
 import kotlinx.android.synthetic.main.activity_comic_detail.view.*
 import kotlinx.android.synthetic.main.comic_issue_item.view.*
 import kotlinx.android.synthetic.main.content_comic_detail.*
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.alert
-import org.jetbrains.anko.browse
-import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.*
 
 class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
     private lateinit var comicListItem: ComicListItem
@@ -37,6 +34,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
         comicListItem = intent.getSerializableExtra("item") as? ComicListItem ?: run {
+            error { "ComicDetailActivity 没能从intent得到ComicListItem, 打开方式不对吧，" }
             finish()
             return
         }
@@ -52,10 +50,15 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         App.component.plus(DetailModule(comicListItem))
                 .getComicDetail()
                 .async()
-                .subscribe { comicDetail ->
+                .subscribe({ comicDetail ->
                     setDetail(comicDetail)
                     loadingDialog.dismiss()
-                }
+                }, { e ->
+                    val message = "加载漫画详情失败，"
+                    error(message, e)
+                    alertError(message, e)
+                    loadingDialog.dismiss()
+                })
     }
 
     private fun setDetail(detail: ComicDetail) {

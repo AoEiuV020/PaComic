@@ -55,12 +55,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         searchView.setHintTextColor(getColor(R.color.abc_hint_foreground_material_light))
 
+        debug { "读取记住的选择，" }
         App.component.plus(SiteModule()).site?.also { site ->
-            showGenre(site)
+            debug { "已有记住网站：${site.name}" }
+            selectSite(site)
             App.component.plus(GenreModule(site)).genre?.let { genre ->
-                showComicList(genre)
-            } ?: openDrawer()
-        } ?: showSites()
+                debug { "已有记住分类：${genre.name}" }
+                selectComicGenre(genre)
+            } ?: run {
+                debug { "没有记住的分类，弹出侧栏，" }
+                openDrawer()
+            }
+        } ?: run {
+            debug { "没有记住的网站，弹出网站选择，" }
+            showSites()
+        }
     }
 
     private fun isDrawerOpen() = drawer_layout.isDrawerOpen(GravityCompat.START)
@@ -104,7 +113,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.groupId) {
             GROUP_ID -> {
-                showComicList(genres[item.order])
+                selectComicGenre(genres[item.order])
             }
             else -> when (item.itemId) {
                 R.id.select_sites -> showSites()
@@ -119,7 +128,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var listComponent: ListComponent? = null
 
-    private fun showComicList(genre: ComicGenre) {
+    private fun selectComicGenre(genre: ComicGenre) {
         val loadingDialog = loading(R.string.comic_list)
         url = genre.url
         title = genre.name
@@ -131,7 +140,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     setComicList(comicList)
                     loadingDialog.dismiss()
                 }, { e ->
-                    error("加载漫画列表失败", e)
+                    val message = "加载漫画列表失败，"
+                    error(message, e)
+                    alertError(message, e)
                     loadingDialog.dismiss()
                 })
     }
@@ -141,6 +152,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setComicList(comicList: List<ComicListItem>) {
+        debug { "展示漫画列表，数量：${comicList.size}" }
         listView.run {
             adapter = ComicListAdapter(this@MainActivity, comicList)
             setOnItemClickListener { _, _, position, _ ->
@@ -155,7 +167,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
 
                 override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {
-                    debug { "<$lastItem, $loadingNextPage, $scrollState>" }
                     // 差不多就好，反正没到底也快了，
                     if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
                             && lastItem >= adapter.count - 2 && !loadingNextPage) {
@@ -173,7 +184,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                                 loadingDialog.dismiss()
                                                 loadingNextPage = false
                                             }, { e ->
-                                                error("加载漫画列表失败", e)
+                                                val message = "加载漫画列表一下页失败，"
+                                                error(message, e)
+                                                alertError(message, e)
                                                 loadingDialog.dismiss()
                                                 loadingNextPage = false
                                             })
@@ -194,13 +207,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .subscribe { sites ->
                     AlertDialog.Builder(this@MainActivity).setAdapter(SiteListAdapter(this@MainActivity, sites)) { _, index ->
                         val site = sites[index]
+                        debug { "选中网站：${site.name}，弹出侧栏，" }
                         openDrawer()
-                        showGenre(site)
+                        selectSite(site)
                     }.show()
                 }
     }
 
-    private fun showGenre(site: ComicSite) {
+    private fun selectSite(site: ComicSite) {
         url = site.baseUrl
         nav_view.getHeaderView(0).apply {
             selectedSiteName.text = site.name
@@ -212,10 +226,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .async()
                 .toList()
                 .subscribe({ genres ->
+                    debug { "加载网站分类列表成功，数量：${genres.size}" }
                     setGenres(genres)
                     loadingDialog.dismiss()
                 }, { e ->
-                    error("加载网站列表失败", e)
+                    val message = "加载网站分类列表失败，"
+                    error(message, e)
+                    alertError(message, e)
                     loadingDialog.dismiss()
                 })
     }

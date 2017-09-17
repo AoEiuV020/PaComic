@@ -31,8 +31,12 @@ class ListModule(private val comicGenre: ComicGenre) {
 
     @Provides
     fun getComicList(): Observable<ComicListItem> = Observable.create { em ->
-        ctx(comicGenre.url).getComicList(comicGenre).forEach {
-            em.onNext(it)
+        try {
+            ctx(comicGenre.url).getComicList(comicGenre).forEach {
+                em.onNext(it)
+            }
+        } catch (e: Exception) {
+            em.onError(e)
         }
         em.onComplete()
     }

@@ -19,11 +19,12 @@ import com.boycy815.pinchimageview.PinchImageView
 import com.boycy815.pinchimageview.huge.HugeUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.ImageViewTarget
-import com.bumptech.glide.request.transition.Transition
 import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
+import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.browse
+import org.jetbrains.anko.error
 import java.io.File
 import java.util.*
 
@@ -50,10 +51,15 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
                 .getComicPages()
                 .async()
                 .toList()
-                .subscribe { pages ->
+                .subscribe({ pages ->
                     display(pages)
                     loadingDialog.dismiss()
-                }
+                }, { e ->
+                    val message = "加载漫画页面失败，"
+                    error(message, e)
+                    alertError(message, e)
+                    loadingDialog.dismiss()
+                })
     }
 
     private fun display(pages: List<ComicPage>) {
@@ -95,7 +101,7 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
     }
 }
 
-class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : PagerAdapter() {
+class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
     private val views: LinkedList<View> = LinkedList()
     override fun isViewFromObject(view: View, obj: Any) = view === obj
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
@@ -115,7 +121,7 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
         App.component.plus(ImageModule(page))
                 .getComicImage()
                 .async()
-                .subscribe { (img) ->
+                .subscribe({ (img) ->
                     Glide.with(ctx).download(img).into(object : ImageViewTarget<File>(root.image) {
                         override fun setResource(resource: File?) {
                             resource?.let {
@@ -129,7 +135,11 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
                             root.progressBar.visibility = View.GONE
                         }
                     })
-                }
+                }, { e ->
+                    val message = "加载漫画页面失败，"
+                    error(message, e)
+                    root.progressBar.visibility = View.GONE
+                })
         container.addView(root)
         return root
     }

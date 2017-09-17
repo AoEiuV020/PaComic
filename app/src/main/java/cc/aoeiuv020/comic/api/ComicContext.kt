@@ -4,6 +4,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.IOException
 import java.net.URL
 
 /**
@@ -73,8 +74,13 @@ abstract class ComicContext {
         }
         logger.debug { "get $url" }
         val conn = Jsoup.connect(url)
+        // 网络连接失败直接抛出，
         val root = conn.get()
-        logger.debug { "title: ${root.title()}" }
+        logger.debug { "status code: ${conn.response().statusCode()}" }
+        logger.debug { "response url: ${conn.response().url()}" }
+        if (!check(conn.response().url().toString())) {
+            throw IOException("网络被重定向，检查网络是否可用，")
+        }
         return root
     }
 
