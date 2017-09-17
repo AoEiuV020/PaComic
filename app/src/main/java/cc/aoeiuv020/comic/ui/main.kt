@@ -19,10 +19,8 @@ import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.api.ComicSite
-import cc.aoeiuv020.comic.di.GenreModule
-import cc.aoeiuv020.comic.di.ListComponent
-import cc.aoeiuv020.comic.di.ListModule
-import cc.aoeiuv020.comic.di.SiteModule
+import cc.aoeiuv020.comic.di.*
+import com.miguelcatalan.materialsearchview.MaterialSearchView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.comic_list_item.view.*
@@ -38,7 +36,9 @@ import org.jetbrains.anko.*
  */
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AnkoLogger {
+    private var site: ComicSite? = null
     private var url: String? = null
+
     @SuppressLint("PrivateResource")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +53,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
 
         searchView.setHintTextColor(getColor(R.color.abc_hint_foreground_material_light))
+
+        searchView.setOnQueryTextListener(object : MaterialSearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                debug { "搜索：$query" }
+                site?.also {
+                    debug { "当前选择了的网站：${it.name}" }
+                    val loadingDialog = loading(R.string.search_result)
+                    App.component.plus(SearchModule(it, query)).search().async().subscribe({ genre ->
+                        // 收起软键盘，
+                        searchView.hideKeyboard(searchView)
+                        selectComicGenre(genre)
+                        loadingDialog.dismiss()
+                    }, { e ->
+                        val message = "加载搜索结果失败，"
+                        error(message, e)
+                        alertError(message, e)
+                        loadingDialog.dismiss()
+                    })
+                } ?: run {
+                    debug { "没有选择网站，先弹出网站选择，" }
+                    showSites()
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean = false
+
+        })
 
         debug { "读取记住的选择，" }
         App.component.plus(SiteModule()).site?.also { site ->
@@ -146,12 +174,35 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 })
     }
 
+    private fun selectNextPage(genre: ComicGenre) {
+        val loadingDialog = loading(R.string.next_page)
+        url = genre.url
+        title = genre.name
+        App.component.plus(ListModule(genre)).also { listComponent = it }
+                .getComicList()
+                .async()
+                .toList()
+                .subscribe({ comicList ->
+                    addComicList(comicList)
+                    loadingDialog.dismiss()
+                }, { e ->
+                    val message = "加载漫画列表失败，"
+                    error(message, e)
+                    alertError(message, e)
+                    loadingDialog.dismiss()
+                })
+    }
+
     private fun addComicList(comicList: List<ComicListItem>) {
-        (listView.adapter as ComicListAdapter).addAll(comicList)
+        debug { "展示漫画列表，数量：${comicList.size}" }
+        if (listView.adapter != null) {
+            (listView.adapter as ComicListAdapter).addAll(comicList)
+        } else {
+            setComicList(comicList)
+        }
     }
 
     private fun setComicList(comicList: List<ComicListItem>) {
-        debug { "展示漫画列表，数量：${comicList.size}" }
         listView.run {
             adapter = ComicListAdapter(this@MainActivity, comicList)
             setOnItemClickListener { _, _, position, _ ->
@@ -159,7 +210,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             setOnScrollListener(object : AbsListView.OnScrollListener {
                 private var lastItem = 0
+                /**
+                 * 是否正在加载下一页，
+                 * 没有下一页时设为true假装正在加载下一页，就不会真的去加载下一页了，
+                 */
                 private var loadingNextPage = false
+
                 override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
                     // 求画面上最后一个的索引，并不准，可能是最后一个+1,
                     lastItem = firstVisibleItem + visibleItemCount
@@ -171,26 +227,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             && lastItem >= adapter.count - 2 && !loadingNextPage) {
                         loadingNextPage = true
                         val loadingDialog = loading(getString(R.string.next_page))
+                        debug { "加载下一页，已经设置listComponent: ${listComponent != null}" }
                         listComponent?.run {
-                            getNextPage().async().subscribe { nullableGenre ->
-                                nullableGenre?.also { genre ->
-                                    App.component.plus(ListModule(genre)).also { listComponent = it }
-                                            .getComicList()
-                                            .async()
-                                            .toList()
-                                            .subscribe({ comicList ->
-                                                addComicList(comicList)
-                                                loadingDialog.dismiss()
-                                                loadingNextPage = false
-                                            }, { e ->
-                                                val message = "加载漫画列表一下页失败，"
-                                                error(message, e)
-                                                alertError(message, e)
-                                                loadingDialog.dismiss()
-                                                loadingNextPage = false
-                                            })
-                                } ?: loading(R.string.yet_last_page)
-                            }
+                            getNextPage().async().toList().subscribe({ genres ->
+                                if (genres.isEmpty()) {
+                                    debug { "没有下一页" }
+                                    loadingDialog.dismiss()
+                                    alert(R.string.yet_last_page).show()
+                                    return@subscribe
+                                }
+                                val genre = genres.first()
+                                // 重制这个标志，以便继续加载下一页，
+                                loadingNextPage = false
+                                selectNextPage(genre)
+                                loadingDialog.dismiss()
+                            }, { e ->
+                                val message = "加载漫画列表一下页地址失败，"
+                                error(message, e)
+                                alertError(message, e)
+                                loadingDialog.dismiss()
+                            })
                         }
                     }
                 }
@@ -214,6 +270,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun selectSite(site: ComicSite) {
+        this.site = site
         url = site.baseUrl
         nav_view.getHeaderView(0).apply {
             selectedSiteName.text = site.name

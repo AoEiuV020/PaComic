@@ -21,5 +21,6 @@
     <string name="page_number">%d/%d</string>
     <string name="browse">浏览</string>
     <string name="info">简介</string>
+    <string name="search_result">搜索结果</string>
 
 </resources>

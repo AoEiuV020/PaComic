@@ -16,7 +16,7 @@ import io.reactivex.Observable
 @Subcomponent(modules = arrayOf(ListModule::class))
 interface ListComponent {
     fun getComicList(): Observable<ComicListItem>
-    fun getNextPage(): Observable<ComicGenre?>
+    fun getNextPage(): Observable<ComicGenre>
 }
 
 @Module
@@ -42,7 +42,7 @@ class ListModule(private val comicGenre: ComicGenre) {
     }
 
     @Provides
-    fun getNextPage(): Observable<ComicGenre?> = Observable.create { em ->
+    fun getNextPage(): Observable<ComicGenre> = Observable.create { em ->
         ctx(comicGenre.url).getNextPage(comicGenre)?.let {
             em.onNext(it)
         }

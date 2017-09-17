@@ -19,6 +19,7 @@ interface AppComponent {
     fun plus(module: DetailModule): DetailComponent
     fun plus(module: PageModule): PageComponent
     fun plus(module: ImageModule): ImageComponent
+    fun plus(module: SearchModule): SearchComponent
 }
 
 @Module
