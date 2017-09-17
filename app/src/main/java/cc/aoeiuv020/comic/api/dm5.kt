@@ -33,9 +33,9 @@ class Dm5Context : ComicContext() {
 
     override fun getComicList(genre: ComicGenre): List<ComicListItem> {
         val root = getHtml(genre.url)
-        val elements = root.select("#index_left > div.inkk.mato20 > div.innr3 > li > a:nth-child(1)")
+        val elements = root.select("#index_left > div.inkk.mato20 > div.innr3 > li")
         return elements.map {
-            ComicListItem(it.text(), it.select("img").attr("src"), url(it.attr("href")))
+            ComicListItem(it.select("strong").text(), it.select("img").attr("src"), url(it.select("a:has(strong)").attr("href")))
         }
     }
 

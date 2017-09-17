@@ -40,10 +40,15 @@ class Dm5ContextTest {
 
     @Test
     fun getComicList() {
-        context.getComicList(ComicGenre("", "http://www.dm5.com/manhua-shaonianrexue/")).forEach {
-            println(it.name)
-            println(it.url)
-            println(it.img)
+        val genreList = listOf("http://www.dm5.com/manhua-shaonianrexue/",
+                "http://www.dm5.com/manhua-latest/")
+                .map { ComicGenre("", it) }
+        genreList.forEach {
+            context.getComicList(it).forEach {
+                println(it.name)
+                println(it.url)
+                println(it.img)
+            }
         }
     }
 
