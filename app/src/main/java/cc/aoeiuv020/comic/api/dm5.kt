@@ -79,10 +79,10 @@ class Dm5Context : ComicContext() {
                 .data("gtk", "6")
                 .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.86 Safari/537.36")
                 .referrer(site.baseUrl)
-        logger.debug("connect $pageUrl")
+        logger.debug { "connect $pageUrl" }
         conn.execute()
         val str = conn.response().body()
-        logger.debug("chapterfun: $str")
+        logger.debug { "chapterfun: $str" }
         val chapter = str.removeSuffix("\n")
         return ComicImage(decode(chapter))
     }
@@ -103,11 +103,11 @@ class Dm5Context : ComicContext() {
         // g://f-k-j-a-b.e.c/l/q/3
         val pix = chapter.replace(Regex(".*=\"(\\w://[^\"]*)\";.*"), "$1")
                 .fold("", ::antialiasing)
-        logger.debug("pix = $pix")
+        logger.debug { "pix = $pix" }
         // /p.4
         val pvalue = chapter.replace(Regex(".*\\w=\\[\"([^\"]*)\"[,\\]].*"), "$1")
                 .fold("", ::antialiasing)
-        logger.debug("pvalue = $pvalue")
+        logger.debug { "pvalue = $pvalue" }
         /* 这里android和java不一样，
          * android上右花括号必须转义，java都可以，
          * 然而android studio 甚至警告不要转义，
@@ -117,7 +117,7 @@ class Dm5Context : ComicContext() {
         */
         val param = chapter.replace(Regex(".*\\+\\\\\'(\\?[^\\\\]*)\\\\\'\\}.*"), "$1")
                 .fold("", ::antialiasing)
-        logger.debug("param = $param")
+        logger.debug { "param = $param" }
         return "$pix$pvalue$param"
     }
 }

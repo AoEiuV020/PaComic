@@ -65,16 +65,16 @@ abstract class ComicContext {
     internal fun check(url: String): Boolean = URL(getComicSite().baseUrl).host == URL(url).host
 
     protected fun getHtml(url: String): Document {
-        if (logger.isTraceEnabled) {
+        logger.trace {
             val stack = Thread.currentThread().stackTrace
-            stack.drop(2).take(6).forEach {
-                logger.trace("${it.className}.${it.methodName}(${it.fileName}:${it.lineNumber})")
+            stack.drop(2).take(6).joinToString("\n", "stack trace\n") {
+                "\tat ${it.className}.${it.methodName}(${it.fileName}:${it.lineNumber})"
             }
         }
-        logger.debug("get $url")
+        logger.debug { "get $url" }
         val conn = Jsoup.connect(url)
         val root = conn.get()
-        logger.debug("title: ${root.title()}")
+        logger.debug { "title: ${root.title()}" }
         return root
     }
 
