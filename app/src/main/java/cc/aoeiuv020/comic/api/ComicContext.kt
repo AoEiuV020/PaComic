@@ -2,6 +2,7 @@ package cc.aoeiuv020.comic.api
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.IOException
@@ -12,6 +13,7 @@ import java.net.URL
  * 一个Context对象贯穿始终，
  * Created by AoEiuV020 on 2017.09.09-20:50:30.
  */
+@Suppress("unused")
 abstract class ComicContext {
     companion object {
         @Suppress("RemoveExplicitTypeArguments")
@@ -89,5 +91,9 @@ abstract class ComicContext {
         return root
     }
 
-    protected fun url(url: String) = getComicSite().baseUrl + url
+    protected fun absUrl(url: String) = getComicSite().baseUrl + url
+    protected fun text(e: Element): String = e.text()
+    protected fun src(img: Element): String = img.attr("src")
+    protected fun absHref(a: Element): String = a.attr("abs:href")
+    protected fun title(a: Element): String = a.attr("title")
 }

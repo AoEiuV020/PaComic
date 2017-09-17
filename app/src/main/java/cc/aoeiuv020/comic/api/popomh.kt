@@ -6,6 +6,7 @@ import java.net.URLEncoder
  * 泡泡漫画，
  * Created by AoEiuV020 on 2017.09.09-21:08:02.
  */
+@Suppress("UnnecessaryVariable")
 class PopomhContext : ComicContext() {
     private val site = ComicSite(
             name = "泡泡漫画",
@@ -17,12 +18,16 @@ class PopomhContext : ComicContext() {
     override fun getGenres(): List<ComicGenre> {
         val root = getHtml(site.baseUrl)
         val elements = root.select("#iHBG > div.cHNav > div > span > a, #iHBG > div.cHNav > div a:has(span)")
-        return elements.map { ComicGenre(it.text(), url(it.attr("href"))) }
+        return elements.map {
+            val a = it
+            ComicGenre(text(a), absHref(a))
+        }
     }
 
     override fun getNextPage(genre: ComicGenre): ComicGenre? {
         val root = getHtml(genre.url)
-        val url = root.select("#iComicPC1 > span > a:nth-child(3)").first().attr("abs:href")
+        val a = root.select("#iComicPC1 > span > a:nth-child(3)").first()
+        val url = absHref(a)
         return if (url.isEmpty()) {
             return null
         } else {
@@ -34,32 +39,34 @@ class PopomhContext : ComicContext() {
         val root = getHtml(genre.url)
         val elements = root.select("#list > div.cComicList > li > a")
         return elements.map {
-            ComicListItem(it.text(), it.select("img").attr("src"), url(it.attr("href")))
+            val a = it
+            val img = it.select("img").first()
+            ComicListItem(text(a), src(img), absHref(a))
         }
     }
 
     override fun search(name: String): List<ComicListItem> {
         val urlEncodedName = URLEncoder.encode(name, "UTF-8")
-        val root = getHtml(url("/comic/?act=search&st=$urlEncodedName"))
+        val root = getHtml(absUrl("/comic/?act=search&st=$urlEncodedName"))
         val elements = root.select("#list > div.cComicList > li > a")
         return elements.map {
             val a = it
             val img = it.select("img").first()
-            ComicListItem(a.ownText(), img.attr("src"), a.attr("abs:href"))
+            ComicListItem(text(a), src(img), absHref(a))
         }
     }
 
     override fun getComicDetail(comicListItem: ComicListItem): ComicDetail {
         val root = getHtml(comicListItem.url)
-        // 这个name也可以改成从html解析，
         val name = comicListItem.name
-        val bigImg = root.select("#about_style > img")
-                .attr("src")
+        val img = root.select("#about_style > img").first()
+        val bigImg = src(img)
         val info = root.select("#about_kit > ul > li")
-                .joinToString("\n") { it.text() }
-        val issues = root.select("#permalink > div.cVolList > ul > li > a")
-                .map { ComicIssue(it.text().removePrefix(name), url(it.attr("href"))) }
-                .asReversed()
+                .joinToString("\n") { text(it) }
+        val issues = root.select("#permalink > div.cVolList > ul > li > a").map {
+            val a = it
+            ComicIssue(text(a).removePrefix(name), absHref(a))
+        }.asReversed()
         return ComicDetail(name, bigImg, info, issues)
     }
 

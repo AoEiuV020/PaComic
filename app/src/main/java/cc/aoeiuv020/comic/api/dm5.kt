@@ -7,6 +7,7 @@ import java.net.URLEncoder
  * 动漫屋，
  * Created by AoEiuV020 on 2017.09.13-15:15:49.
  */
+@Suppress("UnnecessaryVariable")
 class Dm5Context : ComicContext() {
     private val site = ComicSite(
             name = "动漫屋",
@@ -19,12 +20,16 @@ class Dm5Context : ComicContext() {
         val root = getHtml(site.baseUrl)
         val elements = root.select("body > div:nth-child(1) > div.navBar > ul > li > a[class='item ib'] , " +
                 "body > div:nth-child(3) > div:nth-child(2) > ul > li > a")
-        return elements.map { ComicGenre(it.text(), url(it.attr("href"))) }
+        return elements.map {
+            val a = it
+            ComicGenre(text(a), absHref(a))
+        }
     }
 
     override fun getNextPage(genre: ComicGenre): ComicGenre? {
         val root = getHtml(genre.url)
-        val url = root.select("#search_fy > a:contains(下一页)").attr("abs:href")
+        val a = root.select("#search_fy > a:contains(下一页)").first()
+        val url = absHref(a)
         return if (url.isEmpty()) {
             return null
         } else {
@@ -36,19 +41,21 @@ class Dm5Context : ComicContext() {
         val root = getHtml(genre.url)
         val elements = root.select("#index_left > div.inkk.mato20 > div.innr3 > li")
         return elements.map {
-            ComicListItem(it.select("strong").text(), it.select("img").attr("src"), url(it.select("a:has(strong)").attr("href")))
+            val a = it.select("a:has(strong)").first()
+            val img = it.select("img").first()
+            ComicListItem(text(a), src(img), absHref(a))
         }
     }
 
     override fun search(name: String): List<ComicListItem> {
         val urlEncodedName = URLEncoder.encode(name, "UTF-8")
         val index = 1
-        val root = getHtml(url("/search?page=$index&title=$urlEncodedName&language=1"))
+        val root = getHtml(absUrl("/search?page=$index&title=$urlEncodedName&language=1"))
         val elements = root.select("body > div.container > div.midBar > div.item")
         return elements.map {
             val a = it.select("dt > p > a").first()
             val img = it.select("dl > a > img").first()
-            ComicListItem(a.ownText(), img.attr("src"), a.attr("abs:href"))
+            ComicListItem(text(a), src(img), absHref(a))
         }
     }
 
@@ -60,10 +67,10 @@ class Dm5Context : ComicContext() {
                 .attr("src")
         val info = root.select("#mhinfo > div.innr9.innr9_min > div:nth-child(3) > p")
                 .first().let { it.ownText() + (it.select("span").first()?.ownText() ?: "") }
-        val issues = root.select("ul.nr6.lan2 > li:has(a.tg)")
-                .map {
-                    ComicIssue(it.select("a").attr("title").removePrefix(name), url(it.select("a").attr("href")))
-                }.asReversed()
+        val issues = root.select("ul.nr6.lan2 > li:has(a.tg)").map {
+            val a = it.select("a").first()
+            ComicIssue(title(a).removePrefix(name), absHref(a))
+        }.asReversed()
         return ComicDetail(name, bigImg, info, issues)
     }
 
@@ -73,18 +80,17 @@ class Dm5Context : ComicContext() {
         val chapter = first.select("body > div.viewBar > div:nth-child(9) > div#chapterpager").firstOrNull() ?: return emptyList()
         val pagesCount = chapter.select("a:nth-last-child(1)").firstOrNull()?.run { text().toInt() } ?: 1
         return List(pagesCount) {
-            ComicPage(url("/m$cid-p${it + 1}/"))
+            ComicPage(absUrl("/m$cid-p${it + 1}/"))
         }
     }
 
-    private val chapterfunUrl = url("/chapterfun.ashx")
     /**
      * http://css99tel.cdndm5.com/v201709121708/default/js/chapternew_v22.js
      */
     override fun getComicImage(comicPage: ComicPage): ComicImage {
         val cid = comicPage.url.replace(Regex(".*/m(\\d*)-p\\d*/"), "$1")
         val index = comicPage.url.replace(Regex(".*/m\\d*-p(\\d*)/"), "$1")
-        val pageUrl = chapterfunUrl
+        val pageUrl = absUrl("/chapterfun.ashx")
         val conn = Jsoup.connect(pageUrl)
                 .data("cid", cid)
                 .data("page", index)
