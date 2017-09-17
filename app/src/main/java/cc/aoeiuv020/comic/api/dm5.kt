@@ -16,7 +16,8 @@ class Dm5Context : ComicContext() {
     override fun getComicSite(): ComicSite = site
     override fun getGenres(): List<ComicGenre> {
         val root = getHtml(site.baseUrl)
-        val elements = root.select("body > div:nth-child(3) > div:nth-child(2) > ul > li > a")
+        val elements = root.select("body > div:nth-child(1) > div.navBar > ul > li > a[class='item ib'] , " +
+                "body > div:nth-child(3) > div:nth-child(2) > ul > li > a")
         return elements.map { ComicGenre(it.text(), url(it.attr("href"))) }
     }
 
