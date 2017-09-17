@@ -54,7 +54,7 @@ class Dm5ContextTest {
 
     @Test
     fun getComicDetail() {
-        context.getComicDetail(ComicListItem("妖神记", "", "http://www.dm5.com/manhua-yaoshenji/")).let {
+        context.getComicDetail(ComicListItem("妖精的尾巴", "", "http://www.dm5.com/manhua-yaojingdeweiba/")).let {
             println(it.name)
             println(it.bigImg)
             println(it.info)

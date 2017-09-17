@@ -46,7 +46,7 @@ class Dm5Context : ComicContext() {
         val bigImg = root.select("#mhinfo > div.innr9.innr9_min > div.innr90 > div.innr91 > img")
                 .attr("src")
         val info = root.select("#mhinfo > div.innr9.innr9_min > div:nth-child(3) > p")
-                .joinToString("\n") { it.text() }
+                .first().let { it.ownText() + (it.select("span").first()?.ownText() ?: "") }
         val issues = root.select("ul.nr6.lan2 > li:has(a.tg)")
                 .map {
                     ComicIssue(it.select("a").attr("title").removePrefix(name), url(it.select("a").attr("href")))
