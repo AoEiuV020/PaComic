@@ -181,6 +181,7 @@ class ComicListAdapter(val ctx: Context, data: List<ComicListItem>) : BaseAdapte
             = (convertView ?: View.inflate(ctx, R.layout.comic_list_item, null)).apply {
         val comic = getItem(position)
         comic_name.text = comic.name
+        comic_info.text = comic.info
         ctx.glide()?.also {
             it.load(comic.img).into(comic_icon)
         }
