@@ -90,7 +90,7 @@ class Dm5Context : ComicContext() {
     override fun getComicPages(comicIssue: ComicIssue): List<ComicPage> {
         val cid = comicIssue.url.replace(Regex(".*/m(\\d*)/"), "$1")
         val first = getHtml(comicIssue.url)
-        val chapter = first.select("body > div.viewBar > div:nth-child(9) > div#chapterpager").firstOrNull() ?: return emptyList()
+        val chapter = first.select("div#chapterpager").firstOrNull() ?: return emptyList()
         val pagesCount = chapter.select("a:nth-last-child(1)").firstOrNull()?.run { text().toInt() } ?: 1
         return List(pagesCount) {
             ComicPage(absUrl("/m$cid-p${it + 1}/"))
