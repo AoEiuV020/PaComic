@@ -56,7 +56,7 @@ class Dm5Context : ComicContext() {
         return elements.map {
             val a = it.select("a:has(strong)").first()
             val img = it.select("img").first()
-            ComicListItem(text(a), src(img), absHref(a), text(it))
+            ComicListItem(text(a), src(img), absHref(a), text(it).removePrefix(text(a)))
         }
     }
 
