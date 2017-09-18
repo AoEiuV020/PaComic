@@ -1,7 +1,6 @@
 package cc.aoeiuv020.comic.ui
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.view.PagerAdapter
@@ -17,7 +16,8 @@ import cc.aoeiuv020.comic.di.PageModule
 import cc.aoeiuv020.comic.ui.base.ComicPageBaseFullScreenActivity
 import com.boycy815.pinchimageview.PinchImageView
 import com.boycy815.pinchimageview.huge.HugeUtil
-import com.bumptech.glide.request.target.ImageViewTarget
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
 import org.jetbrains.anko.AnkoLogger
@@ -115,6 +115,7 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
         root.progressBar.visibility = View.VISIBLE
         // 重制放大状态，
         (root.image as PinchImageView).reset()
+        root.image.setImageDrawable(null)
         root.pageNumber.text = ctx.getString(R.string.page_number, position + 1, count)
         val page = pages[position]
         App.component.plus(ImageModule(page))
@@ -122,18 +123,12 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
                 .async()
                 .subscribe({ (img) ->
                     ctx.glide()?.also {
-                        it.download(img).into(object : ImageViewTarget<File>(root.image) {
-                            override fun setResource(resource: File?) {
-                                resource?.let {
-                                    root.progressBar.visibility = View.GONE
-                                    // TODO: 这段直接对比别人的demo, 少个recycle, 但并没有导致内存泄漏，
-                                    HugeUtil.setImageUri(root.image, Uri.fromFile(it))
-                                }
-                            }
-
-                            override fun onLoadFailed(errorDrawable: Drawable?) {
+                        it.download(img).into(object : SimpleTarget<File>() {
+                            override fun onResourceReady(resource: File, transition: Transition<in File>?) {
+                                HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
                                 root.progressBar.visibility = View.GONE
                             }
+
                         })
                     }
                 }, { e ->
