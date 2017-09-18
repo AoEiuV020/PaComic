@@ -27,11 +27,14 @@
 
         <TextView
             android:id="@+id/comic_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:singleLine="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/comic_icon"
             app:layout_constraintTop_toTopOf="@+id/comic_icon"
             tools:text="漫画名" />
