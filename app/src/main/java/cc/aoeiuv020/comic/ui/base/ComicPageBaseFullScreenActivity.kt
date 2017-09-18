@@ -1,11 +1,15 @@
 package cc.aoeiuv020.comic.ui.base
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
+import android.util.AttributeSet
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowInsets
 import android.view.WindowManager
+import android.widget.FrameLayout
 import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.ui.hide
 import cc.aoeiuv020.comic.ui.show
@@ -73,9 +77,11 @@ abstract class ComicPageBaseFullScreenActivity : AppCompatActivity(), AnkoLogger
         mVisible = true
 
         navBarBg.post {
-            navBarBg.rootWindowInsets.systemWindowInsetBottom.let {
-                navBarBg.layoutParams = navBarBg.layoutParams.apply { height = it }
+            navBarBg.setOnApplyWindowInsetsListener { _, insets ->
+                navBarBg.layoutParams = navBarBg.layoutParams.apply { height = insets.systemWindowInsetBottom }
+                insets
             }
+            navBarBg.requestApplyInsets()
         }
     }
 
@@ -142,5 +148,14 @@ abstract class ComicPageBaseFullScreenActivity : AppCompatActivity(), AnkoLogger
          * and a change of the status and navigation bar.
          */
         private val UI_ANIMATION_DELAY = 300
+    }
+}
+
+class ComicPageFullScreenRootFrameLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs), AnkoLogger {
+    override fun dispatchApplyWindowInsets(insets: WindowInsets): WindowInsets {
+        findViewById<View>(R.id.navBarBg)?.apply {
+            layoutParams = layoutParams.apply { height = insets.systemWindowInsetBottom }
+        }
+        return super.dispatchApplyWindowInsets(insets)
     }
 }

@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<cc.aoeiuv020.comic.ui.base.ComicPageFullScreenRootFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -91,5 +91,4 @@
                 android:focusable="false" />
         </LinearLayout>
     </FrameLayout>
-
-</FrameLayout>
+</cc.aoeiuv020.comic.ui.base.ComicPageFullScreenRootFrameLayout>
