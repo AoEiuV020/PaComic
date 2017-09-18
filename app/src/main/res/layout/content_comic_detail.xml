@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="cc.aoeiuv020.comic.ComicDetailActivity"
-    tools:listitem="@layout/comic_content_item"
+    tools:context="cc.aoeiuv020.comic.ui.ComicDetailActivity"
+    tools:listitem="@layout/comic_issue_item"
     tools:showIn="@layout/activity_comic_detail">
 
 </android.support.v7.widget.RecyclerView>

@@ -2,6 +2,7 @@
 
 ## 应用简介
 这是有理想的漫画神器，  
+kotlin + mvp + dagger2 + rxandroid  
 
 【背景】  
 市面上的漫画软件都是都是从特定的某个漫画网站下载漫画，  
@@ -15,8 +16,15 @@
 
 【库】  
 [jsoup](https://github.com/jhy/jsoup)
+[dagger2](https://github.com/google/dagger)
+[RxAndroid](https://github.com/ReactiveX/RxAndroid)
+[glide](https://github.com/bumptech/glide)
+[anko](https://github.com/Kotlin/anko)
+[MaterialSearchView](https://github.com/MiguelCatalan/MaterialSearchView)
+[PinchImageView](https://github.com/boycy815/PinchImageView)
+[slf4j](https://github.com/qos-ch/slf4j)
 
-## apitester
-测试爬虫用的app,  
-[README.md](apitester/)
-
+![img](screenshots/genre.jpg)
+![img](screenshots/search.jpg)
+![img](screenshots/detail.jpg)
+![img](screenshots/image.jpg)
