@@ -48,7 +48,7 @@ class Dm5Context : ComicContext() {
             return elements.map {
                 val a = it.select("dt > p > a").first()
                 val img = it.select("dl > a > img").first()
-                ComicListItem(text(a), src(img), absHref(a))
+                ComicListItem(text(a), src(img), absHref(a), text(it))
             }
         }
         val root = getHtml(genre.url)
@@ -56,7 +56,7 @@ class Dm5Context : ComicContext() {
         return elements.map {
             val a = it.select("a:has(strong)").first()
             val img = it.select("img").first()
-            ComicListItem(text(a), src(img), absHref(a))
+            ComicListItem(text(a), src(img), absHref(a), text(it))
         }
     }
 

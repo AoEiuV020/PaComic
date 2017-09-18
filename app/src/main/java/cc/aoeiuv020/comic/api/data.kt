@@ -46,8 +46,11 @@ data class ComicGenre(
 data class ComicListItem(
         val name: String,
         val img: String,
-        val url: String
-) : Data()
+        val url: String,
+        val info: String
+) : Data() {
+    constructor(name: String, img: String, url: String) : this(name, img, url, "")
+}
 
 /**
  * 漫画详情页，

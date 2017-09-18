@@ -50,6 +50,7 @@ class Dm5ContextTest {
                 println(it.name)
                 println(it.url)
                 println(it.img)
+                println(it.info)
             }
         }
     }
