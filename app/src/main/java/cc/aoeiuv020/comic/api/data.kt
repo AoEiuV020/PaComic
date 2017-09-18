@@ -84,5 +84,8 @@ data class ComicPage(
  * @param img 漫画图片地址，
  */
 data class ComicImage(
-        val img: String
-) : Data()
+        val img: String,
+        val cacheableUrl: String
+) : Data() {
+    constructor(img: String) : this(img, img)
+}

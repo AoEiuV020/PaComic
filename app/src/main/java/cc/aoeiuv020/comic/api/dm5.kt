@@ -1,7 +1,6 @@
 package cc.aoeiuv020.comic.api
 
 import org.jsoup.Jsoup
-import java.net.URL
 import java.net.URLEncoder
 
 /**
@@ -118,7 +117,11 @@ class Dm5Context : ComicContext() {
         val str = conn.response().body()
         logger.debug { "chapterfun: $str" }
         val chapter = str.removeSuffix("\n")
-        return ComicImage(decode(chapter))
+        val img = decode(chapter)
+        logger.debug { "img: $img" }
+        val cacheableUrl = img.replace(Regex("&key=\\w*"), "")
+        logger.debug { "cacheableUrl: $cacheableUrl" }
+        return ComicImage(img)
     }
 
     /**

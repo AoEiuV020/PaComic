@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import cc.aoeiuv020.comic.R
+import cc.aoeiuv020.comic.api.ComicImage
 import cc.aoeiuv020.comic.api.ComicIssue
 import cc.aoeiuv020.comic.api.ComicPage
 import cc.aoeiuv020.comic.di.ImageModule
@@ -17,8 +18,10 @@ import cc.aoeiuv020.comic.di.PageModule
 import cc.aoeiuv020.comic.ui.base.ComicPageBaseFullScreenActivity
 import com.boycy815.pinchimageview.PinchImageView
 import com.boycy815.pinchimageview.huge.HugeUtil
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import com.bumptech.glide.signature.ObjectKey
 import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
 import org.jetbrains.anko.AnkoLogger
@@ -103,7 +106,7 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
 
 class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
     private val views: LinkedList<View> = LinkedList()
-    private val imgs = SparseArray<String>()
+    private val imgs = SparseArray<ComicImage>()
     override fun isViewFromObject(view: View, obj: Any) = view === obj
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val root = if (views.isNotEmpty())
@@ -120,30 +123,34 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
         root.image.setImageDrawable(null)
         root.pageNumber.text = ctx.getString(R.string.page_number, position + 1, count)
         val page = pages[position]
-        imgs[position]?.let { img ->
+        imgs[position]?.let { (img, cacheableUrl) ->
             ctx.glide()?.also {
-                it.download(img).into(object : SimpleTarget<File>() {
-                    override fun onResourceReady(resource: File, transition: Transition<in File>?) {
-                        HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
-                        root.progressBar.visibility = View.GONE
-                    }
+                it.download(img).apply(RequestOptions().signature(ObjectKey(cacheableUrl)))
+                        .into(object : SimpleTarget<File>() {
+                            override fun onResourceReady(resource: File, transition: Transition<in File>?) {
+                                HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
+                                root.progressBar.visibility = View.GONE
+                            }
 
-                })
+                        })
             }
         } ?: run {
             App.component.plus(ImageModule(page))
                     .getComicImage()
                     .async()
-                    .subscribe({ (img) ->
-                        imgs.put(position, img)
+                    .subscribe({ comicImage ->
+                        imgs.put(position, comicImage)
+                        val img = comicImage.img
+                        val cacheableUrl = comicImage.cacheableUrl
                         ctx.glide()?.also {
-                            it.download(img).into(object : SimpleTarget<File>() {
-                                override fun onResourceReady(resource: File, transition: Transition<in File>?) {
-                                    HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
-                                    root.progressBar.visibility = View.GONE
-                                }
+                            it.download(img).apply(RequestOptions().signature(ObjectKey(cacheableUrl)))
+                                    .into(object : SimpleTarget<File>() {
+                                        override fun onResourceReady(resource: File, transition: Transition<in File>?) {
+                                            HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
+                                            root.progressBar.visibility = View.GONE
+                                        }
 
-                            })
+                                    })
                         }
                     }, { e ->
                         val message = "加载漫画页面失败，"
