@@ -1,6 +1,5 @@
 package cc.aoeiuv020.comic.ui
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -19,7 +18,8 @@ import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.api.ComicSite
-import cc.aoeiuv020.comic.di.*
+import cc.aoeiuv020.comic.presenter.AlertableView
+import cc.aoeiuv020.comic.presenter.MainPresenter
 import com.miguelcatalan.materialsearchview.MaterialSearchView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -27,7 +27,9 @@ import kotlinx.android.synthetic.main.comic_list_item.view.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import kotlinx.android.synthetic.main.site_list_item.view.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.browse as ankoBrowse
 
 
 /**
@@ -35,11 +37,11 @@ import org.jetbrains.anko.*
  * Created by AoEiuV020 on 2017.09.12-19:04:44.
  */
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AnkoLogger {
-    private var site: ComicSite? = null
-    private var url: String? = null
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AlertableView {
+    override val ctx: Context = this
+    private lateinit var presenter: MainPresenter
+    private lateinit var genres: List<ComicGenre>
 
-    @SuppressLint("PrivateResource")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -52,27 +54,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
+        presenter = MainPresenter(this)
+
         searchView.setOnQueryTextListener(object : MaterialSearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                debug { "搜索：$query" }
-                site?.also {
-                    debug { "当前选择了的网站：${it.name}" }
-                    val loadingDialog = loading(R.string.search_result)
-                    App.component.plus(SearchModule(it, query)).search().async().subscribe({ genre ->
-                        // 收起软键盘，
-                        searchView.hideKeyboard(searchView)
-                        selectComicGenre(genre)
-                        loadingDialog.dismiss()
-                    }, { e ->
-                        val message = "加载搜索结果失败，"
-                        error(message, e)
-                        alertError(message, e)
-                        loadingDialog.dismiss()
-                    })
-                } ?: run {
-                    debug { "没有选择网站，先弹出网站选择，" }
-                    showSites()
-                }
+                // 收起软键盘，
+                searchView.hideKeyboard(searchView)
+                presenter.search(query)
                 return true
             }
 
@@ -80,21 +68,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         })
 
-        debug { "读取记住的选择，" }
-        App.component.plus(SiteModule()).site?.also { site ->
-            debug { "已有记住网站：${site.name}" }
-            selectSite(site)
-            App.component.plus(GenreModule(site)).genre?.let { genre ->
-                debug { "已有记住分类：${genre.name}" }
-                selectComicGenre(genre)
-            } ?: run {
-                debug { "没有记住的分类，弹出侧栏，" }
-                openDrawer()
-            }
-        } ?: run {
-            debug { "没有记住的网站，弹出网站选择，" }
-            showSites()
-        }
+        presenter.start()
     }
 
     private fun isDrawerOpen() = drawer_layout.isDrawerOpen(GravityCompat.START)
@@ -126,7 +100,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         searchView.setMenuItem(item)
 
         menu.findItem(R.id.browse).setOnMenuItemClickListener {
-            url?.let { browse(it) } ?: false
+            presenter.browseCurrentUrl()
         }
 
         return true
@@ -138,10 +112,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.groupId) {
             GROUP_ID -> {
-                selectComicGenre(genres[item.order])
+                showGenre(genres[item.order])
             }
             else -> when (item.itemId) {
-                R.id.select_sites -> showSites()
+                R.id.select_sites -> presenter.requestSites()
                 R.id.settings -> {
                     Snackbar.make(drawer_layout, "没实现", Snackbar.LENGTH_SHORT).show()
                 }
@@ -151,56 +125,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private var listComponent: ListComponent? = null
-
-    private fun selectComicGenre(genre: ComicGenre) {
-        val loadingDialog = loading(R.string.comic_list)
-        url = genre.url
+    fun showGenre(genre: ComicGenre) {
         title = genre.name
-        App.component.plus(ListModule(genre)).also { listComponent = it }
-                .getComicList()
-                .async()
-                .toList()
-                .subscribe({ comicList ->
-                    setComicList(comicList)
-                    loadingDialog.dismiss()
-                }, { e ->
-                    val message = "加载漫画列表失败，"
-                    error(message, e)
-                    alertError(message, e)
-                    loadingDialog.dismiss()
-                })
+        closeDrawer()
+        presenter.requestComicList(genre)
     }
 
-    private fun selectNextPage(genre: ComicGenre) {
-        val loadingDialog = loading(R.string.next_page)
-        url = genre.url
-        title = genre.name
-        App.component.plus(ListModule(genre)).also { listComponent = it }
-                .getComicList()
-                .async()
-                .toList()
-                .subscribe({ comicList ->
-                    addComicList(comicList)
-                    loadingDialog.dismiss()
-                }, { e ->
-                    val message = "加载漫画列表失败，"
-                    error(message, e)
-                    alertError(message, e)
-                    loadingDialog.dismiss()
-                })
-    }
-
-    private fun addComicList(comicList: List<ComicListItem>) {
-        debug { "展示漫画列表，数量：${comicList.size}" }
+    fun addComicList(comicList: List<ComicListItem>) {
         if (listView.adapter != null) {
             (listView.adapter as ComicListAdapter).addAll(comicList)
         } else {
-            setComicList(comicList)
+            showComicList(comicList)
         }
     }
 
-    private fun setComicList(comicList: List<ComicListItem>) {
+    fun showComicList(comicList: List<ComicListItem>) {
         listView.run {
             adapter = ComicListAdapter(this@MainActivity, comicList)
             setOnItemClickListener { _, _, position, _ ->
@@ -208,11 +147,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             setOnScrollListener(object : AbsListView.OnScrollListener {
                 private var lastItem = 0
-                /**
-                 * 是否正在加载下一页，
-                 * 没有下一页时设为true假装正在加载下一页，就不会真的去加载下一页了，
-                 */
-                private var loadingNextPage = false
 
                 override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
                     // 求画面上最后一个的索引，并不准，可能是最后一个+1,
@@ -222,80 +156,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {
                     // 差不多就好，反正没到底也快了，
                     if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
-                            && lastItem >= adapter.count - 2 && !loadingNextPage) {
-                        loadingNextPage = true
-                        val loadingDialog = loading(getString(R.string.next_page))
-                        debug { "加载下一页，已经设置listComponent: ${listComponent != null}" }
-                        listComponent?.run {
-                            getNextPage().async().toList().subscribe({ genres ->
-                                if (genres.isEmpty()) {
-                                    debug { "没有下一页" }
-                                    loadingDialog.dismiss()
-                                    alert(R.string.yet_last_page).show()
-                                    return@subscribe
-                                }
-                                val genre = genres.first()
-                                // 重制这个标志，以便继续加载下一页，
-                                loadingNextPage = false
-                                selectNextPage(genre)
-                                loadingDialog.dismiss()
-                            }, { e ->
-                                val message = "加载漫画列表一下页地址失败，"
-                                error(message, e)
-                                alertError(message, e)
-                                loadingDialog.dismiss()
-                            })
-                        }
+                            && lastItem >= adapter.count - 2) {
+                        presenter.loadNextPage()
                     }
                 }
             })
         }
     }
 
-    private fun showSites() {
-        App.component.plus(SiteModule())
-                .getSites()
-                .async()
-                .toList()
-                .subscribe { sites ->
-                    AlertDialog.Builder(this@MainActivity).setAdapter(SiteListAdapter(this@MainActivity, sites)) { _, index ->
-                        val site = sites[index]
-                        debug { "选中网站：${site.name}，弹出侧栏，" }
-                        openDrawer()
-                        selectSite(site)
-                    }.show()
-                }
+    fun showSites(sites: List<ComicSite>) {
+        AlertDialog.Builder(this@MainActivity).setAdapter(SiteListAdapter(this@MainActivity, sites)) { _, index ->
+            presenter.setSite(sites[index])
+        }.show()
     }
 
-    private fun selectSite(site: ComicSite) {
-        this.site = site
-        url = site.baseUrl
+    fun showSite(site: ComicSite) {
+        openDrawer()
         nav_view.getHeaderView(0).apply {
             selectedSiteName.text = site.name
             glide()?.also {
                 it.load(site.logo).holdInto(selectedSiteLogo)
             }
         }
-        val loadingDialog = loading(R.string.genre_list)
-        App.component.plus(GenreModule(site))
-                .getGenres()
-                .async()
-                .toList()
-                .subscribe({ genres ->
-                    debug { "加载网站分类列表成功，数量：${genres.size}" }
-                    setGenres(genres)
-                    loadingDialog.dismiss()
-                }, { e ->
-                    val message = "加载网站分类列表失败，"
-                    error(message, e)
-                    alertError(message, e)
-                    loadingDialog.dismiss()
-                })
+        presenter.requestGenres(site)
     }
 
-    private lateinit var genres: List<ComicGenre>
-
-    private fun setGenres(genres: List<ComicGenre>) {
+    fun showGenres(genres: List<ComicGenre>) {
         this.genres = genres
         nav_view.menu.run {
             removeGroup(GROUP_ID)

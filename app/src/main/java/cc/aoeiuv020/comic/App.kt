@@ -1,4 +1,4 @@
-package cc.aoeiuv020.comic.ui
+package cc.aoeiuv020.comic
 
 import android.app.Application
 import android.content.Context
@@ -23,7 +23,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        App.setComponent(this)
+        setComponent(this)
     }
 
 }

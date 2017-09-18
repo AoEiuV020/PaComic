@@ -5,16 +5,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
-import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import android.widget.SeekBar
 import cc.aoeiuv020.comic.R
-import cc.aoeiuv020.comic.api.ComicImage
 import cc.aoeiuv020.comic.api.ComicIssue
 import cc.aoeiuv020.comic.api.ComicPage
-import cc.aoeiuv020.comic.di.ImageModule
-import cc.aoeiuv020.comic.di.PageModule
+import cc.aoeiuv020.comic.presenter.AlertableView
+import cc.aoeiuv020.comic.presenter.ComicPagePresenter
 import cc.aoeiuv020.comic.ui.base.ComicPageBaseFullScreenActivity
 import com.boycy815.pinchimageview.PinchImageView
 import com.boycy815.pinchimageview.huge.HugeUtil
@@ -26,8 +25,6 @@ import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.browse
-import org.jetbrains.anko.error
 import java.io.File
 import java.util.*
 
@@ -36,43 +33,41 @@ import java.util.*
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class ComicPageActivity : ComicPageBaseFullScreenActivity() {
+class ComicPageActivity : ComicPageBaseFullScreenActivity(), AlertableView {
+    override val ctx: Context = this
+    private lateinit var presenter: ComicPagePresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val name = intent.getStringExtra("name") ?: return
         val issue = intent.getSerializableExtra("issue") as? ComicIssue ?: return
-        val loadingDialog = loading(R.string.comic_page)
-        title = "$name - ${issue.name}"
+
+        presenter = ComicPagePresenter(this, name, issue)
+
         urlBar.setOnClickListener {
-            browse(url.text.toString())
+            presenter.browseCurrentUrl()
         }
-        // 显示第一页地址，
-        url.text = issue.url
-        App.component.plus(PageModule(issue))
-                .getComicPages()
-                .async()
-                .toList()
-                .subscribe({ pages ->
-                    display(pages)
-                    loadingDialog.dismiss()
-                }, { e ->
-                    val message = "加载漫画页面失败，"
-                    error(message, e)
-                    alertError(message, e)
-                    loadingDialog.dismiss()
-                })
+
+        presenter.start()
     }
 
-    private fun display(pages: List<ComicPage>) {
+    fun showName(name: String) {
+        title = name
+    }
+
+    fun showUrl(s: String) {
+        url.text = s
+    }
+
+    fun showComicPages(pages: List<ComicPage>) {
         if (pages.isEmpty()) {
             alert("浏览失败或者不支持该漫画").show()
             // 无法浏览的情况显示状态栏标题栏导航栏，方便离开，
             show()
             return
         }
-        viewPager.adapter = ComicPageAdapter(this, pages)
+        viewPager.adapter = ComicPageAdapter(this, presenter, pages)
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
                 hide()
@@ -83,7 +78,7 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
 
             override fun onPageSelected(position: Int) {
                 seekBar.progress = position
-                url.text = (viewPager.adapter as ComicPageAdapter).getItem(viewPager.currentItem).url
+                presenter.changeCurrentComicPage((viewPager.adapter as ComicPageAdapter).getItem(viewPager.currentItem))
             }
         })
         seekBar.max = pages.size - 1
@@ -104,9 +99,8 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
     }
 }
 
-class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
+class ComicPageAdapter(val ctx: Context, private val presenter: ComicPagePresenter, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
     private val views: LinkedList<View> = LinkedList()
-    private val imgs = SparseArray<ComicImage>()
     override fun isViewFromObject(view: View, obj: Any) = view === obj
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val root = if (views.isNotEmpty())
@@ -123,7 +117,7 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
         root.image.setImageDrawable(null)
         root.pageNumber.text = ctx.getString(R.string.page_number, position + 1, count)
         val page = pages[position]
-        imgs[position]?.let { (img, cacheableUrl) ->
+        presenter.resolveComicPage(page, { (img, cacheableUrl) ->
             ctx.glide()?.also {
                 it.download(img).apply(RequestOptions().signature(ObjectKey(cacheableUrl)))
                         .into(object : SimpleTarget<File>() {
@@ -134,31 +128,12 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
 
                         })
             }
-        } ?: run {
-            App.component.plus(ImageModule(page))
-                    .getComicImage()
-                    .async()
-                    .subscribe({ comicImage ->
-                        imgs.put(position, comicImage)
-                        val img = comicImage.img
-                        val cacheableUrl = comicImage.cacheableUrl
-                        ctx.glide()?.also {
-                            it.download(img).apply(RequestOptions().signature(ObjectKey(cacheableUrl)))
-                                    .into(object : SimpleTarget<File>() {
-                                        override fun onResourceReady(resource: File, transition: Transition<in File>?) {
-                                            HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
-                                            root.progressBar.visibility = View.GONE
-                                        }
-
-                                    })
-                        }
-                    }, { e ->
-                        val message = "加载漫画页面失败，"
-                        error(message, e)
-                        root.progressBar.visibility = View.GONE
-                    })
-        }
+        }, { _, _ ->
+            root.progressBar.visibility = View.GONE
+        })
         container.addView(root)
+        val w = WebView(ctx)
+        w.getContentHeight()
         return root
     }
 

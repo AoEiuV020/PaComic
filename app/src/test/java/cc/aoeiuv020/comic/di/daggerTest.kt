@@ -2,8 +2,8 @@ package cc.aoeiuv020.comic.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import cc.aoeiuv020.comic.App
 import cc.aoeiuv020.comic.api.*
-import cc.aoeiuv020.comic.ui.App
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -73,7 +73,7 @@ class DaggerTest {
 
     @Test
     fun getComicPages() {
-        val pageComponent: PageComponent = App.component.plus(PageModule(ComicIssue("", "http://www.popomh.com/popo290025/1.html?s=3")))
+        val pageComponent: PageComponent = App.component.plus(PageModule(ComicIssue("", "http://www.popomh.com/popo290025/1.html?str=3")))
         pageComponent.getComicPages()
                 .forEach {
                     println(it.url)
@@ -82,7 +82,7 @@ class DaggerTest {
 
     @Test
     fun getComicImage() {
-        val imageComponent: ImageComponent = App.component.plus(ImageModule(ComicPage("http://www.popomh.com/popo290025/24.html?s=3")))
+        val imageComponent: ImageComponent = App.component.plus(ImageModule(ComicPage("http://www.popomh.com/popo290025/24.html?str=3")))
         imageComponent.getComicImage()
                 .forEach {
                     println(it.img)

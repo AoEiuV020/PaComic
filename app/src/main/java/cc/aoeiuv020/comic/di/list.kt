@@ -1,9 +1,9 @@
 package cc.aoeiuv020.comic.di
 
 import android.content.Context
+import cc.aoeiuv020.comic.App
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicListItem
-import cc.aoeiuv020.comic.ui.App
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent

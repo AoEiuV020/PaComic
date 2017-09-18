@@ -74,14 +74,14 @@ class PopomhContextTest {
 
     @Test
     fun getComicPages() {
-        context.getComicPages(ComicIssue("", "http://www.popomh.com/popo290025/1.html?s=3")).forEach {
+        context.getComicPages(ComicIssue("", "http://www.popomh.com/popo290025/1.html?str=3")).forEach {
             println(it.url)
         }
     }
 
     @Test
     fun getComicImage() {
-        context.getComicImage(ComicPage("http://www.popomh.com/popo290025/24.html?s=3")).let {
+        context.getComicImage(ComicPage("http://www.popomh.com/popo290025/24.html?str=3")).let {
             println(it.img)
         }
     }

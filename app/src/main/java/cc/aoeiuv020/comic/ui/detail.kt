@@ -13,16 +13,19 @@ import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicDetail
 import cc.aoeiuv020.comic.api.ComicIssue
 import cc.aoeiuv020.comic.api.ComicListItem
-import cc.aoeiuv020.comic.di.DetailModule
+import cc.aoeiuv020.comic.presenter.AlertableView
+import cc.aoeiuv020.comic.presenter.ComicDetailPresenter
 import kotlinx.android.synthetic.main.activity_comic_detail.*
 import kotlinx.android.synthetic.main.activity_comic_detail.view.*
 import kotlinx.android.synthetic.main.comic_issue_item.view.*
 import kotlinx.android.synthetic.main.content_comic_detail.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.error
+import org.jetbrains.anko.startActivity
 
-class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
-    private lateinit var comicListItem: ComicListItem
-    private var comicDetail: ComicDetail? = null
+class ComicDetailActivity : AppCompatActivity(), AnkoLogger, AlertableView {
+    override val ctx: Context = this
+    private lateinit var presenter: ComicDetailPresenter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,36 +35,27 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        comicListItem = intent.getSerializableExtra("item") as? ComicListItem ?: run {
+        val comicListItem = intent.getSerializableExtra("item") as? ComicListItem ?: run {
             error { "ComicDetailActivity 没能从intent得到ComicListItem, 打开方式不对吧，" }
             finish()
             return
         }
 
+        recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity)
+        recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
+
+        presenter = ComicDetailPresenter(this, comicListItem)
+        presenter.start()
+    }
+
+    fun showGeneral(comicListItem: ComicListItem) {
         toolbar_layout.title = comicListItem.name
         ctx.glide()?.also {
             it.load(comicListItem.img).into(toolbar_layout.image)
         }
-        recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity)
-        recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
-
-        val loadingDialog = loading(R.string.comic_detail)
-        App.component.plus(DetailModule(comicListItem))
-                .getComicDetail()
-                .async()
-                .subscribe({ comicDetail ->
-                    setDetail(comicDetail)
-                    loadingDialog.dismiss()
-                }, { e ->
-                    val message = "加载漫画详情失败，"
-                    error(message, e)
-                    alertError(message, e)
-                    loadingDialog.dismiss()
-                })
     }
 
-    private fun setDetail(detail: ComicDetail) {
-        this.comicDetail = detail
+    fun showComicDetail(detail: ComicDetail) {
         toolbar_layout.title = detail.name
         ctx.glide()?.also {
             it.load(detail.bigImg).holdInto(toolbar_layout.image)
@@ -72,13 +66,10 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_detail, menu)
         menu.findItem(R.id.browse).setOnMenuItemClickListener {
-            browse(comicListItem.url)
+            presenter.browseCurrentUrl()
         }
         menu.findItem(R.id.info).setOnMenuItemClickListener {
-            // 这个comicDetail本质上是调用getter，不是直接传对象到内部类，
-            comicDetail?.let {
-                alert(it.info, it.name).show()
-            }
+            presenter.requestComicAbout()
             true
         }
 
