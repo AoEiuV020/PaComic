@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
+import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
@@ -102,6 +103,7 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
 
 class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
     private val views: LinkedList<View> = LinkedList()
+    private val imgs = SparseArray<String>()
     override fun isViewFromObject(view: View, obj: Any) = view === obj
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val root = if (views.isNotEmpty())
@@ -118,24 +120,37 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
         root.image.setImageDrawable(null)
         root.pageNumber.text = ctx.getString(R.string.page_number, position + 1, count)
         val page = pages[position]
-        App.component.plus(ImageModule(page))
-                .getComicImage()
-                .async()
-                .subscribe({ (img) ->
-                    ctx.glide()?.also {
-                        it.download(img).into(object : SimpleTarget<File>() {
-                            override fun onResourceReady(resource: File, transition: Transition<in File>?) {
-                                HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
-                                root.progressBar.visibility = View.GONE
-                            }
-
-                        })
+        imgs[position]?.let { img ->
+            ctx.glide()?.also {
+                it.download(img).into(object : SimpleTarget<File>() {
+                    override fun onResourceReady(resource: File, transition: Transition<in File>?) {
+                        HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
+                        root.progressBar.visibility = View.GONE
                     }
-                }, { e ->
-                    val message = "加载漫画页面失败，"
-                    error(message, e)
-                    root.progressBar.visibility = View.GONE
+
                 })
+            }
+        } ?: run {
+            App.component.plus(ImageModule(page))
+                    .getComicImage()
+                    .async()
+                    .subscribe({ (img) ->
+                        imgs.put(position, img)
+                        ctx.glide()?.also {
+                            it.download(img).into(object : SimpleTarget<File>() {
+                                override fun onResourceReady(resource: File, transition: Transition<in File>?) {
+                                    HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
+                                    root.progressBar.visibility = View.GONE
+                                }
+
+                            })
+                        }
+                    }, { e ->
+                        val message = "加载漫画页面失败，"
+                        error(message, e)
+                        root.progressBar.visibility = View.GONE
+                    })
+        }
         container.addView(root)
         return root
     }
