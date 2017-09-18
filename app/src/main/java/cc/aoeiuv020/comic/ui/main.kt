@@ -2,12 +2,8 @@ package cc.aoeiuv020.comic.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -20,6 +16,7 @@ import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.api.ComicSite
 import cc.aoeiuv020.comic.presenter.AlertableView
 import cc.aoeiuv020.comic.presenter.MainPresenter
+import cc.aoeiuv020.comic.ui.base.MainBaseNavigationActivity
 import com.miguelcatalan.materialsearchview.MaterialSearchView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -29,7 +26,6 @@ import kotlinx.android.synthetic.main.nav_header_main.view.*
 import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.browse as ankoBrowse
 
 
 /**
@@ -37,25 +33,15 @@ import org.jetbrains.anko.browse as ankoBrowse
  * Created by AoEiuV020 on 2017.09.12-19:04:44.
  */
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, AlertableView {
+class MainActivity : MainBaseNavigationActivity(), AlertableView {
     override val ctx: Context = this
     private lateinit var presenter: MainPresenter
     private lateinit var genres: List<ComicGenre>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-
-        val toggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
-
-        nav_view.setNavigationItemSelectedListener(this)
 
         presenter = MainPresenter(this)
-
         searchView.setOnQueryTextListener(object : MaterialSearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 // 收起软键盘，
@@ -67,30 +53,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onQueryTextChange(newText: String?): Boolean = false
 
         })
-
         presenter.start()
-    }
-
-    private fun isDrawerOpen() = drawer_layout.isDrawerOpen(GravityCompat.START)
-
-    private fun closeDrawer() {
-        drawer_layout.closeDrawer(GravityCompat.START)
-    }
-
-    private fun openDrawer() {
-        drawer_layout.openDrawer(GravityCompat.START)
-    }
-
-    override fun onBackPressed() {
-        if (isDrawerOpen()) {
-            closeDrawer()
-        } else {
-            if (searchView.isSearchOpen) {
-                searchView.closeSearch()
-            } else {
-                super.onBackPressed()
-            }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
