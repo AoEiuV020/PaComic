@@ -11,8 +11,8 @@ android {
         applicationId "cc.aoeiuv020.comic"
         minSdkVersion min_version
         targetSdkVersion target_version
-        versionCode 4
-        versionName "0.4"
+        versionCode 5
+        versionName "0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "comic-$versionName")
     }
