@@ -45,3 +45,5 @@ inline fun Logger.error(e: Throwable, message: () -> Any?) {
         error(message().toString(), e)
     }
 }
+
+fun String.pick(pattern: String) = replace(Regex(pattern), "$1")

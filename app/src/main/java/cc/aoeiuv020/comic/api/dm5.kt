@@ -48,7 +48,7 @@ class Dm5Context : ComicContext() {
             return elements.map {
                 val a = it.select("dt > p > a").first()
                 val img = it.select("dl > a > img").first()
-                ComicListItem(text(a), src(img), absHref(a), text(it))
+                ComicListItem(text(a), src(img), absHref(a), it.select("> :not(p, a)").joinToString("") { textWithNewLine(it, 6) })
             }
         }
         val root = getHtml(genre.url)
@@ -56,7 +56,7 @@ class Dm5Context : ComicContext() {
         return elements.map {
             val a = it.select("a:has(strong)").first()
             val img = it.select("img").first()
-            ComicListItem(text(a), src(img), absHref(a), text(it).removePrefix(text(a)))
+            ComicListItem(text(a), src(img), absHref(a), textWithNewLine(it, 4).removePrefix(text(a)))
         }
     }
 
@@ -76,8 +76,7 @@ class Dm5Context : ComicContext() {
         val root = getHtml(comicListItem.url)
         // 这个name也可以改成从html解析，
         val name = comicListItem.name
-        val bigImg = root.select("#mhinfo > div.innr9.innr9_min > div.innr90 > div.innr91 > img")
-                .attr("src")
+        val bigImg = src(root.select("#mhinfo > div.innr9.innr9_min > div.innr90 > div.innr91 > img").first())
         val info = root.select("#mhinfo > div.innr9.innr9_min > div:nth-child(3) > p")
                 .first().let { it.ownText() + (it.select("span").first()?.ownText() ?: "") }
         val issues = root.select("ul.nr6.lan2 > li:has(a.tg)").map {

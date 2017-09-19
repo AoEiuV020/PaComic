@@ -1,8 +1,10 @@
 # 爬漫画
 
 ## 应用简介
-这是有理想的漫画神器，  
-kotlin + mvp + dagger2 + rxandroid  
+这是有理想的漫画神器，目前支持三个网站，  
+[漫画台](http://www.manhuatai.com)
+[动漫屋](http://www.dm5.com)
+[泡泡漫画](http://www.popomh.com)
 
 【背景】  
 市面上的漫画软件都是都是从特定的某个漫画网站下载漫画，  
@@ -15,6 +17,7 @@ kotlin + mvp + dagger2 + rxandroid
 计划未来要支持大多数漫画网站，  
 
 【库】  
+kotlin + mvp + dagger2 + rxandroid  
 [jsoup](https://github.com/jhy/jsoup)
 [dagger2](https://github.com/google/dagger)
 [RxAndroid](https://github.com/ReactiveX/RxAndroid)

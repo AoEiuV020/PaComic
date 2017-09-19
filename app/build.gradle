@@ -11,14 +11,14 @@ android {
         applicationId "cc.aoeiuv020.comic"
         minSdkVersion min_version
         targetSdkVersion target_version
-        versionCode 4
-        versionName "0.4"
+        versionCode 5
+        versionName "0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "comic-$versionName")
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -55,4 +55,5 @@ dependencies {
     implementation 'com.miguelcatalan:materialsearchview:1.4.0'
     testImplementation 'org.mockito:mockito-core:2.8.47'
     implementation 'com.github.AoEiuV020:PinchImageView:1.2@aar'
+    implementation 'com.google.code.gson:gson:2.8.1'
 }
