@@ -3,6 +3,7 @@ package cc.aoeiuv020.comic.api
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.IOException
@@ -17,7 +18,7 @@ import java.net.URL
 abstract class ComicContext {
     companion object {
         @Suppress("RemoveExplicitTypeArguments")
-        private val contexts = listOf<ComicContext>(PopomhContext(), Dm5Context())
+        private val contexts = listOf<ComicContext>(PopomhContext(), Dm5Context(), ManhuataiContext())
         private val contextsMap = contexts.associateBy { URL(it.getComicSite().baseUrl).host }
         fun getComicContexts(): List<ComicContext> = contexts
         fun getComicContext(url: String): ComicContext? {
@@ -95,7 +96,8 @@ abstract class ComicContext {
 
     protected fun absUrl(url: String) = getComicSite().baseUrl + url
     protected fun text(e: Element): String = e.text()
+    protected fun text(e: Elements): String = e.text()
     protected fun src(img: Element): String = img.attr("src")
-    protected fun absHref(a: Element): String = a.attr("abs:href")
+    protected fun absHref(a: Element): String = a.absUrl("abs:href")
     protected fun title(a: Element): String = a.attr("title")
 }
