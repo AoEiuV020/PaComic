@@ -3,11 +3,6 @@ package cc.aoeiuv020.comic.api
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
-import org.jsoup.nodes.Node
-import org.jsoup.nodes.TextNode
-import org.jsoup.select.NodeTraversor
-import org.jsoup.select.NodeVisitor
 import java.net.URLEncoder
 
 
@@ -94,45 +89,12 @@ class ManhuataiContext : ComicContext() {
         val root = getHtml(comicListItem.url)
         val name = comicListItem.name
         val bigImg = src(root.select("#offlinebtn-container > img").first())
-        val info = convertNodeToText(root.select("div.wz.clearfix > div").first())
+        val info = textWithNewLine(root.select("div.wz.clearfix > div").first(), 1)
         val issues = root.select("div.mhlistbody > ul > li > a").map {
             val a = it
             ComicIssue(text(a), absHref(a))
         }.asReversed()
         return ComicDetail(name, bigImg, info, issues)
-    }
-
-    /**
-     * https://stackoverflow.com/a/17989379/5615186
-     */
-    fun convertNodeToText(element: Element): String {
-        val buffer = StringBuilder()
-        NodeTraversor(object : NodeVisitor {
-            internal var isNewline = true
-            override fun head(node: Node, depth: Int) {
-                if (depth != 1) {
-                    // 不处理子结点，
-                    return
-                }
-                if (node is TextNode) {
-                    val text = node.text().replace('\u00A0', ' ').trim { it <= ' ' }
-                    if (!text.isEmpty()) {
-                        buffer.append(text)
-                        isNewline = false
-                    }
-                } else if (node is Element) {
-                    if (!isNewline) {
-                        if (node.isBlock || node.tagName() == "br") {
-                            buffer.append("\n")
-                            isNewline = true
-                        }
-                    }
-                }
-            }
-
-            override fun tail(node: Node, depth: Int) {}
-        }).traverse(element)
-        return buffer.toString()
     }
 
     /**

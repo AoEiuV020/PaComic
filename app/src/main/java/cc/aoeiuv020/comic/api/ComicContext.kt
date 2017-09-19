@@ -3,7 +3,11 @@ package cc.aoeiuv020.comic.api
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import org.jsoup.nodes.Node
+import org.jsoup.nodes.TextNode
 import org.jsoup.select.Elements
+import org.jsoup.select.NodeTraversor
+import org.jsoup.select.NodeVisitor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.IOException
@@ -100,4 +104,38 @@ abstract class ComicContext {
     protected fun src(img: Element): String = img.attr("src")
     protected fun absHref(a: Element): String = a.absUrl("abs:href")
     protected fun title(a: Element): String = a.attr("title")
+
+    /**
+     * br结点转成换行的方法，
+     * https://stackoverflow.com/a/17989379/5615186
+     * @param maxDepth 深度，为 1 则不处理子结点，
+     */
+    protected fun textWithNewLine(element: Element, maxDepth: Int): String {
+        val buffer = StringBuilder()
+        NodeTraversor(object : NodeVisitor {
+            internal var isNewline = true
+            override fun head(node: Node, depth: Int) {
+                if (depth > maxDepth) {
+                    return
+                }
+                if (node is TextNode) {
+                    val text = node.text().replace('\u00A0', ' ').trim { it <= ' ' }
+                    if (!text.isEmpty()) {
+                        buffer.append(text)
+                        isNewline = false
+                    }
+                } else if (node is Element) {
+                    if (!isNewline) {
+                        if (node.isBlock || node.tagName() == "br") {
+                            buffer.append("\n")
+                            isNewline = true
+                        }
+                    }
+                }
+            }
+
+            override fun tail(node: Node, depth: Int) {}
+        }).traverse(element)
+        return buffer.toString()
+    }
 }
