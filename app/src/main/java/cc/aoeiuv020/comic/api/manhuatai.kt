@@ -68,10 +68,10 @@ class ManhuataiContext : ComicContext() {
     class SearchResultList : ArrayList<SearchResultItem>()
 
     data class SearchResultItem(
-            val cartoon_id: String, // kenan
-            val cartoon_name: String, // 柯南
-            val cartoon_status_id: String, // 连载
-            val latest_cartoon_topic_name: String// 996话
+            @SerializedName("cartoon_id") val cartoon_id: String, // kenan
+            @SerializedName("cartoon_name") val cartoon_name: String, // 柯南
+            @SerializedName("cartoon_status_id") val cartoon_status_id: String, // 连载
+            @SerializedName("latest_cartoon_topic_name") val latest_cartoon_topic_name: String// 996话
     )
 
     override fun search(name: String): ComicGenre {
