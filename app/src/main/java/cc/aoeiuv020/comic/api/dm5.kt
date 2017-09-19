@@ -76,8 +76,7 @@ class Dm5Context : ComicContext() {
         val root = getHtml(comicListItem.url)
         // 这个name也可以改成从html解析，
         val name = comicListItem.name
-        val bigImg = root.select("#mhinfo > div.innr9.innr9_min > div.innr90 > div.innr91 > img")
-                .attr("src")
+        val bigImg = src(root.select("#mhinfo > div.innr9.innr9_min > div.innr90 > div.innr91 > img").first())
         val info = root.select("#mhinfo > div.innr9.innr9_min > div:nth-child(3) > p")
                 .first().let { it.ownText() + (it.select("span").first()?.ownText() ?: "") }
         val issues = root.select("ul.nr6.lan2 > li:has(a.tg)").map {
