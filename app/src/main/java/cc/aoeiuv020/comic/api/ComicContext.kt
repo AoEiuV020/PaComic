@@ -22,7 +22,7 @@ import java.net.URL
 abstract class ComicContext {
     companion object {
         @Suppress("RemoveExplicitTypeArguments")
-        private val contexts = listOf<ComicContext>(PopomhContext(), Dm5Context(), ManhuataiContext())
+        private val contexts = listOf<ComicContext>(ManhuataiContext(), Dm5Context(), PopomhContext())
         private val contextsMap = contexts.associateBy { URL(it.getComicSite().baseUrl).host }
         fun getComicContexts(): List<ComicContext> = contexts
         fun getComicContext(url: String): ComicContext? {
