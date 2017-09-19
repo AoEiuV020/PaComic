@@ -1,6 +1,8 @@
 package cc.aoeiuv020.comic.ui.base
 
+import android.annotation.TargetApi
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
@@ -75,14 +77,6 @@ abstract class ComicPageBaseFullScreenActivity : AppCompatActivity(), AnkoLogger
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
         mVisible = true
-
-        navBarBg.post {
-            navBarBg.setOnApplyWindowInsetsListener { _, insets ->
-                navBarBg.layoutParams = navBarBg.layoutParams.apply { height = insets.systemWindowInsetBottom }
-                insets
-            }
-            navBarBg.requestApplyInsets()
-        }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -152,6 +146,7 @@ abstract class ComicPageBaseFullScreenActivity : AppCompatActivity(), AnkoLogger
 }
 
 class ComicPageFullScreenRootFrameLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs), AnkoLogger {
+    @TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
     override fun dispatchApplyWindowInsets(insets: WindowInsets): WindowInsets {
         findViewById<View>(R.id.navBarBg)?.apply {
             layoutParams = layoutParams.apply { height = insets.systemWindowInsetBottom }
