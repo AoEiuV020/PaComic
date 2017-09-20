@@ -78,7 +78,6 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity(), AlertableView {
 
             override fun onPageSelected(position: Int) {
                 seekBar.progress = position
-                presenter.changeCurrentComicPage((viewPager.adapter as ComicPageAdapter).getItem(viewPager.currentItem))
             }
         })
         seekBar.max = pages.size - 1
@@ -136,8 +135,6 @@ class ComicPageAdapter(val ctx: Context, private val presenter: ComicPagePresent
         w.getContentHeight()
         return root
     }
-
-    fun getItem(position: Int): ComicPage = pages[position]
 
     override fun destroyItem(container: ViewGroup, position: Int, obj: Any?) {
         val view = obj as View

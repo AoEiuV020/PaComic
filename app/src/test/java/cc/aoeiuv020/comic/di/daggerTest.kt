@@ -3,7 +3,10 @@ package cc.aoeiuv020.comic.di
 import android.content.Context
 import android.content.SharedPreferences
 import cc.aoeiuv020.comic.App
-import cc.aoeiuv020.comic.api.*
+import cc.aoeiuv020.comic.api.ComicGenre
+import cc.aoeiuv020.comic.api.ComicIssue
+import cc.aoeiuv020.comic.api.ComicListItem
+import cc.aoeiuv020.comic.api.ComicSite
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -77,15 +80,6 @@ class DaggerTest {
         pageComponent.getComicPages()
                 .forEach {
                     println(it.url)
-                }
-    }
-
-    @Test
-    fun getComicImage() {
-        val imageComponent: ImageComponent = App.component.plus(ImageModule(ComicPage("http://www.popomh.com/popo290025/24.html?str=3")))
-        imageComponent.getComicImage()
-                .forEach {
-                    println(it.img)
                 }
     }
 }

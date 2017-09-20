@@ -2,6 +2,7 @@ package cc.aoeiuv020.comic.api
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import io.reactivex.Observable
 import org.jsoup.Jsoup
 import java.net.URLEncoder
 
@@ -136,7 +137,9 @@ class ManhuataiContext : ComicContext() {
         return List(mh_info.totalimg) {
             val d = (mh_info.startimg + it).toString() + ".jpg" + b
             val e = "http://$c/comic/$imgpath$d"
-            ComicPage(comicIssue.url + "#" + e)
+            ComicPage(Observable.create { em ->
+                em.onNext(getComicImage(e))
+            })
         }
     }
 
@@ -148,8 +151,7 @@ class ManhuataiContext : ComicContext() {
                       @SerializedName("imgpath") val imgpath: String
     )
 
-    override fun getComicImage(comicPage: ComicPage): ComicImage {
-        val url = comicPage.url.split("#")[1]
+    fun getComicImage(url: String): ComicImage {
         return ComicImage(url)
     }
 }

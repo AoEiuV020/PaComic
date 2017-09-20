@@ -1,5 +1,6 @@
 package cc.aoeiuv020.comic.api
 
+import io.reactivex.Observable
 import java.net.URLEncoder
 
 /**
@@ -88,8 +89,10 @@ class PopomhContext : ComicContext() {
         val first = getHtml(comicIssue.url)
         val pagesCount = first.select("body > div.cHeader > div.cH1 > b")
                 .first().text().split('/')[1].trim().toInt()
-        return List(pagesCount) {
-            ComicPage(comicIssue.url.replace(Regex("/\\d*.html"), "/${it + 1}.html"))
+        return List(pagesCount) { index ->
+            ComicPage(Observable.create { em ->
+                em.onNext(getComicImage(comicIssue.url.replace(Regex("/\\d*.html"), "/${index + 1}.html")))
+            })
         }
     }
 
@@ -98,8 +101,8 @@ class PopomhContext : ComicContext() {
      */
     private var domainIndex: Int = 0
 
-    override fun getComicImage(comicPage: ComicPage): ComicImage {
-        val root = getHtml(comicPage.url)
+    fun getComicImage(url: String): ComicImage {
+        val root = getHtml(url)
         val domains = root.select("#hdDomain").first().attr("value").split('|')
         val domain = domains[if (domainIndex < 0) 0 else if (domainIndex > domains.size) domains.size else domainIndex]
         val cipher = root.select("#img7652, #img1021, #img2391, #imgCurr")

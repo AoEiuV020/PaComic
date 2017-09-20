@@ -1,5 +1,6 @@
 package cc.aoeiuv020.comic.api
 
+import io.reactivex.Observable
 import java.io.Serializable
 
 /**
@@ -79,8 +80,11 @@ data class ComicIssue(
  * 漫画页面，
  */
 data class ComicPage(
-        val url: String
-) : Data()
+        val url: Observable<ComicImage>
+) : Data() {
+    constructor(comicImage: ComicImage) : this(Observable.just(comicImage))
+    constructor(s: String) : this(ComicImage(s))
+}
 
 /**
  * 漫画图片，

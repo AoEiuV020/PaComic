@@ -72,11 +72,6 @@ abstract class ComicContext {
      */
     abstract fun getComicPages(comicIssue: ComicIssue): List<ComicPage>
 
-    /**
-     * 从漫画页面获取漫画图片，
-     */
-    abstract fun getComicImage(comicPage: ComicPage): ComicImage
-
     internal fun check(url: String): Boolean = URL(getComicSite().baseUrl).host == URL(url).host
 
     protected fun getHtml(url: String): Document {
