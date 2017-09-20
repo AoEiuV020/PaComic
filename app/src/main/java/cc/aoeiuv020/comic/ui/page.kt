@@ -7,7 +7,6 @@ import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
 import android.widget.SeekBar
 import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicIssue
@@ -131,8 +130,6 @@ class ComicPageAdapter(val ctx: Context, private val presenter: ComicPagePresent
             root.progressBar.visibility = View.GONE
         })
         container.addView(root)
-        val w = WebView(ctx)
-        w.getContentHeight()
         return root
     }
 
