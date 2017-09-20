@@ -22,5 +22,6 @@
     <string name="browse">浏览</string>
     <string name="info">简介</string>
     <string name="search_result">搜索结果</string>
+    <string name="comic_not_support">浏览失败或者不支持该漫画</string>
 
 </resources>

@@ -1,7 +1,9 @@
 package cc.aoeiuv020.comic.ui
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -13,7 +15,6 @@ import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicDetail
 import cc.aoeiuv020.comic.api.ComicIssue
 import cc.aoeiuv020.comic.api.ComicListItem
-import cc.aoeiuv020.comic.presenter.AlertableView
 import cc.aoeiuv020.comic.presenter.ComicDetailPresenter
 import kotlinx.android.synthetic.main.activity_comic_detail.*
 import kotlinx.android.synthetic.main.activity_comic_detail.view.*
@@ -24,10 +25,13 @@ import org.jetbrains.anko.browse
 import org.jetbrains.anko.error
 import org.jetbrains.anko.startActivity
 
-class ComicDetailActivity : AppCompatActivity(), AnkoLogger, AlertableView {
-    override val ctx: Context = this
+class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
+    private val alertDialog: AlertDialog by lazy { AlertDialog.Builder(this).create() }
+    @Suppress("DEPRECATION")
+    private val progressDialog: ProgressDialog by lazy { ProgressDialog(this) }
     private lateinit var url: String
     private lateinit var presenter: ComicDetailPresenter
+    private var comicDetail: ComicDetail? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,23 +50,39 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger, AlertableView {
         recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity)
         recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
 
+        loading(progressDialog, R.string.comic_detail)
+        showGeneral(comicListItem)
+
         presenter = ComicDetailPresenter(this, comicListItem)
         presenter.start()
     }
 
-    fun showGeneral(comicListItem: ComicListItem) {
+    private fun showGeneral(comicListItem: ComicListItem) {
         toolbar_layout.title = comicListItem.name
-        ctx.glide()?.also {
+        glide()?.also {
             it.load(comicListItem.img).into(toolbar_layout.image)
         }
     }
 
     fun showComicDetail(detail: ComicDetail) {
+        this.comicDetail = detail
+        progressDialog.dismiss()
         toolbar_layout.title = detail.name
-        ctx.glide()?.also {
+        glide()?.also {
             it.load(detail.bigImg).holdInto(toolbar_layout.image)
         }
         (recyclerView.adapter as ComicDetailAdapter).setDetail(detail)
+    }
+
+    fun showError(message: String, e: Throwable) {
+        progressDialog.dismiss()
+        alertError(message, e)
+    }
+
+    private fun showComicAbout() {
+        comicDetail?.let {
+            alert(alertDialog, it.name, it.info)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -71,10 +91,9 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger, AlertableView {
             browse(url)
         }
         menu.findItem(R.id.info).setOnMenuItemClickListener {
-            presenter.requestComicAbout()
+            showComicAbout()
             true
         }
-
         return true
     }
 }
@@ -93,7 +112,6 @@ class ComicDetailAdapter(val ctx: Context) : RecyclerView.Adapter<ComicDetailAda
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int)
             = Holder(LayoutInflater.from(ctx).inflate(R.layout.comic_issue_item, parent, false))
-
 
     fun setDetail(detail: ComicDetail) {
         this.detail = detail

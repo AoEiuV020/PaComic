@@ -1,5 +1,6 @@
 package cc.aoeiuv020.comic.ui
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -14,7 +15,6 @@ import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.api.ComicSite
-import cc.aoeiuv020.comic.presenter.AlertableView
 import cc.aoeiuv020.comic.presenter.MainPresenter
 import cc.aoeiuv020.comic.ui.base.MainBaseNavigationActivity
 import com.miguelcatalan.materialsearchview.MaterialSearchView
@@ -26,6 +26,7 @@ import kotlinx.android.synthetic.main.nav_header_main.view.*
 import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.browse
+import org.jetbrains.anko.debug
 import org.jetbrains.anko.startActivity
 
 
@@ -34,11 +35,16 @@ import org.jetbrains.anko.startActivity
  * Created by AoEiuV020 on 2017.09.12-19:04:44.
  */
 
-class MainActivity : MainBaseNavigationActivity(), AlertableView {
-    override val ctx: Context = this
+class MainActivity : MainBaseNavigationActivity(), AnkoLogger {
+    private val alertDialog: AlertDialog by lazy { AlertDialog.Builder(this).create() }
+    @Suppress("DEPRECATION")
+    private val progressDialog: ProgressDialog by lazy { ProgressDialog(this) }
     private var url: String = "https://github.com/AoEiuV020/comic"
     private lateinit var presenter: MainPresenter
     private lateinit var genres: List<ComicGenre>
+    private var site: ComicSite? = null
+    private var isEnd = false
+    private var isLoadingNextPage = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +54,13 @@ class MainActivity : MainBaseNavigationActivity(), AlertableView {
             override fun onQueryTextSubmit(query: String): Boolean {
                 // 收起软键盘，
                 searchView.hideKeyboard(searchView)
-                presenter.search(query)
+                site?.also {
+                    loading(progressDialog, R.string.search_result)
+                    presenter.search(it, query)
+                } ?: run {
+                    debug { "没有选择网站，先弹出网站选择，" }
+                    presenter.requestSites()
+                }
                 return true
             }
 
@@ -60,14 +72,11 @@ class MainActivity : MainBaseNavigationActivity(), AlertableView {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-
         val item = menu.findItem(R.id.action_search)
         searchView.setMenuItem(item)
-
         menu.findItem(R.id.browse).setOnMenuItemClickListener {
             browse(url)
         }
-
         return true
     }
 
@@ -97,11 +106,16 @@ class MainActivity : MainBaseNavigationActivity(), AlertableView {
     fun showGenre(genre: ComicGenre) {
         title = genre.name
         url = genre.url
+        isEnd = false
+        isLoadingNextPage = false
         closeDrawer()
+        loading(progressDialog, R.string.comic_list)
         presenter.requestComicList(genre)
     }
 
     fun addComicList(comicList: List<ComicListItem>) {
+        isLoadingNextPage = false
+        progressDialog.dismiss()
         if (listView.adapter != null) {
             (listView.adapter as ComicListAdapter).addAll(comicList)
         } else {
@@ -110,6 +124,8 @@ class MainActivity : MainBaseNavigationActivity(), AlertableView {
     }
 
     fun showComicList(comicList: List<ComicListItem>) {
+        isLoadingNextPage = false
+        progressDialog.dismiss()
         listView.run {
             adapter = ComicListAdapter(this@MainActivity, comicList)
             setOnItemClickListener { _, _, position, _ ->
@@ -127,6 +143,11 @@ class MainActivity : MainBaseNavigationActivity(), AlertableView {
                     // 差不多就好，反正没到底也快了，
                     if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE
                             && lastItem >= adapter.count - 2) {
+                        if (isLoadingNextPage || isEnd) {
+                            return
+                        }
+                        isLoadingNextPage = true
+                        loading(progressDialog, R.string.next_page)
                         presenter.loadNextPage()
                     }
                 }
@@ -136,13 +157,18 @@ class MainActivity : MainBaseNavigationActivity(), AlertableView {
 
     fun showSites(sites: List<ComicSite>) {
         AlertDialog.Builder(this@MainActivity).setAdapter(SiteListAdapter(this@MainActivity, sites)) { _, index ->
-            presenter.setSite(sites[index])
+            val site = sites[index]
+            this.site = site
+            debug { "选中网站：${site.name}，弹出侧栏，" }
+            showSite(site)
         }.show()
     }
 
     fun showSite(site: ComicSite) {
+        this.site = site
         url = site.baseUrl
         openDrawer()
+        loading(progressDialog, R.string.genre_list)
         nav_view.getHeaderView(0).apply {
             selectedSiteName.text = site.name
             glide()?.also {
@@ -154,12 +180,25 @@ class MainActivity : MainBaseNavigationActivity(), AlertableView {
 
     fun showGenres(genres: List<ComicGenre>) {
         this.genres = genres
+        progressDialog.dismiss()
         nav_view.menu.run {
             removeGroup(GROUP_ID)
             genres.forEachIndexed { index, (name) ->
                 add(GROUP_ID, index, index, name)
             }
         }
+    }
+
+    fun showError(message: String, e: Throwable) {
+        progressDialog.dismiss()
+        alertError(alertDialog, message, e)
+    }
+
+    fun showYetLastPage() {
+        isEnd = true
+        isLoadingNextPage = false
+        progressDialog.dismiss()
+        alert(alertDialog, R.string.yet_last_page)
     }
 }
 

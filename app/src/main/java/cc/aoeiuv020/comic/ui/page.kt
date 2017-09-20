@@ -1,10 +1,12 @@
 package cc.aoeiuv020.comic.ui
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
@@ -12,7 +14,6 @@ import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicImage
 import cc.aoeiuv020.comic.api.ComicIssue
 import cc.aoeiuv020.comic.api.ComicPage
-import cc.aoeiuv020.comic.presenter.AlertableView
 import cc.aoeiuv020.comic.presenter.ComicPagePresenter
 import cc.aoeiuv020.comic.ui.base.ComicPageBaseFullScreenActivity
 import com.boycy815.pinchimageview.PinchImageView
@@ -24,7 +25,6 @@ import com.bumptech.glide.signature.ObjectKey
 import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.browse
 import org.jetbrains.anko.error
 import java.io.File
@@ -35,8 +35,10 @@ import java.util.*
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class ComicPageActivity : ComicPageBaseFullScreenActivity(), AlertableView {
-    override val ctx: Context = this
+class ComicPageActivity : ComicPageBaseFullScreenActivity() {
+    private val alertDialog: AlertDialog by lazy { AlertDialog.Builder(this).create() }
+    @Suppress("DEPRECATION")
+    private val progressDialog: ProgressDialog by lazy { ProgressDialog(this) }
     private lateinit var url: String
     private lateinit var presenter: ComicPagePresenter
 
@@ -47,22 +49,31 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity(), AlertableView {
         val issue = intent.getSerializableExtra("issue") as? ComicIssue ?: return
         url = issue.url
 
-        presenter = ComicPagePresenter(this, name, issue)
 
         urlBar.setOnClickListener {
             browse(url)
         }
 
+        showName("$name - ${issue.name}")
+        loading(progressDialog, R.string.comic_page)
+
+        presenter = ComicPagePresenter(this, issue)
         presenter.start()
     }
 
-    fun showName(name: String) {
+    private fun showName(name: String) {
         title = name
     }
 
+    fun showError(message: String, e: Throwable) {
+        progressDialog.dismiss()
+        alertError(message, e)
+    }
+
     fun showComicPages(pages: List<ComicPage>) {
+        progressDialog.dismiss()
         if (pages.isEmpty()) {
-            alert("浏览失败或者不支持该漫画").show()
+            alert(alertDialog, R.string.comic_not_support)
             // 无法浏览的情况显示状态栏标题栏导航栏，方便离开，
             show()
             return
