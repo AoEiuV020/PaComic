@@ -90,8 +90,8 @@ class PopomhContext : ComicContext() {
         val pagesCount = first.select("body > div.cHeader > div.cH1 > b")
                 .first().text().split('/')[1].trim().toInt()
         return List(pagesCount) { index ->
-            ComicPage(Observable.create { em ->
-                em.onNext(getComicImage(comicIssue.url.replace(Regex("/\\d*.html"), "/${index + 1}.html")))
+            ComicPage(Observable.fromCallable {
+                getComicImage(comicIssue.url.replace(Regex("/\\d*.html"), "/${index + 1}.html"))
             })
         }
     }

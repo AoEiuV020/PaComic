@@ -93,9 +93,7 @@ class Dm5Context : ComicContext() {
         val chapter = first.select("div#chapterpager").firstOrNull() ?: return emptyList()
         val pagesCount = chapter.select("a:nth-last-child(1)").firstOrNull()?.run { text().toInt() } ?: 1
         return List(pagesCount) { index ->
-            ComicPage(Observable.create { em ->
-                em.onNext(getComicImage(cid, "${index + 1}"))
-            })
+            ComicPage(Observable.fromCallable { getComicImage(cid, "${index + 1}") })
         }
     }
 

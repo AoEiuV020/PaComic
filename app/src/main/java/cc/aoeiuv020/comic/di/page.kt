@@ -19,10 +19,7 @@ interface PageComponent {
 @Module
 class PageModule(private val comicIssue: ComicIssue) {
     @Provides
-    fun getComicPages(): Observable<ComicPage> = Observable.create { em ->
-        ctx(comicIssue.url).getComicPages(comicIssue).forEach {
-            em.onNext(it)
-        }
-        em.onComplete()
-    }
+    fun getComicPages(): Observable<ComicPage> = Observable.fromCallable {
+        ctx(comicIssue.url).getComicPages(comicIssue)
+    }.flatMapIterable { it }
 }

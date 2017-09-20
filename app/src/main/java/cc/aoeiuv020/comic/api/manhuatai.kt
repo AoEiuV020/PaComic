@@ -137,9 +137,7 @@ class ManhuataiContext : ComicContext() {
         return List(mh_info.totalimg) {
             val d = (mh_info.startimg + it).toString() + ".jpg" + b
             val e = "http://$c/comic/$imgpath$d"
-            ComicPage(Observable.create { em ->
-                em.onNext(getComicImage(e))
-            })
+            ComicPage(Observable.fromCallable { getComicImage(e) })
         }
     }
 

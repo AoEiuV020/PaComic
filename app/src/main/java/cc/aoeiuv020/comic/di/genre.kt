@@ -33,12 +33,9 @@ class GenreModule(private val site: ComicSite) {
     }
 
     @Provides
-    fun getGenres(): Observable<ComicGenre> = Observable.create { em ->
-        ctx(site.baseUrl).getGenres().forEach {
-            em.onNext(it)
-        }
-        em.onComplete()
-    }
+    fun getGenres(): Observable<ComicGenre> = Observable.fromCallable {
+        ctx(site.baseUrl).getGenres()
+    }.flatMapIterable { it }
 
     @Provides
     fun genre(): ComicGenre? {

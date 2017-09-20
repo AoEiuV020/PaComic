@@ -30,12 +30,9 @@ class ListModule(private val comicGenre: ComicGenre) {
     }
 
     @Provides
-    fun getComicList(): Observable<ComicListItem> = Observable.create { em ->
-        ctx(comicGenre.url).getComicList(comicGenre).forEach {
-            em.onNext(it)
-        }
-        em.onComplete()
-    }
+    fun getComicList(): Observable<ComicListItem> = Observable.fromCallable {
+        ctx(comicGenre.url).getComicList(comicGenre)
+    }.flatMapIterable { it }
 
     @Provides
     fun getNextPage(): Observable<ComicGenre> = Observable.create { em ->
