@@ -39,7 +39,6 @@ class ComicDetailPresenter(private val view: ComicDetailActivity, private val co
                 })
     }
 
-    fun browseCurrentUrl() = view.browse(comicListItem.url)
     fun requestComicAbout() {
         // 这个comicDetail本质上是调用getter，不是直接传对象到内部类，
         comicDetail?.let {

@@ -8,7 +8,6 @@ import cc.aoeiuv020.comic.ui.ComicPageActivity
 import cc.aoeiuv020.comic.ui.async
 import cc.aoeiuv020.comic.ui.loading
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.browse
 import org.jetbrains.anko.debug
 import org.jetbrains.anko.error
 
@@ -16,10 +15,8 @@ import org.jetbrains.anko.error
  * Created by AoEiuV020 on 2017.09.18-18:24:20.
  */
 class ComicPagePresenter(private val view: ComicPageActivity, private val name: String, private val issue: ComicIssue) : AnkoLogger {
-    private var url = issue.url
     fun start() {
         view.showName("$name - ${issue.name}")
-        view.showUrl(url)
         requestComicPages()
     }
 
@@ -40,6 +37,4 @@ class ComicPagePresenter(private val view: ComicPageActivity, private val name: 
                     loadingDialog.dismiss()
                 })
     }
-
-    fun browseCurrentUrl() = view.browse(url)
 }

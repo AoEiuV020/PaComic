@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.browse
 import org.jetbrains.anko.error
 import java.io.File
 import java.util.*
@@ -36,6 +37,7 @@ import java.util.*
  */
 class ComicPageActivity : ComicPageBaseFullScreenActivity(), AlertableView {
     override val ctx: Context = this
+    private lateinit var url: String
     private lateinit var presenter: ComicPagePresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,11 +45,12 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity(), AlertableView {
 
         val name = intent.getStringExtra("name") ?: return
         val issue = intent.getSerializableExtra("issue") as? ComicIssue ?: return
+        url = issue.url
 
         presenter = ComicPagePresenter(this, name, issue)
 
         urlBar.setOnClickListener {
-            presenter.browseCurrentUrl()
+            browse(url)
         }
 
         presenter.start()
@@ -55,10 +58,6 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity(), AlertableView {
 
     fun showName(name: String) {
         title = name
-    }
-
-    fun showUrl(s: String) {
-        url.text = s
     }
 
     fun showComicPages(pages: List<ComicPage>) {

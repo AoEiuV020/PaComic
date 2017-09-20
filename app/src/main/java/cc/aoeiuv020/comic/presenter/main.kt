@@ -16,7 +16,6 @@ import org.jetbrains.anko.error
  */
 class MainPresenter(private val view: MainActivity) : AnkoLogger {
     private var site: ComicSite? = null
-    private var url: String = "https://github.com/AoEiuV020/comic"
     private var listComponent: ListComponent? = null
     private var isEnd = false
     private var isLoadingNextPage = false
@@ -69,7 +68,6 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
     }
 
     fun requestComicList(genre: ComicGenre) {
-        url = genre.url
         isEnd = false
         isLoadingNextPage = false
         val loadingDialog = view.loading(R.string.comic_list)
@@ -91,7 +89,6 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
     fun setSite(site: ComicSite) {
         debug { "选中网站：${site.name}，弹出侧栏，" }
         this.site = site
-        url = site.baseUrl
         view.showSite(site)
     }
 
@@ -113,9 +110,6 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
                 })
     }
 
-    fun browseCurrentUrl() = view.browse(url)
-
-    @Synchronized
     fun loadNextPage() {
         if (isLoadingNextPage || isEnd) {
             return
@@ -134,7 +128,7 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
                     return@subscribe
                 }
                 val genre = genres.first()
-                url = genre.url
+                view.showUrl(genre.url)
                 App.component.plus(ListModule(genre)).also { listComponent = it }
                         .getComicList()
                         .async()

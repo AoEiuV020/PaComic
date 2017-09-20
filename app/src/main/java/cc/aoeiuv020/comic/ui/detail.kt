@@ -20,13 +20,14 @@ import kotlinx.android.synthetic.main.activity_comic_detail.view.*
 import kotlinx.android.synthetic.main.comic_issue_item.view.*
 import kotlinx.android.synthetic.main.content_comic_detail.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.browse
 import org.jetbrains.anko.error
 import org.jetbrains.anko.startActivity
 
 class ComicDetailActivity : AppCompatActivity(), AnkoLogger, AlertableView {
     override val ctx: Context = this
+    private lateinit var url: String
     private lateinit var presenter: ComicDetailPresenter
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +41,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger, AlertableView {
             finish()
             return
         }
+        url = comicListItem.url
 
         recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity)
         recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
@@ -66,7 +68,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger, AlertableView {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_detail, menu)
         menu.findItem(R.id.browse).setOnMenuItemClickListener {
-            presenter.browseCurrentUrl()
+            browse(url)
         }
         menu.findItem(R.id.info).setOnMenuItemClickListener {
             presenter.requestComicAbout()

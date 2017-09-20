@@ -5,7 +5,6 @@ package cc.aoeiuv020.comic.presenter
 import android.content.Context
 import cc.aoeiuv020.comic.R
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.browse
 import org.jetbrains.anko.indeterminateProgressDialog
 
 /**
@@ -23,7 +22,6 @@ interface ContextView {
 
 fun ContextView.str(id: Int): String = ctx.getString(id)
 fun ContextView.str(id: Int, vararg formatArgs: String): String = ctx.getString(id, *formatArgs)
-fun ContextView.browse(url: String) = ctx.browse(url)
 
 /**
  * 封装一些对话框相关的方法，

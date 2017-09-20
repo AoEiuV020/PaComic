@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.browse
 import org.jetbrains.anko.startActivity
 
 
@@ -35,6 +36,7 @@ import org.jetbrains.anko.startActivity
 
 class MainActivity : MainBaseNavigationActivity(), AlertableView {
     override val ctx: Context = this
+    private var url: String = "https://github.com/AoEiuV020/comic"
     private lateinit var presenter: MainPresenter
     private lateinit var genres: List<ComicGenre>
 
@@ -63,7 +65,7 @@ class MainActivity : MainBaseNavigationActivity(), AlertableView {
         searchView.setMenuItem(item)
 
         menu.findItem(R.id.browse).setOnMenuItemClickListener {
-            presenter.browseCurrentUrl()
+            browse(url)
         }
 
         return true
@@ -88,8 +90,13 @@ class MainActivity : MainBaseNavigationActivity(), AlertableView {
         return true
     }
 
+    fun showUrl(url: String) {
+        this.url = url
+    }
+
     fun showGenre(genre: ComicGenre) {
         title = genre.name
+        url = genre.url
         closeDrawer()
         presenter.requestComicList(genre)
     }
@@ -134,6 +141,7 @@ class MainActivity : MainBaseNavigationActivity(), AlertableView {
     }
 
     fun showSite(site: ComicSite) {
+        url = site.baseUrl
         openDrawer()
         nav_view.getHeaderView(0).apply {
             selectedSiteName.text = site.name
