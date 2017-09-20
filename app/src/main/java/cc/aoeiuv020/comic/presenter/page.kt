@@ -2,9 +2,7 @@ package cc.aoeiuv020.comic.presenter
 
 import cc.aoeiuv020.comic.App
 import cc.aoeiuv020.comic.R
-import cc.aoeiuv020.comic.api.ComicImage
 import cc.aoeiuv020.comic.api.ComicIssue
-import cc.aoeiuv020.comic.api.ComicPage
 import cc.aoeiuv020.comic.di.PageModule
 import cc.aoeiuv020.comic.ui.ComicPageActivity
 import cc.aoeiuv020.comic.ui.async
@@ -44,22 +42,4 @@ class ComicPagePresenter(private val view: ComicPageActivity, private val name: 
     }
 
     fun browseCurrentUrl() = view.browse(url)
-
-    private val imgs = mutableMapOf<ComicPage, ComicImage>()
-    /**
-     * 解析漫画页面，得到该页图片地址，然后回调，
-     */
-    fun resolveComicPage(page: ComicPage, onComplete: (ComicImage) -> Unit, onError: (String, Throwable) -> Unit = { _, _ -> }) {
-        debug { "解析漫画页面，${page.url}" }
-        imgs[page]?.let { comicImage ->
-            onComplete(comicImage)
-        } ?: page.url.async().subscribe({ comicImage ->
-            imgs.put(page, comicImage)
-            onComplete(comicImage)
-        }, { e ->
-            val message = "加载漫画页面失败，"
-            error(message, e)
-            onError(message, e)
-        })
-    }
 }

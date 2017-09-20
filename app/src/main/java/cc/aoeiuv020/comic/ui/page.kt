@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import cc.aoeiuv020.comic.R
+import cc.aoeiuv020.comic.api.ComicImage
 import cc.aoeiuv020.comic.api.ComicIssue
 import cc.aoeiuv020.comic.api.ComicPage
 import cc.aoeiuv020.comic.presenter.AlertableView
@@ -24,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.error
 import java.io.File
 import java.util.*
 
@@ -66,7 +68,7 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity(), AlertableView {
             show()
             return
         }
-        viewPager.adapter = ComicPageAdapter(this, presenter, pages)
+        viewPager.adapter = ComicPageAdapter(this, pages)
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
                 hide()
@@ -97,8 +99,9 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity(), AlertableView {
     }
 }
 
-class ComicPageAdapter(val ctx: Context, private val presenter: ComicPagePresenter, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
+class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
     private val views: LinkedList<View> = LinkedList()
+    private val imgs = mutableMapOf<ComicPage, ComicImage>()
     override fun isViewFromObject(view: View, obj: Any) = view === obj
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val root = if (views.isNotEmpty())
@@ -115,7 +118,8 @@ class ComicPageAdapter(val ctx: Context, private val presenter: ComicPagePresent
         root.image.setImageDrawable(null)
         root.pageNumber.text = ctx.getString(R.string.page_number, position + 1, count)
         val page = pages[position]
-        presenter.resolveComicPage(page, { (img, cacheableUrl) ->
+        fun setImage(comicImage: ComicImage) {
+            val (img, cacheableUrl) = comicImage
             ctx.glide()?.also {
                 it.download(img).apply(RequestOptions().signature(ObjectKey(cacheableUrl)))
                         .into(object : SimpleTarget<File>() {
@@ -123,10 +127,17 @@ class ComicPageAdapter(val ctx: Context, private val presenter: ComicPagePresent
                                 HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
                                 root.progressBar.visibility = View.GONE
                             }
-
                         })
             }
-        }, { _, _ ->
+        }
+        imgs[page]?.let { comicImage ->
+            setImage(comicImage)
+        } ?: page.url.async().subscribe({ comicImage ->
+            imgs.put(page, comicImage)
+            setImage(comicImage)
+        }, { e ->
+            val message = "加载漫画页面失败，"
+            error(message, e)
             root.progressBar.visibility = View.GONE
         })
         container.addView(root)
