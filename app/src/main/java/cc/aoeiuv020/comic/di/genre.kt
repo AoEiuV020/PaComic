@@ -34,12 +34,8 @@ class GenreModule(private val site: ComicSite) {
 
     @Provides
     fun getGenres(): Observable<ComicGenre> = Observable.create { em ->
-        try {
-            ctx(site.baseUrl).getGenres().forEach {
-                em.onNext(it)
-            }
-        } catch (e: Exception) {
-            em.onError(e)
+        ctx(site.baseUrl).getGenres().forEach {
+            em.onNext(it)
         }
         em.onComplete()
     }
