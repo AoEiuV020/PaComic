@@ -97,7 +97,7 @@ abstract class ComicContext {
     protected fun text(e: Element): String = e.text()
     protected fun text(e: Elements): String = e.text()
     protected fun src(img: Element): String = img.attr("src")
-    protected fun absHref(a: Element): String = a.absUrl("abs:href")
+    protected fun absHref(a: Element): String = a.absUrl("href")
     protected fun title(a: Element): String = a.attr("title")
 
     /**

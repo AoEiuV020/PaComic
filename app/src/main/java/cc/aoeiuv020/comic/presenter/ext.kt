@@ -30,16 +30,11 @@ fun ContextView.browse(url: String) = ctx.browse(url)
  */
 interface AlertableView : ContextView
 
-
 fun AlertableView.loading(str: String = "") = ctx.indeterminateProgressDialog(str(R.string.loading, str))
 fun AlertableView.loading(id: Int) = loading(str(id))
-
 fun AlertableView.alertError(str: String, e: Throwable) = ctx.alert(str + "\n" + e.message).show()
-
 fun AlertableView.alertError(id: Int, e: Throwable) = alertError(str(id), e)
-
 fun AlertableView.alert(message: String, title: String? = null) = ctx.alert(message, title).show()
-
 fun AlertableView.alert(messageId: Int) = alert(str(messageId))
 fun AlertableView.alert(messageId: Int, titleId: Int) = alert(str(messageId), str(titleId))
 
