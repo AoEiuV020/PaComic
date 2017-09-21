@@ -46,11 +46,15 @@ data class ComicGenre(
  */
 data class ComicListItem(
         val name: String,
-        val img: String,
+        val img: Observable<ComicImage>,
         val url: String,
-        val info: String
+        val info: String = ""
 ) : Data() {
-    constructor(name: String, img: String, url: String) : this(name, img, url, "")
+    constructor(name: String, img: ComicImage, url: String, info: String = "")
+            : this(name, Observable.just(img), url, info)
+
+    constructor(name: String, img: String, url: String, info: String = "")
+            : this(name, ComicImage(img), url, info)
 }
 
 /**

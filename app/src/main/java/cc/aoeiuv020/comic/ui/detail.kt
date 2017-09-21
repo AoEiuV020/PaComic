@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.comic_issue_item.view.*
 import kotlinx.android.synthetic.main.content_comic_detail.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.browse
-import org.jetbrains.anko.error
 import org.jetbrains.anko.startActivity
 
 class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
@@ -40,28 +39,19 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        val comicListItem = intent.getSerializableExtra("item") as? ComicListItem ?: run {
-            error { "ComicDetailActivity 没能从intent得到ComicListItem, 打开方式不对吧，" }
-            finish()
-            return
-        }
-        url = comicListItem.url
+        url = intent.getStringExtra("url")
+        val name = intent.getStringExtra("name")
+        // TODO: 这一点都不优雅，
+        val comicListItem = ComicListItem(name, "", url)
 
         recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity)
         recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
 
         loading(progressDialog, R.string.comic_detail)
-        showGeneral(comicListItem)
+        toolbar_layout.title = name
 
         presenter = ComicDetailPresenter(this, comicListItem)
         presenter.start()
-    }
-
-    private fun showGeneral(comicListItem: ComicListItem) {
-        toolbar_layout.title = comicListItem.name
-        glide {
-            it.load(comicListItem.img).into(toolbar_layout.image)
-        }
     }
 
     fun showComicDetail(detail: ComicDetail) {

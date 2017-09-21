@@ -129,7 +129,8 @@ class MainActivity : MainBaseNavigationActivity(), AnkoLogger {
         listView.run {
             adapter = ComicListAdapter(this@MainActivity, comicList)
             setOnItemClickListener { _, _, position, _ ->
-                startActivity<ComicDetailActivity>("item" to adapter.getItem(position))
+                val item = adapter.getItem(position) as ComicListItem
+                startActivity<ComicDetailActivity>("url" to item.url, "name" to item.name)
             }
             setOnScrollListener(object : AbsListView.OnScrollListener {
                 private var lastItem = 0
@@ -229,8 +230,10 @@ class ComicListAdapter(val ctx: Context, data: List<ComicListItem>) : BaseAdapte
         val comic = getItem(position)
         comic_name.text = comic.name
         comic_info.text = comic.info
-        ctx.glide {
-            it.load(comic.img).into(comic_icon)
+        comic.img.async().subscribe { (img) ->
+            ctx.glide {
+                it.load(img).into(comic_icon)
+            }
         }
     }
 

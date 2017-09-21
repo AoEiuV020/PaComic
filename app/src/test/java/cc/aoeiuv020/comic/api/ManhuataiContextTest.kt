@@ -50,7 +50,9 @@ class ManhuataiContextTest {
             context.getComicList(it).forEach {
                 println(it.name)
                 println(it.url)
-                println(it.img)
+                it.img.subscribe {
+                    println(it)
+                }
                 println(it.info)
             }
         }

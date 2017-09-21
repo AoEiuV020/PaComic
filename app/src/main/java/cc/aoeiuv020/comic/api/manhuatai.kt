@@ -52,8 +52,16 @@ class ManhuataiContext : ComicContext() {
             val json = Jsoup.connect(genre.url).apply { execute() }.response().body()
             val searchResultList = Gson().fromJson(json, SearchResultList::class.java)
             return searchResultList.map {
-                // 搜索结果没有图片，拿网站logo顶一下，
-                ComicListItem(it.cartoon_name, site.logo, absUrl("/${it.cartoon_id}/"), "${it.cartoon_status_id}, ${it.latest_cartoon_topic_name}")
+                val url = absUrl("/${it.cartoon_id}/")
+                /**
+                 * 搜索结果没有图片，直接拿大图顶上，
+                 * [getComicDetail]
+                 */
+                val img = Observable.fromCallable {
+                    val root = getHtml(url)
+                    src(root.select("#offlinebtn-container > img").first())
+                }.map { ComicImage(it) }
+                ComicListItem(it.cartoon_name, img, url, "${it.cartoon_status_id}, ${it.latest_cartoon_topic_name}")
             }
         }
         val root = getHtml(genre.url)
