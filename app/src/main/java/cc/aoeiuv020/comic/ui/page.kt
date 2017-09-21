@@ -39,7 +39,6 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
     private val alertDialog: AlertDialog by lazy { AlertDialog.Builder(this).create() }
     @Suppress("DEPRECATION")
     private val progressDialog: ProgressDialog by lazy { ProgressDialog(this) }
-    private lateinit var url: String
     private lateinit var presenter: ComicPagePresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,22 +46,16 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
 
         val name = intent.getStringExtra("name") ?: return
         val issue = intent.getSerializableExtra("issue") as? ComicIssue ?: return
-        url = issue.url
 
-
+        title = "$name - ${issue.name}"
+        url.text = issue.url
         urlBar.setOnClickListener {
-            browse(url)
+            browse(url.text.toString())
         }
-
-        showName("$name - ${issue.name}")
         loading(progressDialog, R.string.comic_page)
 
         presenter = ComicPagePresenter(this, issue)
         presenter.start()
-    }
-
-    private fun showName(name: String) {
-        title = name
     }
 
     fun showError(message: String, e: Throwable) {
