@@ -15,7 +15,7 @@ import io.reactivex.Observable
  */
 @Subcomponent(modules = arrayOf(SiteModule::class))
 interface SiteComponent {
-    fun getSites(): Observable<ComicSite>
+    fun getSites(): Observable<List<ComicSite>>
     /**
      * 提供记住了的选择，
      */
@@ -25,7 +25,9 @@ interface SiteComponent {
 @Module
 class SiteModule {
     @Provides
-    fun getSites(): Observable<ComicSite> = Observable.fromIterable(ComicContext.getComicContexts().map(ComicContext::getComicSite))
+    fun getSites(): Observable<List<ComicSite>> = Observable.fromCallable {
+        ComicContext.getComicContexts().map(ComicContext::getComicSite)
+    }
 
     @Provides
     fun site(): ComicSite? {

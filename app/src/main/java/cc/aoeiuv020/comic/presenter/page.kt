@@ -22,7 +22,6 @@ class ComicPagePresenter(private val view: ComicPageActivity, private val issue:
         App.component.plus(PageModule(issue))
                 .getComicPages()
                 .async()
-                .toList()
                 .subscribe({ pages ->
                     view.showComicPages(pages)
                 }, { e ->

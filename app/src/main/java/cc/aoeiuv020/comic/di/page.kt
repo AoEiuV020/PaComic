@@ -13,13 +13,13 @@ import io.reactivex.Observable
  */
 @Subcomponent(modules = arrayOf(PageModule::class))
 interface PageComponent {
-    fun getComicPages(): Observable<ComicPage>
+    fun getComicPages(): Observable<List<ComicPage>>
 }
 
 @Module
 class PageModule(private val comicIssue: ComicIssue) {
     @Provides
-    fun getComicPages(): Observable<ComicPage> = Observable.fromCallable {
+    fun getComicPages(): Observable<List<ComicPage>> = Observable.fromCallable {
         ctx(comicIssue.url).getComicPages(comicIssue)
-    }.flatMapIterable { it }
+    }
 }

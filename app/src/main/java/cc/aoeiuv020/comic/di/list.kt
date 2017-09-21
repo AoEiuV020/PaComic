@@ -15,7 +15,7 @@ import io.reactivex.Observable
  */
 @Subcomponent(modules = arrayOf(ListModule::class))
 interface ListComponent {
-    fun getComicList(): Observable<ComicListItem>
+    fun getComicList(): Observable<List<ComicListItem>>
     fun getNextPage(): Observable<ComicGenre>
 }
 
@@ -30,9 +30,9 @@ class ListModule(private val comicGenre: ComicGenre) {
     }
 
     @Provides
-    fun getComicList(): Observable<ComicListItem> = Observable.fromCallable {
+    fun getComicList(): Observable<List<ComicListItem>> = Observable.fromCallable {
         ctx(comicGenre.url).getComicList(comicGenre)
-    }.flatMapIterable { it }
+    }
 
     @Provides
     fun getNextPage(): Observable<ComicGenre> = Observable.create { em ->

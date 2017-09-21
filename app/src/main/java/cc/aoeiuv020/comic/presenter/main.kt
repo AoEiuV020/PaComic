@@ -37,7 +37,6 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
         App.component.plus(SiteModule())
                 .getSites()
                 .async()
-                .toList()
                 .subscribe { sites ->
                     view.showSites(sites)
                 }
@@ -58,7 +57,6 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
         App.component.plus(ListModule(genre)).also { listComponent = it }
                 .getComicList()
                 .async()
-                .toList()
                 .subscribe({ comicList ->
                     view.showComicList(comicList)
                 }, { e ->
@@ -97,7 +95,6 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
                 App.component.plus(ListModule(genre)).also { listComponent = it }
                         .getComicList()
                         .async()
-                        .toList()
                         .subscribe({ comicList ->
                             debug { "展示漫画列表，数量：${comicList.size}" }
                             view.addComicList(comicList)

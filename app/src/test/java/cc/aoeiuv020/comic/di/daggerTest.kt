@@ -31,7 +31,7 @@ class DaggerTest {
     @Test
     fun getSites() {
         val siteComponent: SiteComponent = App.component.plus(SiteModule())
-        siteComponent.getSites()
+        siteComponent.getSites().flatMapIterable { it }
                 .forEach {
                     println(it.name)
                     println(it.baseUrl)
@@ -53,6 +53,7 @@ class DaggerTest {
     fun getComicList() {
         val listComponent: ListComponent = App.component.plus(ListModule(ComicGenre("", "http://www.popomh.com/comic/class_8.html")))
         listComponent.getComicList()
+                .flatMapIterable { it }
                 .forEach {
                     println(it.name)
                     println(it.url)
@@ -76,10 +77,12 @@ class DaggerTest {
 
     @Test
     fun getComicPages() {
-        val pageComponent: PageComponent = App.component.plus(PageModule(ComicIssue("", "http://www.popomh.com/popo290025/1.html?str=3")))
-        pageComponent.getComicPages()
+        val pageComponent: PageComponent = App.component.plus(PageModule(ComicIssue("", "http://www.popomh.com/popo290025/1.html?s=3")))
+        pageComponent.getComicPages().flatMapIterable { it }
                 .forEach {
-                    println(it.url)
+                    it.url.subscribe {
+                        println(it)
+                    }
                 }
     }
 }
