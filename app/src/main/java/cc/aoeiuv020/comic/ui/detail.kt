@@ -68,8 +68,10 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         this.comicDetail = detail
         progressDialog.dismiss()
         toolbar_layout.title = detail.name
-        glide()?.also {
-            it.load(detail.bigImg).holdInto(toolbar_layout.image)
+        detail.bigImg.async().subscribe { (img) ->
+            glide()?.also {
+                it.load(img).holdInto(toolbar_layout.image)
+            }
         }
         (recyclerView.adapter as ComicDetailAdapter).setDetail(detail)
     }

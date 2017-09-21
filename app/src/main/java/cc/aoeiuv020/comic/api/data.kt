@@ -59,10 +59,16 @@ data class ComicListItem(
  */
 data class ComicDetail(
         val name: String,
-        val bigImg: String,
+        val bigImg: Observable<ComicImage>,
         val info: String,
         val issuesAsc: List<ComicIssue>
-) : Data()
+) : Data() {
+    constructor(name: String, bigImg: ComicImage, info: String, issuesAsc: List<ComicIssue>) :
+            this(name, Observable.just(bigImg), info, issuesAsc)
+
+    constructor(name: String, bigImg: String, info: String, issuesAsc: List<ComicIssue>) :
+            this(name, ComicImage(bigImg), info, issuesAsc)
+}
 
 /**
  * 漫画目录，

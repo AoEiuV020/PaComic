@@ -67,7 +67,9 @@ class DaggerTest {
         detailComponent.getComicDetail()
                 .forEach {
                     println(it.name)
-                    println(it.bigImg)
+                    it.bigImg.subscribe {
+                        println(it)
+                    }
                     println(it.info)
                     it.issuesAsc.forEach {
                         println("[${it.name}](${it.url})")
