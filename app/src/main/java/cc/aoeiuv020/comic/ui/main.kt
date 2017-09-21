@@ -4,6 +4,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.app.ActivityOptionsCompat
 import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
@@ -27,7 +28,7 @@ import kotlinx.android.synthetic.main.site_list_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.browse
 import org.jetbrains.anko.debug
-import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.intentFor
 
 
 /**
@@ -128,9 +129,12 @@ class MainActivity : MainBaseNavigationActivity(), AnkoLogger {
         progressDialog.dismiss()
         listView.run {
             adapter = ComicListAdapter(this@MainActivity, comicList)
-            setOnItemClickListener { _, _, position, _ ->
+            setOnItemClickListener { _, view, position, _ ->
                 val item = adapter.getItem(position) as ComicListItem
-                startActivity<ComicDetailActivity>("url" to item.url, "name" to item.name)
+                val intent = intentFor<ComicDetailActivity>("url" to item.url, "name" to item.name, "icon" to view.comic_icon.getTag(R.id.comic_icon))
+                val options = ActivityOptionsCompat
+                        .makeSceneTransitionAnimation(this@MainActivity, view.comic_icon, "image")
+                startActivity(intent, options.toBundle())
             }
             setOnScrollListener(object : AbsListView.OnScrollListener {
                 private var lastItem = 0
@@ -231,6 +235,7 @@ class ComicListAdapter(val ctx: Context, data: List<ComicListItem>) : BaseAdapte
         comic_name.text = comic.name
         comic_info.text = comic.info
         comic.img.async().subscribe { (img) ->
+            comic_icon.setTag(R.id.comic_icon, img)
             ctx.glide {
                 it.load(img).into(comic_icon)
             }

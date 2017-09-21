@@ -3,6 +3,7 @@ package cc.aoeiuv020.comic.ui
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Bundle
+import android.support.v4.view.ViewCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -22,6 +23,7 @@ import kotlinx.android.synthetic.main.comic_issue_item.view.*
 import kotlinx.android.synthetic.main.content_comic_detail.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.browse
+import org.jetbrains.anko.debug
 import org.jetbrains.anko.startActivity
 
 class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
@@ -41,8 +43,16 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
 
         url = intent.getStringExtra("url")
         val name = intent.getStringExtra("name")
-        // TODO: 这一点都不优雅，
-        val comicListItem = ComicListItem(name, "", url)
+        val icon: String? = intent.getStringExtra("icon")
+        debug { "receive <$url, $name, $icon>" }
+        val comicListItem = ComicListItem(name, icon ?: "", url)
+
+        icon.let { url ->
+            glide {
+                it.load(url).into(image)
+            }
+        }
+        ViewCompat.setTransitionName(image, "image")
 
         recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity)
         recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
