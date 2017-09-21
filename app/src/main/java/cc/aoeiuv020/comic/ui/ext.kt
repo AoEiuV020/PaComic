@@ -24,7 +24,7 @@ import org.jetbrains.anko.alert
  */
 
 fun <T : Any?> Observable<T>.async(): Observable<T> = this
-        .subscribeOn(Schedulers.newThread())
+        .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
 
 fun asyncLoadImage(image: ImageView, url: String) {
