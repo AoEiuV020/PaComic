@@ -53,6 +53,8 @@ fun Context.alertError(message: String, e: Throwable) = alert(message + "\n" + e
  */
 fun Context.glide(): RequestManager? = if (this is Activity && this.isDestroyed) null else Glide.with(this)
 
+fun Context.glide(callback: (RequestManager) -> Unit) = glide()?.also { callback(it) }
+
 fun Context.loading(dialog: ProgressDialog, id: Int) = loading(dialog, getString(R.string.loading, getString(id)))
 fun Context.loading(dialog: ProgressDialog, str: String) = dialog.apply {
     setMessage(str)

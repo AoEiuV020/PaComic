@@ -130,7 +130,7 @@ class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : P
         val page = pages[position]
         fun setImage(comicImage: ComicImage) {
             val (img, cacheableUrl) = comicImage
-            ctx.glide()?.also {
+            ctx.glide {
                 it.download(img).apply(RequestOptions().signature(ObjectKey(cacheableUrl)))
                         .into(object : SimpleTarget<File>() {
                             override fun onResourceReady(resource: File, transition: Transition<in File>?) {

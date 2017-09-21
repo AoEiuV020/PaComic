@@ -59,7 +59,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
 
     private fun showGeneral(comicListItem: ComicListItem) {
         toolbar_layout.title = comicListItem.name
-        glide()?.also {
+        glide {
             it.load(comicListItem.img).into(toolbar_layout.image)
         }
     }
@@ -69,7 +69,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         progressDialog.dismiss()
         toolbar_layout.title = detail.name
         detail.bigImg.async().subscribe { (img) ->
-            glide()?.also {
+            glide {
                 it.load(img).holdInto(toolbar_layout.image)
             }
         }

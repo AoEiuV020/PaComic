@@ -171,7 +171,7 @@ class MainActivity : MainBaseNavigationActivity(), AnkoLogger {
         loading(progressDialog, R.string.genre_list)
         nav_view.getHeaderView(0).apply {
             selectedSiteName.text = site.name
-            glide()?.also {
+            glide {
                 it.load(site.logo).holdInto(selectedSiteLogo)
             }
         }
@@ -208,7 +208,7 @@ class SiteListAdapter(val ctx: Context, private val sites: List<ComicSite>) : Ba
         val site = getItem(position)
         view.apply {
             siteName.text = site.name
-            ctx.glide()?.also {
+            ctx.glide {
                 it.load(site.logo).into(siteLogo)
             }
         }
@@ -229,7 +229,7 @@ class ComicListAdapter(val ctx: Context, data: List<ComicListItem>) : BaseAdapte
         val comic = getItem(position)
         comic_name.text = comic.name
         comic_info.text = comic.info
-        ctx.glide()?.also {
+        ctx.glide {
             it.load(comic.img).into(comic_icon)
         }
     }
