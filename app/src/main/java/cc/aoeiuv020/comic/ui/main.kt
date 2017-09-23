@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package cc.aoeiuv020.comic.ui
 
 import android.app.Activity
@@ -38,7 +40,6 @@ import org.jetbrains.anko.intentFor
 
 class MainActivity : MainBaseNavigationActivity(), AnkoLogger {
     private val alertDialog: AlertDialog by lazy { AlertDialog.Builder(this).create() }
-    @Suppress("DEPRECATION")
     private val progressDialog: ProgressDialog by lazy { ProgressDialog(this) }
     private var url: String = "https://github.com/AoEiuV020/comic"
     private lateinit var presenter: MainPresenter

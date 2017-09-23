@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package cc.aoeiuv020.comic.ui
 
 import android.app.Activity
@@ -39,7 +41,6 @@ import java.util.*
  */
 class ComicPageActivity : ComicPageBaseFullScreenActivity() {
     private val alertDialog: AlertDialog by lazy { AlertDialog.Builder(this).create() }
-    @Suppress("DEPRECATION")
     private val progressDialog: ProgressDialog by lazy { ProgressDialog(this) }
     private lateinit var presenter: ComicPagePresenter
     private lateinit var comicName: String

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package cc.aoeiuv020.comic.ui
 
 import android.app.ProgressDialog
@@ -28,7 +30,6 @@ import org.jetbrains.anko.startActivity
 
 class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
     private val alertDialog: AlertDialog by lazy { AlertDialog.Builder(this).create() }
-    @Suppress("DEPRECATION")
     private val progressDialog: ProgressDialog by lazy { ProgressDialog(this) }
     private lateinit var comicUrl: String
     private lateinit var presenter: ComicDetailPresenter
