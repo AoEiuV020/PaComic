@@ -1,7 +1,5 @@
 package cc.aoeiuv020.comic.di
 
-import android.content.Context
-import cc.aoeiuv020.comic.App
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicListItem
 import dagger.Module
@@ -21,14 +19,6 @@ interface ListComponent {
 
 @Module
 class ListModule(private val comicGenre: ComicGenre) {
-    init {
-        App.component.ctx.getSharedPreferences("genre", Context.MODE_PRIVATE)
-                .edit()
-                .putString("name", comicGenre.name)
-                .putString("url", comicGenre.url)
-                .apply()
-    }
-
     @Provides
     fun getComicList(): Observable<List<ComicListItem>> = Observable.fromCallable {
         ctx(comicGenre.url).getComicList(comicGenre)

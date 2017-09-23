@@ -1,6 +1,8 @@
 package cc.aoeiuv020.comic.presenter
 
+import android.content.Context
 import cc.aoeiuv020.comic.App
+import cc.aoeiuv020.comic.api.ComicContext
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicSite
 import cc.aoeiuv020.comic.di.*
@@ -18,10 +20,10 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
 
     fun start() {
         debug { "读取记住的选择，" }
-        App.component.plus(SiteModule()).site?.also { site ->
+        loadSite()?.also { site ->
             debug { "已有记住网站：${site.name}" }
             view.showSite(site)
-            App.component.plus(GenreModule(site)).genre?.let { genre ->
+            loadGenre(site)?.let { genre ->
                 debug { "已有记住分类：${genre.name}" }
                 view.showGenre(genre)
             } ?: run {
@@ -31,6 +33,45 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
             debug { "没有记住的网站，弹出网站选择，" }
             requestSites()
         }
+    }
+
+    private fun saveGenre(genre: ComicGenre) {
+        App.component.ctx.getSharedPreferences("genre", Context.MODE_PRIVATE)
+                .edit()
+                .putString("name", genre.name)
+                .putString("url", genre.url)
+                .apply()
+    }
+
+    /**
+     * 提供记住了的分类选择，
+     */
+    private fun loadGenre(site: ComicSite): ComicGenre? {
+        return App.component.ctx.getSharedPreferences("genre", Context.MODE_PRIVATE).run {
+            val url = getString("url", null) ?: return null
+            val name = getString("name", "")
+            // 仅当url属于这个site,
+            ComicGenre(name, url).takeIf { ComicContext.getComicContext(site.baseUrl)!!.check(url) }
+        }
+    }
+
+    /**
+     * 保存记住了的网站选择，
+     */
+    private fun saveSite(site: ComicSite) {
+        App.component.ctx.getSharedPreferences("site", Context.MODE_PRIVATE)
+                .edit()
+                .putString("baseUrl", site.baseUrl)
+                .apply()
+    }
+
+    /**
+     * 提供记住了的网站选择，
+     */
+    private fun loadSite(): ComicSite? {
+        val baseUrl = App.component.ctx.getSharedPreferences("site", Context.MODE_PRIVATE)
+                .getString("baseUrl", "")
+        return ComicContext.getComicContext(baseUrl)?.getComicSite()
     }
 
     fun requestSites() {
@@ -54,6 +95,7 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
     }
 
     fun requestComicList(genre: ComicGenre) {
+        saveGenre(genre)
         App.component.plus(ListModule(genre)).also { listComponent = it }
                 .getComicList()
                 .async()
@@ -67,6 +109,7 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
     }
 
     fun requestGenres(site: ComicSite) {
+        saveSite(site)
         App.component.plus(GenreModule(site))
                 .getGenres()
                 .async()
