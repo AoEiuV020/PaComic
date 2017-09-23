@@ -76,7 +76,7 @@ class PopomhContext : ComicContext() {
         val name = comicListItem.name
         val img = root.select("#about_style > img").first()
         val bigImg = src(img)
-        val info = root.select("#about_kit > ul > li")
+        val info = root.select("#about_kit > ul > li:not(:nth-child(1))")
                 .joinToString("\n") { text(it) }
         val issues = root.select("#permalink > div.cVolList > ul > li > a").map {
             val a = it
