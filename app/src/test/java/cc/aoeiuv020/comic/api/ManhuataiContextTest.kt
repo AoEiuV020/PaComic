@@ -49,7 +49,7 @@ class ManhuataiContextTest {
         genreList.forEach {
             context.getComicList(it).forEach {
                 println(it.name)
-                println(it.url)
+                println(it.detailUrl)
                 it.img.subscribe {
                     println(it)
                 }
@@ -68,9 +68,11 @@ class ManhuataiContextTest {
 
     @Test
     fun getComicDetail() {
-        context.getComicDetail(ComicListItem("斗破苍穹", "", "http://www.manhuatai.com/doupocangqiong/")).let {
-            println(it.name)
-            println(it.bigImg)
+        context.getComicDetail(ComicDetailUrl("http://www.manhuatai.com/doupocangqiong/")).let {
+            assertEquals("斗破苍穹", it.name)
+            it.bigImg.subscribe {
+                println(it)
+            }
             println(it.info)
             it.issuesAsc.forEach {
                 println("[${it.name}](${it.url})")

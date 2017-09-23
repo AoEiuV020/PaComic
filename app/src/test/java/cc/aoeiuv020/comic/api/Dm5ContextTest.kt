@@ -50,7 +50,7 @@ class Dm5ContextTest {
         genreList.forEach {
             context.getComicList(it).forEach {
                 println(it.name)
-                println(it.url)
+                println(it.detailUrl)
                 println(it.img)
                 println(it.info)
             }
@@ -67,9 +67,11 @@ class Dm5ContextTest {
 
     @Test
     fun getComicDetail() {
-        context.getComicDetail(ComicListItem("妖精的尾巴", "", "http://www.dm5.com/manhua-yaojingdeweiba/")).let {
-            println(it.name)
-            println(it.bigImg)
+        context.getComicDetail(ComicDetailUrl("http://www.dm5.com/manhua-yaojingdeweiba/")).let {
+            assertEquals("妖精的尾巴", it.name)
+            it.bigImg.subscribe {
+                println(it)
+            }
             println(it.info)
             it.issuesAsc.forEach {
                 println("[${it.name}](${it.url})")

@@ -25,11 +25,9 @@ data class ComicSite(
 ) : Data()
 
 /**
- * 包含漫画列表的页面，
- * 比如，分类，搜索结果，
+ * 封装漫画详情页地址，
  */
-@Deprecated("没设计好")
-data class ComicListPage(
+data class ComicDetailUrl(
         val url: String
 ) : Data()
 
@@ -44,18 +42,27 @@ data class ComicGenre(
 
 /**
  * 漫画列表中的一个漫画，
- * @param url 该漫画详情页地址，
+ * @param detailUrl 该漫画详情页地址，
  */
 data class ComicListItem(
         val name: String,
         val img: Observable<ComicImage>,
-        val url: String,
+        val detailUrl: ComicDetailUrl,
         val info: String = ""
 ) : Data() {
+    constructor(name: String, img: Observable<ComicImage>, url: String, info: String = "")
+            : this(name, img, ComicDetailUrl(url), info)
+
     constructor(name: String, img: ComicImage, url: String, info: String = "")
             : this(name, Observable.just(img), url, info)
 
     constructor(name: String, img: String, url: String, info: String = "")
+            : this(name, ComicImage(img), url, info)
+
+    constructor(name: String, img: ComicImage, url: ComicDetailUrl, info: String = "")
+            : this(name, Observable.just(img), url, info)
+
+    constructor(name: String, img: String, url: ComicDetailUrl, info: String = "")
             : this(name, ComicImage(img), url, info)
 }
 

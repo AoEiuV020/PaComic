@@ -65,7 +65,7 @@ abstract class ComicContext {
     /**
      * 获取漫画详情页信息，
      */
-    abstract fun getComicDetail(comicListItem: ComicListItem): ComicDetail
+    abstract fun getComicDetail(comicDetailUrl: ComicDetailUrl): ComicDetail
 
     /**
      * 获取章节漫画所有页面信息，

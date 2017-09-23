@@ -51,7 +51,7 @@ class PopomhContextTest {
         genreList.forEach {
             context.getComicList(it).forEach {
                 println(it.name)
-                println(it.url)
+                println(it.detailUrl)
                 println(it.img)
             }
         }
@@ -67,9 +67,11 @@ class PopomhContextTest {
 
     @Test
     fun getComicDetail() {
-        context.getComicDetail(ComicListItem("狩猎史莱姆300年", "", "http://www.popomh.com/manhua/32551.html")).let {
-            println(it.name)
-            println(it.bigImg)
+        context.getComicDetail(ComicDetailUrl("http://www.popomh.com/manhua/32551.html")).let {
+            assertEquals("狩猎史莱姆300年", it.name)
+            it.bigImg.subscribe {
+                println(it)
+            }
             println(it.info)
             it.issuesAsc.forEach {
                 println("[${it.name}](${it.url})")

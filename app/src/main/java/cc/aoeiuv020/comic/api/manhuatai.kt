@@ -94,9 +94,9 @@ class ManhuataiContext : ComicContext() {
 
     override fun isSearchResult(genre: ComicGenre): Boolean = genre.url.matches(Regex(".*/getjson.*"))
 
-    override fun getComicDetail(comicListItem: ComicListItem): ComicDetail {
-        val root = getHtml(comicListItem.url)
-        val name = comicListItem.name
+    override fun getComicDetail(comicDetailUrl: ComicDetailUrl): ComicDetail {
+        val root = getHtml(comicDetailUrl.url)
+        val name = text(root.select("div.jshtml > ul > li:nth-child(1)")).removePrefix("名称：")
         val bigImg = src(root.select("#offlinebtn-container > img").first())
         val info = textWithNewLine(root.select("div.wz.clearfix > div").first(), 1)
         val issues = root.select("div.mhlistbody > ul > li > a").map {

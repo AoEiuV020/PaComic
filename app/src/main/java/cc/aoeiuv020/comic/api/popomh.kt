@@ -71,9 +71,9 @@ class PopomhContext : ComicContext() {
 
     override fun isSearchResult(genre: ComicGenre): Boolean = genre.url.matches(Regex(".*act=search.*"))
 
-    override fun getComicDetail(comicListItem: ComicListItem): ComicDetail {
-        val root = getHtml(comicListItem.url)
-        val name = comicListItem.name
+    override fun getComicDetail(comicDetailUrl: ComicDetailUrl): ComicDetail {
+        val root = getHtml(comicDetailUrl.url)
+        val name = text(root.select("#about_kit > ul > li:nth-child(1) > h1")).trim()
         val img = root.select("#about_style > img").first()
         val bigImg = src(img)
         val info = root.select("#about_kit > ul > li:not(:nth-child(1))")

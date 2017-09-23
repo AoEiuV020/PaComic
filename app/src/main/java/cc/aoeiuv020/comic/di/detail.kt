@@ -1,7 +1,7 @@
 package cc.aoeiuv020.comic.di
 
 import cc.aoeiuv020.comic.api.ComicDetail
-import cc.aoeiuv020.comic.api.ComicListItem
+import cc.aoeiuv020.comic.api.ComicDetailUrl
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -17,9 +17,9 @@ interface DetailComponent {
 }
 
 @Module
-class DetailModule(private val comicListItem: ComicListItem) {
+class DetailModule(private val comicDetailUrl: ComicDetailUrl) {
     @Provides
     fun getComicDetail(): Observable<ComicDetail> = Observable.fromCallable {
-        ctx(comicListItem.url).getComicDetail(comicListItem)
+        ctx(comicDetailUrl.url).getComicDetail(comicDetailUrl)
     }
 }

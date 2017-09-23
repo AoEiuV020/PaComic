@@ -1,8 +1,8 @@
 package cc.aoeiuv020.comic.presenter
 
 import cc.aoeiuv020.comic.App
+import cc.aoeiuv020.comic.api.ComicDetailUrl
 import cc.aoeiuv020.comic.api.ComicIssue
-import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.di.DetailModule
 import cc.aoeiuv020.comic.di.PageModule
 import cc.aoeiuv020.comic.ui.ComicPageActivity
@@ -17,7 +17,7 @@ import org.jetbrains.anko.error
 class ComicPagePresenter(private val view: ComicPageActivity, val name: String, val url: String, private var index: Int) : AnkoLogger {
     private lateinit var issueAsc: List<ComicIssue>
     fun start() {
-        App.component.plus(DetailModule(ComicListItem(name, "", url))).getComicDetail()
+        App.component.plus(DetailModule(ComicDetailUrl(url))).getComicDetail()
                 .async().subscribe({ comicDetail ->
             issueAsc = comicDetail.issuesAsc
             requestComicPages(false)

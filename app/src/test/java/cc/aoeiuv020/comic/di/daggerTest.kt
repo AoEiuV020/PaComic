@@ -3,9 +3,9 @@ package cc.aoeiuv020.comic.di
 import android.content.Context
 import android.content.SharedPreferences
 import cc.aoeiuv020.comic.App
+import cc.aoeiuv020.comic.api.ComicDetailUrl
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicIssue
-import cc.aoeiuv020.comic.api.ComicListItem
 import cc.aoeiuv020.comic.api.ComicSite
 import org.junit.Before
 import org.junit.Test
@@ -56,14 +56,14 @@ class DaggerTest {
                 .flatMapIterable { it }
                 .forEach {
                     println(it.name)
-                    println(it.url)
+                    println(it.detailUrl)
                     println(it.img)
                 }
     }
 
     @Test
     fun getComicDetail() {
-        val detailComponent: DetailComponent = App.component.plus(DetailModule(ComicListItem("狩猎史莱姆300年", "", "http://www.popomh.com/manhua/32551.html")))
+        val detailComponent: DetailComponent = App.component.plus(DetailModule(ComicDetailUrl("http://www.popomh.com/manhua/32551.html")))
         detailComponent.getComicDetail()
                 .forEach {
                     println(it.name)

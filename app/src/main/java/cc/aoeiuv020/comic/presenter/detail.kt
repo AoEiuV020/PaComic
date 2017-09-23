@@ -17,7 +17,7 @@ class ComicDetailPresenter(private val view: ComicDetailActivity, private val co
     }
 
     private fun requestComicDetail() {
-        App.component.plus(DetailModule(comicListItem))
+        App.component.plus(DetailModule(comicListItem.detailUrl))
                 .getComicDetail()
                 .async()
                 .subscribe({ comicDetail ->

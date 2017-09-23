@@ -132,7 +132,7 @@ class MainActivity : MainBaseNavigationActivity(), AnkoLogger {
             adapter = ComicListAdapter(this@MainActivity, comicList)
             setOnItemClickListener { _, view, position, _ ->
                 val item = adapter.getItem(position) as ComicListItem
-                val intent = intentFor<ComicDetailActivity>("comicUrl" to item.url, "comicName" to item.name, "comicIcon" to view.comic_icon.getTag(R.id.comic_icon))
+                val intent = intentFor<ComicDetailActivity>("comicUrl" to item.detailUrl.url, "comicName" to item.name, "comicIcon" to view.comic_icon.getTag(R.id.comic_icon))
                 val options = ActivityOptionsCompat
                         .makeSceneTransitionAnimation(this@MainActivity, view.comic_icon, "image")
                 startActivity(intent, options.toBundle())

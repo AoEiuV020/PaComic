@@ -73,10 +73,9 @@ class Dm5Context : ComicContext() {
 
     override fun isSearchResult(genre: ComicGenre): Boolean = genre.url.matches(Regex(".*/search.*"))
 
-    override fun getComicDetail(comicListItem: ComicListItem): ComicDetail {
-        val root = getHtml(comicListItem.url)
-        // 这个name也可以改成从html解析，
-        val name = comicListItem.name
+    override fun getComicDetail(comicDetailUrl: ComicDetailUrl): ComicDetail {
+        val root = getHtml(comicDetailUrl.url)
+        val name = text(root.select("#mhinfo > div.inbt > h1").first())
         val bigImg = src(root.select("#mhinfo > div.innr9.innr9_min > div.innr90 > div.innr91 > img").first())
         val info = root.select("#mhinfo > div.innr9.innr9_min > div:nth-child(3) > p")
                 .first().let { it.ownText() + (it.select("span").first()?.ownText() ?: "") }
