@@ -5,7 +5,9 @@ import cc.aoeiuv020.comic.App
 import cc.aoeiuv020.comic.api.ComicContext
 import cc.aoeiuv020.comic.api.ComicGenre
 import cc.aoeiuv020.comic.api.ComicSite
-import cc.aoeiuv020.comic.di.*
+import cc.aoeiuv020.comic.di.GenreModule
+import cc.aoeiuv020.comic.di.SearchModule
+import cc.aoeiuv020.comic.di.SiteModule
 import cc.aoeiuv020.comic.ui.MainActivity
 import cc.aoeiuv020.comic.ui.async
 import org.jetbrains.anko.AnkoLogger
@@ -18,8 +20,6 @@ import org.jetbrains.anko.error
  * Created by AoEiuV020 on 2017.09.18-15:30:37.
  */
 class MainPresenter(private val view: MainActivity) : AnkoLogger {
-    private var listComponent: ListComponent? = null
-
     fun start() {
         debug { "读取记住的选择，" }
         loadSite()?.also { site ->
@@ -35,14 +35,6 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
             debug { "没有记住的网站，弹出网站选择，" }
             requestSites()
         }
-    }
-
-    private fun saveGenre(genre: ComicGenre) {
-        App.component.ctx.getSharedPreferences("genre", Context.MODE_PRIVATE)
-                .edit()
-                .putString("name", genre.name)
-                .putString("url", genre.url)
-                .apply()
     }
 
     /**
@@ -96,20 +88,6 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
         })
     }
 
-    fun requestComicList(genre: ComicGenre) {
-        saveGenre(genre)
-        App.component.plus(ListModule(genre)).also { listComponent = it }
-                .getComicList()
-                .async()
-                .subscribe({ comicList ->
-                    view.showComicList(comicList)
-                }, { e ->
-                    val message = "加载漫画列表失败，"
-                    error(message, e)
-                    view.showError(message, e)
-                })
-    }
-
     fun requestGenres(site: ComicSite) {
         saveSite(site)
         App.component.plus(GenreModule(site))
@@ -124,35 +102,5 @@ class MainPresenter(private val view: MainActivity) : AnkoLogger {
                     error(message, e)
                     view.showError(message, e)
                 })
-    }
-
-    fun loadNextPage() {
-        debug { "加载下一页，已经设置listComponent: ${listComponent != null}" }
-        listComponent?.run {
-            getNextPage().async().toList().subscribe({ genres ->
-                if (genres.isEmpty()) {
-                    debug { "没有下一页" }
-                    view.showYetLastPage()
-                    return@subscribe
-                }
-                val genre = genres.first()
-                view.showUrl(genre.url)
-                App.component.plus(ListModule(genre)).also { listComponent = it }
-                        .getComicList()
-                        .async()
-                        .subscribe({ comicList ->
-                            debug { "展示漫画列表，数量：${comicList.size}" }
-                            view.addComicList(comicList)
-                        }, { e ->
-                            val message = "加载下一页漫画列表失败，"
-                            error(message, e)
-                            view.showError(message, e)
-                        })
-            }, { e ->
-                val message = "加载漫画列表一下页地址失败，"
-                error(message, e)
-                view.showError(message, e)
-            })
-        }
     }
 }
