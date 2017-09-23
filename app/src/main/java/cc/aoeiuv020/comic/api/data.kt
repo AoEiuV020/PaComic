@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package cc.aoeiuv020.comic.api
 
 import io.reactivex.Observable
@@ -90,7 +92,7 @@ data class ComicIssue(
  * 漫画页面，
  */
 data class ComicPage(
-        val url: Observable<ComicImage>
+        val img: Observable<ComicImage>
 ) : Data() {
     constructor(comicImage: ComicImage) : this(Observable.just(comicImage))
     constructor(s: String) : this(ComicImage(s))
@@ -98,10 +100,11 @@ data class ComicPage(
 
 /**
  * 漫画图片，
- * @param img 漫画图片地址，
+ * @param realUrl 漫画图片地址，
+ * @param cacheableUrl 漫画图片地址，
  */
 data class ComicImage(
-        val img: String,
+        val realUrl: String,
         val cacheableUrl: String
 ) : Data() {
     constructor(img: String) : this(img, img)

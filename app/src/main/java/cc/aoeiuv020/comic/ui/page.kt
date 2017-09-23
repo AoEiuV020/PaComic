@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.SeekBar
 import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicImage
@@ -26,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.browse
+import org.jetbrains.anko.debug
 import org.jetbrains.anko.error
 import java.io.File
 import java.util.*
@@ -40,38 +42,22 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
     @Suppress("DEPRECATION")
     private val progressDialog: ProgressDialog by lazy { ProgressDialog(this) }
     private lateinit var presenter: ComicPagePresenter
+    private lateinit var comicName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val name = intent.getStringExtra("name") ?: return
-        val issue = intent.getSerializableExtra("issue") as? ComicIssue ?: return
+        comicName = intent.getStringExtra("comicName") ?: return
+        val comicUrl = intent.getStringExtra("comicUrl") ?: return
+        val issueIndex = intent.getIntExtra("issueIndex", -1).takeIf { it != -1 } ?: return
 
-        title = "$name - ${issue.name}"
-        url.text = issue.url
+        urlTextView.text = comicUrl
         urlBar.setOnClickListener {
-            browse(url.text.toString())
+            browse(urlTextView.text.toString())
         }
         loading(progressDialog, R.string.comic_page)
 
-        presenter = ComicPagePresenter(this, issue)
-        presenter.start()
-    }
-
-    fun showError(message: String, e: Throwable) {
-        progressDialog.dismiss()
-        alertError(message, e)
-    }
-
-    fun showComicPages(pages: List<ComicPage>) {
-        progressDialog.dismiss()
-        if (pages.isEmpty()) {
-            alert(alertDialog, R.string.comic_not_support)
-            // 无法浏览的情况显示状态栏标题栏导航栏，方便离开，
-            show()
-            return
-        }
-        viewPager.adapter = ComicPageAdapter(this, pages)
+        // 监听器确保只添加一次，
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
                 hide()
@@ -81,15 +67,58 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
             }
 
             override fun onPageSelected(position: Int) {
-                seekBar.progress = position
+                debug { "onPageSelected: $position" }
+                when (position) {
+                    0 -> {
+                        presenter.requestPreviousIssue()
+                    }
+                    viewPager.adapter.count - 1 -> {
+                        presenter.requestNextIssue()
+
+                    }
+                    else -> seekBar.progress = position - 1
+                }
             }
         })
+
+        presenter = ComicPagePresenter(this, comicName, comicUrl, issueIndex)
+        presenter.start()
+    }
+
+    fun showError(message: String, e: Throwable) {
+        progressDialog.dismiss()
+        alertError(message, e)
+    }
+
+    fun showPreviousIssue(issue: ComicIssue, pages: List<ComicPage>) {
+        showComicPages(issue, pages)
+        // 跳到最后一页，
+        viewPager.currentItem = pages.size
+    }
+
+    fun showNextIssue(issue: ComicIssue, pages: List<ComicPage>) {
+        showComicPages(issue, pages)
+        // 跳到第一页，0页不是漫画，
+        viewPager.currentItem = 1
+    }
+
+    private fun showComicPages(issue: ComicIssue, pages: List<ComicPage>) {
+        title = "$comicName - ${issue.name}"
+        urlTextView.text = issue.url
+        progressDialog.dismiss()
+        if (pages.isEmpty()) {
+            alert(alertDialog, R.string.comic_not_support)
+            // 无法浏览的情况显示状态栏标题栏导航栏，方便离开，
+            show()
+            return
+        }
+        viewPager.adapter = ComicPageAdapter(this, pages)
         seekBar.max = pages.size - 1
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
                     // 这里会调用上面的onPageSelected，
-                    viewPager.setCurrentItem(progress, false)
+                    viewPager.setCurrentItem(progress + 1, false)
                 }
             }
 
@@ -105,8 +134,22 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
 class ComicPageAdapter(val ctx: Activity, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
     private val views: LinkedList<View> = LinkedList()
     private val imgs = mutableMapOf<ComicPage, ComicImage>()
+    // TODO: 简单一个全屏ProgressBar略丑，
+    private val firstPage: View by lazy { ProgressBar(ctx) }
+    private val lastPage: View by lazy { ProgressBar(ctx) }
+
     override fun isViewFromObject(view: View, obj: Any) = view === obj
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
+        when (position) {
+            0 -> {
+                container.addView(firstPage)
+                return firstPage
+            }
+            count - 1 -> {
+                container.addView(lastPage)
+                return lastPage
+            }
+        }
         val root = if (views.isNotEmpty())
             views.pop()
         else
@@ -119,12 +162,12 @@ class ComicPageAdapter(val ctx: Activity, private val pages: List<ComicPage>) : 
         // 重制放大状态，
         (root.image as PinchImageView).reset()
         root.image.setImageDrawable(null)
-        root.pageNumber.text = ctx.getString(R.string.page_number, position + 1, count)
-        val page = pages[position]
+        root.pageNumber.text = ctx.getString(R.string.page_number, position, pages.size)
+        val page = pages[position - 1]
         fun setImage(comicImage: ComicImage) {
-            val (img, cacheableUrl) = comicImage
+            val (realUrl, cacheableUrl) = comicImage
             ctx.glide {
-                it.download(img).apply(RequestOptions().signature(ObjectKey(cacheableUrl)))
+                it.download(realUrl).apply(RequestOptions().signature(ObjectKey(cacheableUrl)))
                         .into(object : SimpleTarget<File>() {
                             override fun onResourceReady(resource: File, transition: Transition<in File>?) {
                                 HugeUtil.setImageUri(root.image, Uri.fromFile(resource))
@@ -135,7 +178,7 @@ class ComicPageAdapter(val ctx: Activity, private val pages: List<ComicPage>) : 
         }
         imgs[page]?.let { comicImage ->
             setImage(comicImage)
-        } ?: page.url.async().subscribe({ comicImage ->
+        } ?: page.img.async().subscribe({ comicImage ->
             imgs.put(page, comicImage)
             setImage(comicImage)
         }, { e ->
@@ -150,8 +193,16 @@ class ComicPageAdapter(val ctx: Activity, private val pages: List<ComicPage>) : 
     override fun destroyItem(container: ViewGroup, position: Int, obj: Any?) {
         val view = obj as View
         container.removeView(view)
-        views.push(view)
+        when (position) {
+            0 -> {
+            }
+            count - 1 -> {
+            }
+            else -> {
+                views.push(view)
+            }
+        }
     }
 
-    override fun getCount() = pages.size
+    override fun getCount() = pages.size + 2
 }

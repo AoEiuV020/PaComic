@@ -30,7 +30,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
     private val alertDialog: AlertDialog by lazy { AlertDialog.Builder(this).create() }
     @Suppress("DEPRECATION")
     private val progressDialog: ProgressDialog by lazy { ProgressDialog(this) }
-    private lateinit var url: String
+    private lateinit var comicUrl: String
     private lateinit var presenter: ComicDetailPresenter
     private var comicDetail: ComicDetail? = null
 
@@ -41,24 +41,28 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        url = intent.getStringExtra("url")
-        val name = intent.getStringExtra("name")
-        val icon: String? = intent.getStringExtra("icon")
-        debug { "receive <$url, $name, $icon>" }
-        val comicListItem = ComicListItem(name, icon ?: "", url)
+        comicUrl = intent.getStringExtra("comicUrl")
+        val comicName = intent.getStringExtra("comicName")
+        val comicIcon: String? = intent.getStringExtra("comicIcon")
+        debug { "receive <$comicUrl, $comicName, $comicIcon>" }
+        val comicListItem = ComicListItem(comicName, comicIcon ?: "", comicUrl)
 
-        icon.let { url ->
+        comicIcon.let { url ->
             glide {
                 it.load(url).into(image)
             }
         }
         ViewCompat.setTransitionName(image, "image")
 
-        recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity)
+        recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity) { index ->
+            comicDetail?.let {
+                startActivity<ComicPageActivity>("comicName" to comicName, "comicUrl" to comicUrl, "issueIndex" to index)
+            }
+        }
         recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
 
         loading(progressDialog, R.string.comic_detail)
-        toolbar_layout.title = name
+        toolbar_layout.title = comicName
 
         presenter = ComicDetailPresenter(this, comicListItem)
         presenter.start()
@@ -90,7 +94,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_detail, menu)
         menu.findItem(R.id.browse).setOnMenuItemClickListener {
-            browse(url)
+            browse(comicUrl)
         }
         menu.findItem(R.id.info).setOnMenuItemClickListener {
             showComicAbout()
@@ -100,7 +104,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
     }
 }
 
-class ComicDetailAdapter(val ctx: Context) : RecyclerView.Adapter<ComicDetailAdapter.Holder>() {
+class ComicDetailAdapter(val ctx: Context, val callback: (Int) -> Unit) : RecyclerView.Adapter<ComicDetailAdapter.Holder>() {
     private lateinit var detail: ComicDetail
     private var issuesDesc = emptyList<ComicIssue>()
     override fun getItemCount() = issuesDesc.size
@@ -124,7 +128,8 @@ class ComicDetailAdapter(val ctx: Context) : RecyclerView.Adapter<ComicDetailAda
     inner class Holder(val root: View) : RecyclerView.ViewHolder(root), AnkoLogger {
         init {
             root.setOnClickListener {
-                ctx.startActivity<ComicPageActivity>("name" to detail.name, "issue" to issuesDesc[layoutPosition])
+                // 传出话数的顺序索引，
+                callback(issuesDesc.size - 1 - layoutPosition)
             }
         }
     }

@@ -82,7 +82,7 @@ class DaggerTest {
         val pageComponent: PageComponent = App.component.plus(PageModule(ComicIssue("", "http://www.popomh.com/popo290025/1.html?s=3")))
         pageComponent.getComicPages().flatMapIterable { it }
                 .forEach {
-                    it.url.subscribe {
+                    it.img.subscribe {
                         println(it)
                     }
                 }
