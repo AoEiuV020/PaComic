@@ -12,6 +12,10 @@ import org.jetbrains.anko.debug
 import org.jetbrains.anko.error
 
 /**
+ * 管理漫画图片页的界面和数据，
+ * 初始化时传入漫画地址用来得到章节列表，
+ * 启动时加载当前章节漫画并显示，
+ * 另外还有加载上一话和下一话的处理，
  * Created by AoEiuV020 on 2017.09.18-18:24:20.
  */
 class ComicPagePresenter(private val view: ComicPageActivity, val name: String, val url: String, private var index: Int) : AnkoLogger {

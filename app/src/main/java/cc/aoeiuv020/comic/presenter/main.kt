@@ -13,6 +13,8 @@ import org.jetbrains.anko.debug
 import org.jetbrains.anko.error
 
 /**
+ * 管理主页的界面和数据，
+ * 启动时读取之前的选择，网站和分类，
  * Created by AoEiuV020 on 2017.09.18-15:30:37.
  */
 class MainPresenter(private val view: MainActivity) : AnkoLogger {

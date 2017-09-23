@@ -9,6 +9,9 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.error
 
 /**
+ * 管理详情页的界面和数据，
+ * 启动时请求漫画详情页的信息，
+ * 然后就没了，
  * Created by AoEiuV020 on 2017.09.18-17:52:06.
  */
 class ComicDetailPresenter(private val view: ComicDetailActivity, private val comicListItem: ComicListItem) : AnkoLogger {
