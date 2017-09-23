@@ -48,12 +48,12 @@ fun View.show() {
 fun Context.alertError(message: String, e: Throwable) = alert(message + "\n" + e.message).show()
 
 /**
- * 如果context已经销毁了，返回null,
+ * 如果Activity已经销毁了，返回null,
  * 要是直接调用Glide.with，会报
  */
-fun Context.glide(): RequestManager? = if (this is Activity && this.isDestroyed) null else Glide.with(this)
+fun Activity.glide(): RequestManager? = if (isDestroyed) null else Glide.with(this)
 
-fun Context.glide(callback: (RequestManager) -> Unit) = glide()?.also { callback(it) }
+fun Activity.glide(callback: (RequestManager) -> Unit) = glide()?.also { callback(it) }
 
 fun Context.loading(dialog: ProgressDialog, id: Int) = loading(dialog, getString(R.string.loading, getString(id)))
 fun Context.loading(dialog: ProgressDialog, str: String) = dialog.apply {

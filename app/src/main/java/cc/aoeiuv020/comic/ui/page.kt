@@ -1,7 +1,7 @@
 package cc.aoeiuv020.comic.ui
 
+import android.app.Activity
 import android.app.ProgressDialog
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.view.PagerAdapter
@@ -102,7 +102,7 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
     }
 }
 
-class ComicPageAdapter(val ctx: Context, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
+class ComicPageAdapter(val ctx: Activity, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
     private val views: LinkedList<View> = LinkedList()
     private val imgs = mutableMapOf<ComicPage, ComicImage>()
     override fun isViewFromObject(view: View, obj: Any) = view === obj

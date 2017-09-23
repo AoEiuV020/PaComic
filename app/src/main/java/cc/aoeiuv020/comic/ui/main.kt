@@ -1,7 +1,7 @@
 package cc.aoeiuv020.comic.ui
 
+import android.app.Activity
 import android.app.ProgressDialog
-import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityOptionsCompat
@@ -207,7 +207,7 @@ class MainActivity : MainBaseNavigationActivity(), AnkoLogger {
     }
 }
 
-class SiteListAdapter(val ctx: Context, private val sites: List<ComicSite>) : BaseAdapter() {
+class SiteListAdapter(val ctx: Activity, private val sites: List<ComicSite>) : BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view = convertView ?: View.inflate(ctx, R.layout.site_list_item, null)
         val site = getItem(position)
@@ -227,7 +227,7 @@ class SiteListAdapter(val ctx: Context, private val sites: List<ComicSite>) : Ba
     override fun getCount() = sites.size
 }
 
-class ComicListAdapter(val ctx: Context, data: List<ComicListItem>) : BaseAdapter(), AnkoLogger {
+class ComicListAdapter(val ctx: Activity, data: List<ComicListItem>) : BaseAdapter(), AnkoLogger {
     private val items = data.toMutableList()
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View
             = (convertView ?: View.inflate(ctx, R.layout.comic_list_item, null)).apply {
