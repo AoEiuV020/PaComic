@@ -9,7 +9,6 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.SeekBar
 import cc.aoeiuv020.comic.R
 import cc.aoeiuv020.comic.api.ComicImage
@@ -25,6 +24,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.bumptech.glide.signature.ObjectKey
 import kotlinx.android.synthetic.main.activity_comic_page.*
 import kotlinx.android.synthetic.main.comic_page_item.view.*
+import kotlinx.android.synthetic.main.comic_page_item_loading.view.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.browse
 import org.jetbrains.anko.debug
@@ -102,6 +102,14 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
         viewPager.currentItem = 1
     }
 
+    fun showNoPreviousIssue() {
+        (viewPager.adapter as ComicPageAdapter).noPrevious()
+    }
+
+    fun showNoNextIssue() {
+        (viewPager.adapter as ComicPageAdapter).noNext()
+    }
+
     private fun showComicPages(issue: ComicIssue, pages: List<ComicPage>) {
         title = "$comicName - ${issue.name}"
         urlTextView.text = issue.url
@@ -134,9 +142,16 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
 class ComicPageAdapter(val ctx: Activity, private val pages: List<ComicPage>) : PagerAdapter(), AnkoLogger {
     private val views: LinkedList<View> = LinkedList()
     private val imgs = mutableMapOf<ComicPage, ComicImage>()
-    // TODO: 简单一个全屏ProgressBar略丑，
-    private val firstPage: View by lazy { ProgressBar(ctx) }
-    private val lastPage: View by lazy { ProgressBar(ctx) }
+    private val firstPage: View by lazy {
+        View.inflate(ctx, R.layout.comic_page_item_loading, null).apply {
+            loadingTextView.setText(R.string.now_loading_previous_issue)
+        }
+    }
+    private val lastPage: View by lazy {
+        View.inflate(ctx, R.layout.comic_page_item_loading, null).apply {
+            loadingTextView.setText(R.string.now_loading_next_issue)
+        }
+    }
 
     override fun isViewFromObject(view: View, obj: Any) = view === obj
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
@@ -205,4 +220,13 @@ class ComicPageAdapter(val ctx: Activity, private val pages: List<ComicPage>) : 
     }
 
     override fun getCount() = pages.size + 2
+    fun noNext() {
+        lastPage.loadingTextView.setText(R.string.no_next_issue)
+        lastPage.loadingProgressBar.hide()
+    }
+
+    fun noPrevious() {
+        firstPage.loadingTextView.setText(R.string.no_previous_issue)
+        firstPage.loadingProgressBar.hide()
+    }
 }

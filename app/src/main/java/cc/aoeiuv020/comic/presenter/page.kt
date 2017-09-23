@@ -47,11 +47,19 @@ class ComicPagePresenter(private val view: ComicPageActivity, val name: String, 
     }
 
     fun requestPreviousIssue() {
+        if (index == 0) {
+            view.showNoPreviousIssue()
+            return
+        }
         --index
         requestComicPages(true)
     }
 
     fun requestNextIssue() {
+        if (index == issueAsc.size - 1) {
+            view.showNoNextIssue()
+            return
+        }
         ++index
         requestComicPages(false)
     }
