@@ -18,7 +18,7 @@ import org.jetbrains.anko.error
  * 另外还有加载上一话和下一话的处理，
  * Created by AoEiuV020 on 2017.09.18-18:24:20.
  */
-class ComicPagePresenter(private val view: ComicPageActivity, val name: String, val url: String, private var index: Int) : AnkoLogger {
+class ComicPagePresenter(private val view: ComicPageActivity, val url: String, private var index: Int) : AnkoLogger {
     private lateinit var issueAsc: List<ComicIssue>
     fun start() {
         App.component.plus(DetailModule(ComicDetailUrl(url))).getComicDetail()

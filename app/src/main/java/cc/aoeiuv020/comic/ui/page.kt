@@ -78,7 +78,7 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
             }
         })
 
-        presenter = ComicPagePresenter(this, comicName, comicUrl, issueIndex)
+        presenter = ComicPagePresenter(this, comicUrl, issueIndex)
         presenter.start()
     }
 
