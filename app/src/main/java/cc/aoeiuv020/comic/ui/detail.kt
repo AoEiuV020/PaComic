@@ -87,7 +87,7 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
 
     private fun showComicAbout() {
         comicDetail?.let {
-            alert(alertDialog, it.name, it.info)
+            alert(alertDialog, it.info, it.name)
         }
     }
 
