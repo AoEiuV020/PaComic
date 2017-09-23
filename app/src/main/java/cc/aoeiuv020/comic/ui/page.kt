@@ -46,7 +46,7 @@ class ComicPageActivity : ComicPageBaseFullScreenActivity() {
 
         comicName = intent.getStringExtra("comicName") ?: return
         val comicUrl = intent.getStringExtra("comicUrl") ?: return
-        val issueIndex = intent.getIntExtra("issueIndex", -1).takeIf { it != -1 } ?: return
+        val issueIndex = intent.getIntExtra("issueIndex", 0)
 
         urlTextView.text = comicUrl
         urlBar.setOnClickListener {

@@ -56,14 +56,16 @@ class ComicDetailActivity : AppCompatActivity(), AnkoLogger {
         ViewCompat.setTransitionName(image, "image")
 
         recyclerView.adapter = ComicDetailAdapter(this@ComicDetailActivity) { index ->
-            comicDetail?.let {
-                startActivity<ComicPageActivity>("comicName" to comicName, "comicUrl" to comicUrl, "issueIndex" to index)
-            }
+            startActivity<ComicPageActivity>("comicName" to comicName, "comicUrl" to comicUrl, "issueIndex" to index)
         }
         recyclerView.layoutManager = LinearLayoutManager(this@ComicDetailActivity)
 
         loading(progressDialog, R.string.comic_detail)
         toolbar_layout.title = comicName
+
+        fab.setOnClickListener {
+            startActivity<ComicPageActivity>("comicName" to comicName, "comicUrl" to comicUrl)
+        }
 
         presenter = ComicDetailPresenter(this, comicListItem)
         presenter.start()
