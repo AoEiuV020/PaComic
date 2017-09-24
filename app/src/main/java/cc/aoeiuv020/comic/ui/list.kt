@@ -117,6 +117,7 @@ class ComicListAdapter(val ctx: Activity, data: List<ComicListItem>) : BaseAdapt
         val comic = getItem(position)
         comic_name.text = comic.name
         comic_info.text = comic.info
+        comic_icon.setImageDrawable(null)
         comic.img.async().subscribe { (img) ->
             comic_icon.setTag(R.id.comic_icon, img)
             ctx.glide {
