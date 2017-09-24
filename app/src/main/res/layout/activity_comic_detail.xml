@@ -47,9 +47,10 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/ic_book" />
+        app:layout_behavior=".ui.widget.ScrollAwareFABBehavior"
+        app:srcCompat="@drawable/ic_book"
+        app:tint="#fff" />
 
 </android.support.design.widget.CoordinatorLayout>
