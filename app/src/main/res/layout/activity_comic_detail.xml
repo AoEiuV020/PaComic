@@ -49,8 +49,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:tint="@android:color/white"
         app:layout_behavior=".ui.widget.ScrollAwareFABBehavior"
-        app:srcCompat="@drawable/ic_book"
-        app:tint="#fff" />
+        app:srcCompat="@drawable/ic_book" />
 
 </android.support.design.widget.CoordinatorLayout>
