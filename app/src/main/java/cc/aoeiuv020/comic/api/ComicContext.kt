@@ -65,17 +65,12 @@ abstract class ComicContext {
     /**
      * 获取漫画详情页信息，
      */
-    abstract fun getComicDetail(comicListItem: ComicListItem): ComicDetail
+    abstract fun getComicDetail(comicDetailUrl: ComicDetailUrl): ComicDetail
 
     /**
      * 获取章节漫画所有页面信息，
      */
     abstract fun getComicPages(comicIssue: ComicIssue): List<ComicPage>
-
-    /**
-     * 从漫画页面获取漫画图片，
-     */
-    abstract fun getComicImage(comicPage: ComicPage): ComicImage
 
     internal fun check(url: String): Boolean = URL(getComicSite().baseUrl).host == URL(url).host
 
@@ -102,7 +97,7 @@ abstract class ComicContext {
     protected fun text(e: Element): String = e.text()
     protected fun text(e: Elements): String = e.text()
     protected fun src(img: Element): String = img.attr("src")
-    protected fun absHref(a: Element): String = a.absUrl("abs:href")
+    protected fun absHref(a: Element): String = a.absUrl("href")
     protected fun title(a: Element): String = a.attr("title")
 
     /**

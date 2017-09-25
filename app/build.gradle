@@ -11,14 +11,16 @@ android {
         applicationId "cc.aoeiuv020.comic"
         minSdkVersion min_version
         targetSdkVersion target_version
-        versionCode 5
-        versionName "0.5"
+        versionCode 6
+        versionName "0.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "comic-$versionName")
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -43,7 +45,6 @@ dependencies {
     implementation "org.slf4j:slf4j-api:$slf4j_version"
     testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
     debugRuntimeOnly "org.slf4j:slf4j-android:$slf4j_version"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation "org.jsoup:jsoup:$jsoup_version"
     implementation 'com.google.dagger:dagger:2.11'
     kapt 'com.google.dagger:dagger-compiler:2.11'

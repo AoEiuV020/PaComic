@@ -1,5 +1,8 @@
+@file:Suppress("unused")
+
 package cc.aoeiuv020.comic.api
 
+import io.reactivex.Observable
 import java.io.Serializable
 
 /**
@@ -22,11 +25,9 @@ data class ComicSite(
 ) : Data()
 
 /**
- * 包含漫画列表的页面，
- * 比如，分类，搜索结果，
+ * 封装漫画详情页地址，
  */
-@Deprecated("没设计好")
-data class ComicListPage(
+data class ComicDetailUrl(
         val url: String
 ) : Data()
 
@@ -41,15 +42,28 @@ data class ComicGenre(
 
 /**
  * 漫画列表中的一个漫画，
- * @param url 该漫画详情页地址，
+ * @param detailUrl 该漫画详情页地址，
  */
 data class ComicListItem(
         val name: String,
-        val img: String,
-        val url: String,
-        val info: String
+        val img: Observable<ComicImage>,
+        val detailUrl: ComicDetailUrl,
+        val info: String = ""
 ) : Data() {
-    constructor(name: String, img: String, url: String) : this(name, img, url, "")
+    constructor(name: String, img: Observable<ComicImage>, url: String, info: String = "")
+            : this(name, img, ComicDetailUrl(url), info)
+
+    constructor(name: String, img: ComicImage, url: String, info: String = "")
+            : this(name, Observable.just(img), url, info)
+
+    constructor(name: String, img: String, url: String, info: String = "")
+            : this(name, ComicImage(img), url, info)
+
+    constructor(name: String, img: ComicImage, url: ComicDetailUrl, info: String = "")
+            : this(name, Observable.just(img), url, info)
+
+    constructor(name: String, img: String, url: ComicDetailUrl, info: String = "")
+            : this(name, ComicImage(img), url, info)
 }
 
 /**
@@ -58,10 +72,16 @@ data class ComicListItem(
  */
 data class ComicDetail(
         val name: String,
-        val bigImg: String,
+        val bigImg: Observable<ComicImage>,
         val info: String,
         val issuesAsc: List<ComicIssue>
-) : Data()
+) : Data() {
+    constructor(name: String, bigImg: ComicImage, info: String, issuesAsc: List<ComicIssue>) :
+            this(name, Observable.just(bigImg), info, issuesAsc)
+
+    constructor(name: String, bigImg: String, info: String, issuesAsc: List<ComicIssue>) :
+            this(name, ComicImage(bigImg), info, issuesAsc)
+}
 
 /**
  * 漫画目录，
@@ -79,15 +99,19 @@ data class ComicIssue(
  * 漫画页面，
  */
 data class ComicPage(
-        val url: String
-) : Data()
+        val img: Observable<ComicImage>
+) : Data() {
+    constructor(comicImage: ComicImage) : this(Observable.just(comicImage))
+    constructor(s: String) : this(ComicImage(s))
+}
 
 /**
  * 漫画图片，
- * @param img 漫画图片地址，
+ * @param realUrl 漫画图片地址，
+ * @param cacheableUrl 漫画图片地址，
  */
 data class ComicImage(
-        val img: String,
+        val realUrl: String,
         val cacheableUrl: String
 ) : Data() {
     constructor(img: String) : this(img, img)

@@ -1,5 +1,7 @@
 package cc.aoeiuv020.comic.api
 
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -9,7 +11,7 @@ import org.junit.Test
  */
 class Dm5ContextTest {
     init {
-        System.setProperty("org.slf4j.simpleLogger.log.Dm5Context", "trace")
+        System.setProperty("org.slf4j.simpleLogger.log.Dm5Context", "info")
     }
 
     private lateinit var context: Dm5Context
@@ -48,7 +50,7 @@ class Dm5ContextTest {
         genreList.forEach {
             context.getComicList(it).forEach {
                 println(it.name)
-                println(it.url)
+                println(it.detailUrl)
                 println(it.img)
                 println(it.info)
             }
@@ -65,9 +67,11 @@ class Dm5ContextTest {
 
     @Test
     fun getComicDetail() {
-        context.getComicDetail(ComicListItem("妖精的尾巴", "", "http://www.dm5.com/manhua-yaojingdeweiba/")).let {
-            println(it.name)
-            println(it.bigImg)
+        context.getComicDetail(ComicDetailUrl("http://www.dm5.com/manhua-yaojingdeweiba/")).let {
+            assertEquals("妖精的尾巴", it.name)
+            it.bigImg.subscribe {
+                println(it)
+            }
             println(it.info)
             it.issuesAsc.forEach {
                 println("[${it.name}](${it.url})")
@@ -77,15 +81,23 @@ class Dm5ContextTest {
 
     @Test
     fun getComicPages() {
-        context.getComicPages(ComicIssue("", "http://www.dm5.com/m523824/")).forEach {
-            println(it.url)
+        val imgList = listOf("http://manhua1032-61-174-50-99.cdndm5.com/34/33771/523824/1_1219.jpg?cid=523824",
+                "http://manhua1032-61-174-50-99.cdndm5.com/34/33771/523824/2_2667.jpg?cid=523824",
+                "http://manhua1032-61-174-50-99.cdndm5.com/34/33771/523824/3_8727.jpg?cid=523824",
+                "http://manhua1032-61-174-50-99.cdndm5.com/34/33771/523824/4_1681.jpg?cid=523824",
+                "http://manhua1032-61-174-50-99.cdndm5.com/34/33771/523824/5_1055.jpg?cid=523824",
+                "http://manhua1032-61-174-50-99.cdndm5.com/34/33771/523824/6_5063.jpg?cid=523824",
+                "http://manhua1032-61-174-50-99.cdndm5.com/34/33771/523824/7_8270.jpg?cid=523824",
+                "http://manhua1032-61-174-50-99.cdndm5.com/34/33771/523824/8_3589.jpg?cid=523824")
+        context.getComicPages(ComicIssue("", "http://www.dm5.com/m523824/")).forEachIndexed { index, (url) ->
+            url.subscribe { (img, cacheableUrl) ->
+                assertEquals(imgList[index], cacheableUrl)
+                assertTrue(img.startsWith(imgList[index]))
+            }
         }
-    }
-
-    @Test
-    fun getComicImage() {
-        context.getComicImage(ComicPage("http://www.dm5.com/m529922-p1/")).let {
-            println(it.img)
-        }
+        /*
+                      assertEquals("http://manhua1032-61-174-50-99.cdndm5.com/34/33771/523824/1_1219.jpg?cid=523824", it.cacheableUrl)
+                      assertTrue(it.img.startsWith("http://manhua1032-61-174-50-99.cdndm5.com/34/33771/523824/1_1219.jpg?cid=523824"))
+      */
     }
 }

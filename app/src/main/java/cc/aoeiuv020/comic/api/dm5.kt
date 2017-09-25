@@ -1,5 +1,6 @@
 package cc.aoeiuv020.comic.api
 
+import io.reactivex.Observable
 import org.jsoup.Jsoup
 import java.net.URLEncoder
 
@@ -72,10 +73,9 @@ class Dm5Context : ComicContext() {
 
     override fun isSearchResult(genre: ComicGenre): Boolean = genre.url.matches(Regex(".*/search.*"))
 
-    override fun getComicDetail(comicListItem: ComicListItem): ComicDetail {
-        val root = getHtml(comicListItem.url)
-        // 这个name也可以改成从html解析，
-        val name = comicListItem.name
+    override fun getComicDetail(comicDetailUrl: ComicDetailUrl): ComicDetail {
+        val root = getHtml(comicDetailUrl.url)
+        val name = text(root.select("#mhinfo > div.inbt > h1").first())
         val bigImg = src(root.select("#mhinfo > div.innr9.innr9_min > div.innr90 > div.innr91 > img").first())
         val info = root.select("#mhinfo > div.innr9.innr9_min > div:nth-child(3) > p")
                 .first().let { it.ownText() + (it.select("span").first()?.ownText() ?: "") }
@@ -91,17 +91,15 @@ class Dm5Context : ComicContext() {
         val first = getHtml(comicIssue.url)
         val chapter = first.select("div#chapterpager").firstOrNull() ?: return emptyList()
         val pagesCount = chapter.select("a:nth-last-child(1)").firstOrNull()?.run { text().toInt() } ?: 1
-        return List(pagesCount) {
-            ComicPage(absUrl("/m$cid-p${it + 1}/"))
+        return List(pagesCount) { index ->
+            ComicPage(Observable.fromCallable { getComicImage(cid, "${index + 1}") })
         }
     }
 
     /**
      * http://css99tel.cdndm5.com/v201709121708/default/js/chapternew_v22.js
      */
-    override fun getComicImage(comicPage: ComicPage): ComicImage {
-        val cid = comicPage.url.replace(Regex(".*/m(\\d*)-p\\d*/"), "$1")
-        val index = comicPage.url.replace(Regex(".*/m\\d*-p(\\d*)/"), "$1")
+    fun getComicImage(cid: String, index: String): ComicImage {
         val pageUrl = absUrl("/chapterfun.ashx")
         val conn = Jsoup.connect(pageUrl)
                 .data("cid", cid)
@@ -120,7 +118,7 @@ class Dm5Context : ComicContext() {
         logger.debug { "img: $img" }
         val cacheableUrl = img.replace(Regex("&key=\\w*"), "")
         logger.debug { "cacheableUrl: $cacheableUrl" }
-        return ComicImage(img)
+        return ComicImage(img, cacheableUrl)
     }
 
     /**

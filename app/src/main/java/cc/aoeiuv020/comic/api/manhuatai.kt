@@ -2,6 +2,7 @@ package cc.aoeiuv020.comic.api
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import io.reactivex.Observable
 import org.jsoup.Jsoup
 import java.net.URLEncoder
 
@@ -51,8 +52,16 @@ class ManhuataiContext : ComicContext() {
             val json = Jsoup.connect(genre.url).apply { execute() }.response().body()
             val searchResultList = Gson().fromJson(json, SearchResultList::class.java)
             return searchResultList.map {
-                // 搜索结果没有图片，拿网站logo顶一下，
-                ComicListItem(it.cartoon_name, site.logo, absUrl("/${it.cartoon_id}/"), "${it.cartoon_status_id}, ${it.latest_cartoon_topic_name}")
+                val url = absUrl("/${it.cartoon_id}/")
+                /**
+                 * 搜索结果没有图片，直接拿大图顶上，
+                 * [getComicDetail]
+                 */
+                val img = Observable.fromCallable {
+                    val root = getHtml(url)
+                    src(root.select("#offlinebtn-container > img").first())
+                }.map { ComicImage(it) }
+                ComicListItem(it.cartoon_name, img, url, "${it.cartoon_status_id}, ${it.latest_cartoon_topic_name}")
             }
         }
         val root = getHtml(genre.url)
@@ -85,9 +94,9 @@ class ManhuataiContext : ComicContext() {
 
     override fun isSearchResult(genre: ComicGenre): Boolean = genre.url.matches(Regex(".*/getjson.*"))
 
-    override fun getComicDetail(comicListItem: ComicListItem): ComicDetail {
-        val root = getHtml(comicListItem.url)
-        val name = comicListItem.name
+    override fun getComicDetail(comicDetailUrl: ComicDetailUrl): ComicDetail {
+        val root = getHtml(comicDetailUrl.url)
+        val name = text(root.select("div.jshtml > ul > li:nth-child(1)")).removePrefix("名称：")
         val bigImg = src(root.select("#offlinebtn-container > img").first())
         val info = textWithNewLine(root.select("div.wz.clearfix > div").first(), 1)
         val issues = root.select("div.mhlistbody > ul > li > a").map {
@@ -136,7 +145,7 @@ class ManhuataiContext : ComicContext() {
         return List(mh_info.totalimg) {
             val d = (mh_info.startimg + it).toString() + ".jpg" + b
             val e = "http://$c/comic/$imgpath$d"
-            ComicPage(comicIssue.url + "#" + e)
+            ComicPage(Observable.fromCallable { getComicImage(e) })
         }
     }
 
@@ -148,8 +157,7 @@ class ManhuataiContext : ComicContext() {
                       @SerializedName("imgpath") val imgpath: String
     )
 
-    override fun getComicImage(comicPage: ComicPage): ComicImage {
-        val url = comicPage.url.split("#")[1]
+    fun getComicImage(url: String): ComicImage {
         return ComicImage(url)
     }
 }

@@ -1,5 +1,6 @@
 package cc.aoeiuv020.comic.api
 
+import io.reactivex.Observable
 import java.net.URLEncoder
 
 /**
@@ -70,12 +71,12 @@ class PopomhContext : ComicContext() {
 
     override fun isSearchResult(genre: ComicGenre): Boolean = genre.url.matches(Regex(".*act=search.*"))
 
-    override fun getComicDetail(comicListItem: ComicListItem): ComicDetail {
-        val root = getHtml(comicListItem.url)
-        val name = comicListItem.name
+    override fun getComicDetail(comicDetailUrl: ComicDetailUrl): ComicDetail {
+        val root = getHtml(comicDetailUrl.url)
+        val name = text(root.select("#about_kit > ul > li:nth-child(1) > h1")).trim()
         val img = root.select("#about_style > img").first()
         val bigImg = src(img)
-        val info = root.select("#about_kit > ul > li")
+        val info = root.select("#about_kit > ul > li:not(:nth-child(1))")
                 .joinToString("\n") { text(it) }
         val issues = root.select("#permalink > div.cVolList > ul > li > a").map {
             val a = it
@@ -88,8 +89,10 @@ class PopomhContext : ComicContext() {
         val first = getHtml(comicIssue.url)
         val pagesCount = first.select("body > div.cHeader > div.cH1 > b")
                 .first().text().split('/')[1].trim().toInt()
-        return List(pagesCount) {
-            ComicPage(comicIssue.url.replace(Regex("/\\d*.html"), "/${it + 1}.html"))
+        return List(pagesCount) { index ->
+            ComicPage(Observable.fromCallable {
+                getComicImage(comicIssue.url.replace(Regex("/\\d*.html"), "/${index + 1}.html"))
+            })
         }
     }
 
@@ -98,8 +101,8 @@ class PopomhContext : ComicContext() {
      */
     private var domainIndex: Int = 0
 
-    override fun getComicImage(comicPage: ComicPage): ComicImage {
-        val root = getHtml(comicPage.url)
+    fun getComicImage(url: String): ComicImage {
+        val root = getHtml(url)
         val domains = root.select("#hdDomain").first().attr("value").split('|')
         val domain = domains[if (domainIndex < 0) 0 else if (domainIndex > domains.size) domains.size else domainIndex]
         val cipher = root.select("#img7652, #img1021, #img2391, #imgCurr")

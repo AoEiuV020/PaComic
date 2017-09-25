@@ -1,5 +1,6 @@
 package cc.aoeiuv020.comic.api
 
+import junit.framework.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -8,6 +9,10 @@ import org.junit.Test
  * Created by AoEiuV020 on 2017.09.09-22:17:08.
  */
 class PopomhContextTest {
+    init {
+        System.setProperty("org.slf4j.simpleLogger.log.PopomhContext", "info")
+    }
+
     private lateinit var context: PopomhContext
     @Before
     fun setUp() {
@@ -46,7 +51,7 @@ class PopomhContextTest {
         genreList.forEach {
             context.getComicList(it).forEach {
                 println(it.name)
-                println(it.url)
+                println(it.detailUrl)
                 println(it.img)
             }
         }
@@ -62,9 +67,11 @@ class PopomhContextTest {
 
     @Test
     fun getComicDetail() {
-        context.getComicDetail(ComicListItem("狩猎史莱姆300年", "", "http://www.popomh.com/manhua/32551.html")).let {
-            println(it.name)
-            println(it.bigImg)
+        context.getComicDetail(ComicDetailUrl("http://www.popomh.com/manhua/32551.html")).let {
+            assertEquals("狩猎史莱姆300年", it.name)
+            it.bigImg.subscribe {
+                println(it)
+            }
             println(it.info)
             it.issuesAsc.forEach {
                 println("[${it.name}](${it.url})")
@@ -74,15 +81,12 @@ class PopomhContextTest {
 
     @Test
     fun getComicPages() {
-        context.getComicPages(ComicIssue("", "http://www.popomh.com/popo290025/1.html?str=3")).forEach {
-            println(it.url)
-        }
-    }
-
-    @Test
-    fun getComicImage() {
-        context.getComicImage(ComicPage("http://www.popomh.com/popo290025/24.html?str=3")).let {
-            println(it.img)
+        val imgList = listOf("http://124.94201314.net/dm03//ok-comic03/A/32744/act_008/z_0001_20239.PNG",
+                "http://124.94201314.net/dm03//ok-comic03/A/32744/act_008/z_0002_20503.JPG")
+        context.getComicPages(ComicIssue("", "http://www.popomh.com/popo290338/1.html?s=3")).forEachIndexed { index, (url) ->
+            url.subscribe { (img) ->
+                assertEquals(imgList[index], img)
+            }
         }
     }
 }

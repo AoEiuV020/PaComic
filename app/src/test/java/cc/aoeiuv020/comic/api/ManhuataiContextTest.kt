@@ -1,5 +1,6 @@
 package cc.aoeiuv020.comic.api
 
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -9,7 +10,7 @@ import org.junit.Test
  */
 class ManhuataiContextTest {
     init {
-        System.setProperty("org.slf4j.simpleLogger.log.ManhuataiContext", "trace")
+        System.setProperty("org.slf4j.simpleLogger.log.ManhuataiContext", "info")
     }
 
     private lateinit var context: ManhuataiContext
@@ -48,8 +49,10 @@ class ManhuataiContextTest {
         genreList.forEach {
             context.getComicList(it).forEach {
                 println(it.name)
-                println(it.url)
-                println(it.img)
+                println(it.detailUrl)
+                it.img.subscribe {
+                    println(it)
+                }
                 println(it.info)
             }
         }
@@ -65,9 +68,11 @@ class ManhuataiContextTest {
 
     @Test
     fun getComicDetail() {
-        context.getComicDetail(ComicListItem("斗破苍穹", "", "http://www.manhuatai.com/doupocangqiong/")).let {
-            println(it.name)
-            println(it.bigImg)
+        context.getComicDetail(ComicDetailUrl("http://www.manhuatai.com/doupocangqiong/")).let {
+            assertEquals("斗破苍穹", it.name)
+            it.bigImg.subscribe {
+                println(it)
+            }
             println(it.info)
             it.issuesAsc.forEach {
                 println("[${it.name}](${it.url})")
@@ -77,10 +82,17 @@ class ManhuataiContextTest {
 
     @Test
     fun getComicPages() {
-        context.getComicPages(ComicIssue("", "http://www.manhuatai.com/doupocangqiong/dpcq_615h.html")).forEach {
-            println(it.url)
-            context.getComicImage(it).let {
-                println(it.img)
+        val imgList = listOf("http://mhpic.zymkcdn.com/comic/D%2F%E6%96%97%E7%A0%B4%E8%8B%8D%E7%A9%B9%E6%8B%86%E5%88%86%E7%89%88%2F615%E8%AF%9D%2F1.jpg-mht.middle",
+                "http://mhpic.zymkcdn.com/comic/D%2F%E6%96%97%E7%A0%B4%E8%8B%8D%E7%A9%B9%E6%8B%86%E5%88%86%E7%89%88%2F615%E8%AF%9D%2F2.jpg-mht.middle",
+                "http://mhpic.zymkcdn.com/comic/D%2F%E6%96%97%E7%A0%B4%E8%8B%8D%E7%A9%B9%E6%8B%86%E5%88%86%E7%89%88%2F615%E8%AF%9D%2F3.jpg-mht.middle",
+                "http://mhpic.zymkcdn.com/comic/D%2F%E6%96%97%E7%A0%B4%E8%8B%8D%E7%A9%B9%E6%8B%86%E5%88%86%E7%89%88%2F615%E8%AF%9D%2F4.jpg-mht.middle",
+                "http://mhpic.zymkcdn.com/comic/D%2F%E6%96%97%E7%A0%B4%E8%8B%8D%E7%A9%B9%E6%8B%86%E5%88%86%E7%89%88%2F615%E8%AF%9D%2F5.jpg-mht.middle",
+                "http://mhpic.zymkcdn.com/comic/D%2F%E6%96%97%E7%A0%B4%E8%8B%8D%E7%A9%B9%E6%8B%86%E5%88%86%E7%89%88%2F615%E8%AF%9D%2F6.jpg-mht.middle",
+                "http://mhpic.zymkcdn.com/comic/D%2F%E6%96%97%E7%A0%B4%E8%8B%8D%E7%A9%B9%E6%8B%86%E5%88%86%E7%89%88%2F615%E8%AF%9D%2F7.jpg-mht.middle",
+                "http://mhpic.zymkcdn.com/comic/D%2F%E6%96%97%E7%A0%B4%E8%8B%8D%E7%A9%B9%E6%8B%86%E5%88%86%E7%89%88%2F615%E8%AF%9D%2F8.jpg-mht.middle")
+        context.getComicPages(ComicIssue("", "http://www.manhuatai.com/doupocangqiong/dpcq_615h.html")).forEachIndexed { index, (url) ->
+            url.subscribe { (img) ->
+                assertEquals(imgList[index], img)
             }
         }
     }

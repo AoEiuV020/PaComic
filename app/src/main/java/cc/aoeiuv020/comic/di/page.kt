@@ -13,16 +13,13 @@ import io.reactivex.Observable
  */
 @Subcomponent(modules = arrayOf(PageModule::class))
 interface PageComponent {
-    fun getComicPages(): Observable<ComicPage>
+    fun getComicPages(): Observable<List<ComicPage>>
 }
 
 @Module
 class PageModule(private val comicIssue: ComicIssue) {
     @Provides
-    fun getComicPages(): Observable<ComicPage> = Observable.create { em ->
-        ctx(comicIssue.url).getComicPages(comicIssue).forEach {
-            em.onNext(it)
-        }
-        em.onComplete()
+    fun getComicPages(): Observable<List<ComicPage>> = Observable.fromCallable {
+        ctx(comicIssue.url).getComicPages(comicIssue)
     }
 }
