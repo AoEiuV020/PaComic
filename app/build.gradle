@@ -11,8 +11,8 @@ android {
         applicationId "cc.aoeiuv020.comic"
         minSdkVersion min_version
         targetSdkVersion target_version
-        versionCode 5
-        versionName "0.5"
+        versionCode 6
+        versionName "0.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "comic-$versionName")
         vectorDrawables.useSupportLibrary = true
